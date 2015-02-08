@@ -5,9 +5,8 @@ import sys
 
 def main():
     cli = Interface()
-    print
-    cli.setSimRules()
-    print
+    particles = cli.setSimRules()
+    print particles[0]
 
 if __name__ == '__main__':
     try:
