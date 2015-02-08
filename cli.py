@@ -18,6 +18,8 @@ class Interface():
         parser.add_argument("-o", "--ofile", help="Output file path to write particles to. Suffix is currently "+defaults['ofile'])
         parser.add_argument("--bound", help="Sets boundaries of particle space. Default is "+defaults['bound'],
                             type=int, default=int(defaults['bound']))
+        parser.add_argument("--stdev", help="Standard deviation of particle space. Default is "+defaults['stdev'],
+                    type=float, default=float(defaults['stdev']))
         parser.add_argument("--maxiter", help="Maximum iterations to run the simulation through. Default is "+defaults['maxiter'],
                            type=int, default=int(defaults['maxiter']))
         parser.add_argument("--t_norm", help="Time normalization. Default is "+defaults['t_norm'],
@@ -31,19 +33,18 @@ class Interface():
         parser.add_argument("--res", help="Resolution of the simulation to use", default=defaults['res'])
         self.args = parser.parse_args()
 
-    def genParticles(self, num, ubound):
-        # array containing particle positions
-        ppos = []
-        # array containing particle coordinates
-        p = [0, 0, 0, 0]
-        for i in range(0, num):
-            # generate new particle within 0-ubound range
-            ppos.append([i, uniform(0, ubound), uniform(0, ubound), uniform(0, ubound)])
-        print "[+] Generated %d particles" % len(ppos)
+    def genParticles(self, num, kernel):
+        if kernel == 'gaussian':
+            print "[+] Using Gaussian kernel distribution"
+            ppos = self.useGaussian(num)
+        else:
+            "[+] What the fuck kind of kernel are you using?"
+            sys.exit(0)
+        
         # takes filename specified in sph.config, particle positions, and number of particles generated
         self.writeParticlesToFile(self.config.getArg('savefile'), ppos, num)
         return ppos
-
+    
     def readInputFile(self):
         # particle positions - just like self.genParticles
         ppos = []
@@ -56,18 +57,33 @@ class Interface():
         return ppos
 
     def setSimRules(self):
-        # If [IFILE] is specified, ignore everything else
-        if self.args.ifile:
+        
+        if self.args.ifile: # If [IFILE] is specified, ignore everything else
             particles = self.readInputFile()
-        # If [IFILE] isn't specified and [NUMPRT] is specified, generate particles
-        elif not self.args.ifile and self.args.gen:
-            particles = self.genParticles(self.args.gen, self.args.bound)
-        # If [IFILE] and [NUMPRT] are NOT specified, exit
-        else:
+        elif not self.args.ifile and self.args.gen: # If [IFILE] isn't specified and [NUMPRT] is specified, generate particles
+            particles = self.genParticles(self.args.gen, self.args.kernel)
+        else: # If [IFILE] and [NUMPRT] are NOT specified, exit
             print "[-] You did not specify an input file or tell me to generate particles. Exiting...\n"
             sys.exit(1)
+
         # retrieved from either an input file or generated in self.genParticles
         return particles
+
+    def useGaussian(self, num):
+        mean = (self.args.bound/2)
+        ppos = [] # array containing particle positions
+        for i in range(0, num):
+            particle = []
+            particle.append(i) # assign particle id
+            val = -1 # coordinate value for X, Y, or Z
+            for j in range(1, 4):
+                while val < 0 or self.args.bound < val: # ensure val is within range of particle boundaries
+                    val = gauss(mean, self.args.stdev)
+                particle.append(val)
+                val = -1  # reset val so the while loop will run again (otherwise X=Y=Z)
+            ppos.append(particle)
+            
+        return ppos
 
     def writeParticlesToFile(self, fname, ppos, num):
         with open(fname, "w") as output:
