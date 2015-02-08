@@ -5,7 +5,7 @@ from os import path
 class Config():
     def __init__(self, file="sph.conf"):
         # List of all keys to check for in the config file
-        self.keys = ["numptr", "savefile", "maxiter", "bound", "t_norm", "x_norm", "gsc", "kernel",
+        self.keys = ["numptr", "savefile", "maxiter", "bound", "stdev", "t_norm", "x_norm", "gsc", "kernel",
                      "vidlen", "res", "ofile", "maxvid"]
         # Dictionary containing key (e.g. infile) and value (e.g. "input.csv")
         self.args = {}
@@ -43,5 +43,6 @@ class Config():
                 else:  # read in everything as 'key=value'
                     line = line.strip()
                     p = line.split("=")
+                    # check if the key is in self.keys first to avoid arbitrary key-vals
                     if p[0] in self.keys:
                         self.args[p[0]] = p[1]
