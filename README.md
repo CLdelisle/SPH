@@ -7,7 +7,7 @@ Provides line by line breakdown of time spent in a function
 Install with ```pip install line_profiler```
 Annotate functions to be profiled with @profile.
 
-Example with [timingTests.py]()
+Example with [timingTests.py](https://github.com/QuarkStar/SPH/blob/timingFrameworks/line_profiler/timingTests.py)
 ```bash
 cd line_profiler/
 kernprof -l timingTests.py
