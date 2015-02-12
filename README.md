@@ -38,11 +38,13 @@ Output:
 ## [memory_profiler](https://github.com/fabianp/memory_profiler)
 Monitors memory consumption of a process as well as line-by-line analysis of memory consumption.
 
-#### Install
+#### Usage
+Install:
 ```bash
 pip install -U memory_profiler
 pip install psutil
 ```
+Annotate functions to be profiled with @profile.
 
 Example with [memoryTest.py](https://github.com/QuarkStar/SPH/blob/timingFrameworks/memory_profiler/memoryTest.py)
 ```bash
