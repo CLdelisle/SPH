@@ -18,6 +18,7 @@ Output:
 ![](http://i.imgur.com/nnUkNbq.png)
 
 ## [cProfile](https://docs.python.org/2/library/profile.html)
+C extension with reasonable overhead that makes it suitable for profiling long-running programs.
 
 ### Usage
 cProfile ships with python, no libs to install.
