@@ -14,6 +14,5 @@ kernprof -l timingTests.py
 # view results with:
 python -m line_profiler timingTests.py.lprof
 ```
-
-Example output:
+Output:
 ![](http://i.imgur.com/nnUkNbq.png)
