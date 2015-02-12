@@ -16,3 +16,13 @@ python -m line_profiler timingTests.py.lprof
 ```
 Output:
 ![](http://i.imgur.com/nnUkNbq.png)
+
+## [cProfile](https://docs.python.org/2/library/profile.html)
+Example with [cProfileTest.py]()
+Output:
+```bash
+cd cProfile/
+python cProfileTest.py 
+```
+Output:
+![](http://i.imgur.com/DhJfRjw.png)
