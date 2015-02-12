@@ -28,7 +28,6 @@ cProfile.run('someMethod())
 ```
 
 Example with [cProfileTest.py](https://github.com/QuarkStar/SPH/blob/timingFrameworks/cProfile/cProfileTest.py)
-Output:
 ```bash
 cd cProfile/
 python cProfileTest.py 
