@@ -44,7 +44,7 @@ pip install -U memory_profiler
 pip install psutil
 ```
 
-Example with []()
+Example with [memoryTest.py](https://github.com/QuarkStar/SPH/blob/timingFrameworks/memory_profiler/memoryTest.py)
 ```bash
 cd memory_profiler/
 python -m memory_profiler timingTests.py
