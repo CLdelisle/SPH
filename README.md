@@ -18,6 +18,14 @@ Output:
 ![](http://i.imgur.com/nnUkNbq.png)
 
 ## [cProfile](https://docs.python.org/2/library/profile.html)
+
+### Usage
+cProfile ships with python, no libs to install.
+```python
+import cProfile
+cProfile.run('someMethod())
+```
+
 Example with [cProfileTest.py](https://github.com/QuarkStar/SPH/blob/timingFrameworks/cProfile/cProfileTest.py)
 Output:
 ```bash
