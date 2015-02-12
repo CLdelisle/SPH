@@ -34,3 +34,20 @@ python cProfileTest.py
 ```
 Output:
 ![](http://i.imgur.com/DhJfRjw.png)
+
+## [memory_profiler](https://github.com/fabianp/memory_profiler)
+Monitors memory consumption of a process as well as line-by-line analysis of memory consumption.
+
+#### Install
+```bash
+pip install -U memory_profiler
+pip install psutil
+```
+
+Example with []()
+```bash
+cd memory_profiler/
+python -m memory_profiler timingTests.py
+```
+Output:
+![](http://i.imgur.com/8ld05im.png)
