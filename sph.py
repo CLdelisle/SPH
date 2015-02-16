@@ -1,12 +1,11 @@
 import configuration
 from cli import *
-import sys
 
 
 def main():
     cli = Interface()
     particles = cli.setSimRules()
-    print particles[0]
+    print particles[ len(particles)-1 ]  # print out last particle. Hopefully the PID is the right number
 
 if __name__ == '__main__':
     try:

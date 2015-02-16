@@ -1,22 +1,27 @@
-__author__ = 'Thomas Gardner'
 from os import path
 
 
 class Config():
-    def __init__(self, file="sph.conf"):
+    
+    def __init__(self, config="sph.conf"):
         # List of all keys to check for in the config file
         self.keys = ["numptr", "savefile", "maxiter", "bound", "stdev", "t_norm", "x_norm", "gsc", "kernel",
                      "vidlen", "res", "ofile", "maxvid"]
         # Dictionary containing key (e.g. infile) and value (e.g. "input.csv")
         self.args = {}
-        if path.isfile(file):
-            self.parseConfig(file)
+        if path.isfile(config):
+            self.parseConfig(config)
         else:
             name = raw_input("[?] No config file found. What would you like to name yours? ")
             self.createConfig(name)
 
+    ######################################################
+    # Grabs a config argument value. Key == 'All' returns a dictionary containing all current key-value pairs
+    # INPUT: key (which argument to grab from config file)
+    # OUTPUT: Either a value matching a key pair, or False, indicating the key does not exist
+    ######################################################
     def getArg(self, key):
-        if key == 'all':
+        if key.lower() == 'all':
             return self.args
         elif key in self.keys:
             return self.args[key]
@@ -24,7 +29,13 @@ class Config():
             print "[-] Couldn't find %s" % key
             return False
 
-    def createConfig(self, name):
+    ######################################################
+    # Creates a configuration file with keys from self.keys, and no values defined
+    # Should only be called when it's determined that no configuration file is found
+    # INPUT: fname (configuration filename to create)
+    # OUTPUT: none
+    ######################################################
+    def createConfig(self, fname):
         print "[+] Creating new config file"
         # Instantiate all keys to None
         with open(name, "w") as conf:
@@ -33,8 +44,15 @@ class Config():
                 conf.write(line)
                 self.args[key] = None
 
-    def parseConfig(self, file="sph.conf"):
-        with open(file, "r") as conf:
+    ######################################################
+    # Grabs data from a config file line-by-line as key-value pairs stored in self.args
+    # Ignores comments - lines starting with #
+    # Also ignores empty lines - lines starting with '\n'
+    # INPUT: fname (configuration filename to parse. Default is "sph.conf")
+    # OUTPUT: none
+    ######################################################
+    def parseConfig(self, config="sph.conf"):
+        with open(config, "r") as conf:
             lines = conf.readlines()
             for line in lines:
                 # skip commented out and empty lines
