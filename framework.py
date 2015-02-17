@@ -5,7 +5,7 @@ This is the framework for iterating over a list of particles, computing particle
 """
 
 __author__ = "Colby"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 """ THIS VERSION HAS NOT BEEN TESTED, BUT RUNS SUCCESSFULLY AT THE VERY LEAST """
 
@@ -61,6 +61,8 @@ def main():
 		for p in particles:
 			# preemptively start the Velocity Verlet computation (first half of velocity update part)
 			p.v += (CONST_H/2.0) * p.a
+			temp = p.a
+			p.a = 0
 			for q in particles:
 				if(p.id != q.id):
 					p.a += Newtonian_gravity(p,q)
@@ -73,7 +75,7 @@ def main():
 		
 		for p in particles:
 			# perform position update
-			p.x += CONST_H * (p.v + (CONST_H/2.0)*p.a)
+			p.x += CONST_H * (p.v + (CONST_H/2.0)*temp)
 
 		t += CONST_H # advance time
 
