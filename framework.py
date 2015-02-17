@@ -13,13 +13,13 @@ __version__ = "1.0.1"
 import numpy as np
 
 
-class Particle:
+class Particle(object):
 	def __init__(self,id,m,x,y,z,vx,vy,vz):
 		self.id = id	# particle id (int)
-		self.m = m		# particle mass (double)
-		self.x = np.array([x,y,z])			# position vector<double>
-		self.v = np.array([vx,vy,vz])		# velocity vector<double>
-		self.a = np.array([0.0,0.0,0.0])	# acceleration vector<double>
+		self.mass = m		# particle mass (double)
+		self.pos = np.array([x,y,z])			# position vector<double>
+		self.vel = np.array([vx,vy,vz])		# velocity vector<double>
+		self.acc = np.array([0.0,0.0,0.0])	# acceleration vector<double>
 
 
 def Newtonian_gravity(p,q):
@@ -31,9 +31,9 @@ def Newtonian_gravity(p,q):
 	Note that this is all in the r-direction vectorially
 	'''
 
-	r = q.x - p.x # separation vector
+	r = q.pos - p.pos # separation vector
 	R = np.sqrt(r.dot(r)) # magnitude of the separation vector
-	return ((CONST_G * q.m) / (r.dot(r))) * r
+	return ((CONST_G * q.mass) / (R**3)) * r
 
 
 def main():
@@ -60,13 +60,13 @@ def main():
 		# main simulation loop
 		for p in particles:
 			# preemptively start the Velocity Verlet computation (first half of velocity update part)
-			p.v += (CONST_H/2.0) * p.a
-			temp = p.a
-			p.a = 0
+			p.vel += (CONST_H/2.0) * p.acc
+			temp = p.acc
+			p.acc = 0
 			for q in particles:
 				if(p.id != q.id):
-					p.a += Newtonian_gravity(p,q)
-			p.v += (CONST_H/2.0) * p.a # finish velocity update
+					p.acc += Newtonian_gravity(p,q)
+			p.vel += (CONST_H/2.0) * p.acc # finish velocity update
 	
 		'''
 		Velocity Verlet integration: Works only assuming force is velocity-independent
@@ -75,11 +75,11 @@ def main():
 		
 		for p in particles:
 			# perform position update
-			p.x += CONST_H * (p.v + (CONST_H/2.0)*temp)
+			p.pos += CONST_H * (p.vel + (CONST_H/2.0)*temp)
 
 		t += CONST_H # advance time
 
-		print t # Output only to verify that this code is syntactically correct and will run
+		print "Iteration " + str(int(t)) + "..." # Output only to verify that this code is syntactically correct and will run
 
 
 if __name__ == '__main__':
