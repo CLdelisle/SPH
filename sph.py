@@ -1,4 +1,3 @@
-import configuration
 from cli import *
 
 

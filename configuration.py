@@ -5,8 +5,8 @@ class Config():
     
     def __init__(self, config="sph.conf"):
         # List of all keys to check for in the config file
-        self.keys = ["numptr", "savefile", "maxiter", "bound", "stdev", "t_norm", "x_norm", "gsc", "kernel",
-                     "vidlen", "res", "ofile", "maxvid"]
+        self.keys = ["num", "savefile", "maxiter", "bound", "stdev", "t_norm", "x_norm", "kernel",
+                     "vidlen", "res", "ofile", "maxvid", "gtype", "smooth"]
         # Dictionary containing key (e.g. infile) and value (e.g. "input.csv")
         self.args = {}
         if path.isfile(config):
@@ -36,6 +36,8 @@ class Config():
     # OUTPUT: none
     ######################################################
     def createConfig(self, fname):
+        if fname is '':
+            fname = 'sph.conf'
         print "[+] Creating new config file"
         # Instantiate all keys to None
         with open(name, "w") as conf:
@@ -58,9 +60,13 @@ class Config():
                 # skip commented out and empty lines
                 if line.startswith("#") or line.startswith("\n"):
                     pass
-                else:  # read in everything as 'key=value'
-                    line = line.strip()
-                    p = line.split("=")
+                else:  # read in everything as 'key=value' with NO newlines or spaces
+                    line = line.strip().split(" ")
+		    # make sure there is a key-value pair of form 'key=value' to read
+		    if "=" not in line[0]:
+			raise Exception("Config file is incorrectly formatted. Exiting...")
+			sys.exit(0)
+                    p = line[0].split("=")
                     # check if the key is in self.keys first to avoid arbitrary key-vals
                     if p[0] in self.keys:
                         self.args[p[0]] = p[1]
