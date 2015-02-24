@@ -1,4 +1,4 @@
-import configuration
+#!/usr/bin/python
 from cli import *
 
 

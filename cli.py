@@ -10,31 +10,33 @@ class Interface():
 
     def __init__(self):
         self.config = configuration.Config()
+        raw = argparse.RawTextHelpFormatter
         defaults = self.config.getArg('all')
         # Set argument options for CLI
-        parser = argparse.ArgumentParser(description="Run the SPH simulation")
-        parser.add_argument("-g", "--gen", help="Number of particles to generate. Conflicts with [IFILE] argument",
-                            type=int)
-        parser.add_argument("-i", "--ifile", help="Input file path to read particles from. "
+        self.parser = argparse.ArgumentParser(formatter_class=raw, description="SPH.py is the user interface for our physics simulation program.\n"
+                                "'SPH' stands for Smoothed Particle Hydrodynamics, which is an algorithm for simulating fluid flows.\n"
+                                "You can read more on it at https://en.wikipedia.org/wiki/Smoothed-particle_hydrodynamics")
+        self.parser.add_argument("-g", "--gen", help="Number of particles to generate. Conflicts with [IFILE] argument",
+                                type=int)
+        self.parser.add_argument("-i", "--ifile", help="Input file path to read particles from. "
                                 "Takes precedence over [GEN] argument")
-        parser.add_argument("-o", "--ofile", help="Output file path to write particles to. Suffix is currently "+defaults['ofile'])
-        parser.add_argument("--bound", help="Sets boundaries of particle space. Default is "+defaults['bound'],
-                            type=int, default=int(defaults['bound']))
-        parser.add_argument("--stdev", help="Standard deviation of particle space. Default is "+defaults['stdev'],
-                    type=float, default=float(defaults['stdev']))
-        parser.add_argument("--maxiter", help="Maximum iterations to run the simulation through. Default is "+defaults['maxiter'],
-                           type=int, default=int(defaults['maxiter']))
-        parser.add_argument("--t_norm", help="Time normalization. Default is "+defaults['t_norm'],
-                            choices=['months', 'years', 'decades', 'centuries'], default=defaults['t_norm'])
-        parser.add_argument("--x_norm", help="Space normalization. Default is "+defaults['x_norm'],
-                            choices=['Meters', 'kilometers', 'light-years'], default=defaults['x_norm'])
-        parser.add_argument("--gsc", default=defaults['gsc'])
-        parser.add_argument("--kernel", help="Kernel function to use. Default is "+defaults['kernel'],
-                            choices=['gaussian', 'random'], default=defaults['kernel'])
-        parser.add_argument("--vidlen", help="Maximum length (in seconds) of video to produce", type=int)
-        parser.add_argument("--res", help="Resolution of the simulation to use", default=defaults['res'])   
+        self.parser.add_argument("-s", "--savefile", help="Output file path to write particles to. Suffix is currently "+defaults['savefile'])
+        self.parser.add_argument("--bound", help="Sets boundaries of particle space. Default is "+defaults['bound'],
+                                type=int, default=int(defaults['bound']))
+        self.parser.add_argument("--stdev", help="Standard deviation of particle space. Default is "+defaults['stdev'],
+                                type=float, default=float(defaults['stdev']))
+        self.parser.add_argument("--maxiter", help="Maximum iterations to run the simulation through. Default is "+defaults['maxiter'],
+                                type=int, default=int(defaults['maxiter']))
+        self.parser.add_argument("--t_norm", help="Time normalization. Default is "+defaults['t_norm'],
+                                choices=['months', 'years', 'decades', 'centuries'], default=defaults['t_norm'])
+        self.parser.add_argument("--x_norm", help="Space normalization. Default is "+defaults['x_norm'],
+                                choices=['Meters', 'kilometers', 'light-years'], default=defaults['x_norm'])
+        self.parser.add_argument("--kernel", help="Kernel function to use. Default is "+defaults['kernel'],
+                                choices=['gaussian', 'random'], default=defaults['kernel'])
+    #    self.parser.add_argument("--vidlen", help="Maximum length (in seconds) of video to produce", type=int)
+    #    self.parser.add_argument("--res", help="Resolution of the simulation to use", default=defaults['res'])
         # Actually begin to parse the arguments
-        self.args = parser.parse_args()
+        self.args = self.parser.parse_args()
 
     ######################################################
     # Generate a specified number of particles in a 3D space using random.gauss() function
@@ -128,8 +130,9 @@ class Interface():
             particles = self.readInputFile()
         elif not self.args.ifile and self.args.gen: # If [IFILE] isn't specified and [NUMPRT] is specified, generate particles
             particles = self.genParticles(self.args.gen, self.args.kernel)
-        else: # If [IFILE] and [NUMPRT] are NOT specified, exit
-            print "[-] You did not specify an input file or tell me to generate particles. Exiting...\n"
+        else: # If [IFILE] and [NUMPRT] are NOT specified, print help message and exit
+            self.parser.print_help()
+            print "\n[-] You did not specify an input file or tell me to generate particles!"
             sys.exit(1)
         # retrieved from either an input file or generated in self.genParticles
         return particles
@@ -145,9 +148,6 @@ class Interface():
         with open(fname, "w") as output:
             for i in range(0, num):
                 # header = "Particle ID, X-coord, Y-coord, Z-coord\n"
-                if i < (num-1):
-                    line = "%d,%f,%f,%f\n" % (int(ppos[i][0]), float(ppos[i][1]), float(ppos[i][2]), float(ppos[i][3]))
-                elif i == (num-1):
-                    line = "%d,%f,%f,%f" % (int(ppos[i][0]), float(ppos[i][1]), float(ppos[i][2]), float(ppos[i][3]))
+                line = "%d,%f,%f,%f\n" % (int(ppos[i][0]), float(ppos[i][1]), float(ppos[i][2]), float(ppos[i][3]))
                 output.write(line)
         print "[+] Wrote %d particles to \"%s\"" %(i+1, fname)
