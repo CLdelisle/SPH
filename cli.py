@@ -121,16 +121,20 @@ class Interface():
         file = self.args.ifile
         # particle positions - just like self.genParticles
         ppos = []
+        vx = 0
+        vy = 0
+        vz = 0
 
         with open(file, "r") as ifile:
            print "[+] Reading from input file \"%s\"" % file
-           for line in ifile:
-              # header = "Particle ID, X-coord, Y-coord, Z-coord\n"
+           pstrings = ifile.readlines()
+           for i in range(0, len(pstrings)):
+              # header = "ID, mass, px,py,pz\n"
               # strip '\n' from line, then split into a list at commas
-              p = line.strip().split(",")
+              p = pstrings[i].strip().split(",")
               # must cast values, because they are read in as strings by Python
               # casting should catch odd values as well (e.g. '40a' for a PID)
-              ppos.append([int(p[0]), float(p[1]), float(p[2]), float(p[3]), float(p[4])])
+              ppos.append(particle(int(p[0]), float(p[1]), float(p[2]), float(p[3]), float(p[4]), vx, vy, vz))
 
         return ppos
 
