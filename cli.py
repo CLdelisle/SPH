@@ -35,8 +35,6 @@ class Interface():
                                 choices=['Meters', 'kilometers', 'light-years'], default=defaults['x_norm'])
         self.parser.add_argument("--kernel", help="Kernel function to use. Default is "+defaults['kernel'],
                                 choices=['gaussian', 'cubic'], default=defaults['kernel'])
-    #    self.parser.add_argument("--vidlen", help="Maximum length (in seconds) of video to produce", type=int)
-    #    self.parser.add_argument("--res", help="Resolution of the simulation to use", default=defaults['res'])
         # Actually begin to parse the arguments
         self.args = self.parser.parse_args()
 
@@ -44,7 +42,7 @@ class Interface():
     # Generate a specified number of particles in a 3D space using random.gauss() function
     # Should cluster particles in a sort of 'globe' in the center of the grid
     # INPUT: num (number of particles to generate), mass (default mass of particles)
-    # OUTPUT: ppos (double array containing particle IDs and positions)
+    # OUTPUT: ppos (array containing particle objects)
     ######################################################
     def createGaussian(self, num, mass):
         mean = (self.args.bound/2)
@@ -69,7 +67,7 @@ class Interface():
     # Generate a specified number of particles completely randomly
     # Given enough particles, the space should be about equally distributed
     # INPUT: num (number of particles to generate), mass (default mass of particles)
-    # OUTPUT: ppos (double array containing particle IDs and positions)
+    # OUTPUT: ppos (array containing particle objects)
     ######################################################
     def createRandom(self, num, mass):
         bound = self.args.bound
@@ -91,11 +89,11 @@ class Interface():
     # Will determine what kind of particle generation will occur
     # Mainly just a wrapper function for calling createRandom() or createGaussian()
     # INPUT: num (number of particles to generate), method (how to generate particles)
-    # OUTPUT: ppos (double array containing particle IDs and positions)
+    # OUTPUT: ppos (array containing particle objects)
     ######################################################
     def genParticles(self, num, method):
         mass = 5
-
+        
         if method == 'gaussian':
             print "[+] Generating particles according to Gaussian distribution"
             ppos = self.createGaussian(num, mass)
@@ -115,12 +113,13 @@ class Interface():
     # Called when --ifile flag is set
     # Reads from an input file (orly?) of form "PID,X-coord,Y-coord,Z-coord" on each line
     # INPUT: none - grabs input filename from args parameter
-    # OUTPUT: ppos (double array containing particle IDs and positions)
+    # OUTPUT: ppos (array containing particle objects)
     ######################################################
     def readInputFile(self):
         file = self.args.ifile
         # particle positions - just like self.genParticles
         ppos = []
+        # velocity vectors
         vx = 0
         vy = 0
         vz = 0
@@ -143,7 +142,7 @@ class Interface():
     # Contradicting options are corrected here (e.g. --ifile and --gen flags set)
     # Does NOT do any direct data processing. Only calls other functions
     # INPUT: none
-    # OUTPUT: particles (array of particles with form [PID, X-coord, Y-coord, Z-coord])
+    # OUTPUT: particles (array of particles with form [PID, mass, X-coord, Y-coord, Z-coord, Vx, Vy, Vz])
     ######################################################
     def setSimRules(self):
         if self.args.ifile: # If [IFILE] is specified, ignore everything else
@@ -165,7 +164,7 @@ class Interface():
         print "[+] Starting simulation..."
         
     #   Fake function call to start simulation. Will link together parts later...
-    #   sim(bound, maxiter, t_norm, x_norm, kernel, smooth)
+    #   sim(bound, kernel, maxiter, pnum, smooth, t_norm, x_norm)
 
     ######################################################
     # Writes particle positions [PID, X-coord, Y-coord, Z-coord] to a file, line-by-line
@@ -177,8 +176,9 @@ class Interface():
     def writeParticlesToFile(self, fname, ppos, num, mass):
         with open(fname, "w") as output:
             for i in range(0, num):
+                p = ppos[i]
                 # header = "Particle ID, X-coord, Y-coord, Z-coord\n"
-                line = "%d,%.2f,%f,%f,%f\n" % (int(ppos[i].id), float(ppos[i].mass), float(ppos[i].pos[0]), float(ppos[i].pos[1]), float(ppos[i].pos[2]))
+                line = "%d,%.2f,%f,%f,%f\n" % (int(p.id), float(p.mass), float(p.pos[0]), float(ppos[i].pos[1]), float(ppos[i].pos[2]))
    #             print line
                 output.write(line)
 

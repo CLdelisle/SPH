@@ -3,14 +3,23 @@
 The I/O Framework encompasses the command line environment and configuration file interpretation. One Python script, and three Python modules are included to accomplish this: SPH.py, CLI.py, Configuration.py, and Particle.py. 
 
 ### Usage
-The SPH simulator needs either a CSV file as input, or it needs to be instructed to generate a set amount of particles.
+The SPH simulator needs either a CSV file as input, or it needs to be instructed to generate a set amount of particles. Most options have defaults pre-set in the config file
+(generally <b>sph.conf</b>).
+<br><br>Some simple examples are shown below:
+<ul>
+    <li>If all you want to do is generate 100 particles, you would use: ```python sph.py -g 100```</li>
+    <li>Reading from an input file is as simple as: ```python sph.py -i example.csv```</li>
+    <li>Having a custom output file prefix can be useful too: ```python sph.py -i example.csv -s output```
+    <ul><li>This would yield output files such as: <b>output-001.csv</b>, <b>output-100.csv</b>, etc.</li></ul>
+</ul>
 
+#### Available Flags
 ```
-sph.py [-h] [-g GEN] [-i IFILE] [-o OFILE] [--bound BOUND]
-       [--stdev STDEV] [--maxiter MAXITER]
-       [--t_norm {months,years,decades,centuries}]
-       [--x_norm {Meters,kilometers,light-years}]
-       [--kernel {gaussian,random}] [--vidlen VIDLEN] [--res RES]
+sph.py [-h] [-g GEN] [-i IFILE] [--gtype {gaussian,random}]
+          [-s SAVEFILE] [--bound BOUND] [--stdev STDEV]
+          [--maxiter MAXITER] [--t_norm {months,years,decades,centuries}]
+          [--x_norm {Meters,kilometers,light-years}]
+          [--kernel {gaussian,cubic}]
 ```
 
 ### SPH.py
