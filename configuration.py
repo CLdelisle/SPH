@@ -1,18 +1,34 @@
 from os import path
-
+from glob import glob   # GLOB can returns a list of files in a directory matching certain regex
+from sys import exit
 
 class Config():
     
     def __init__(self, config="sph.conf"):
-        # List of all keys to check for in the config file
-        self.keys = ["num", "maxiter", "bound", "stdev", "t_norm", "x_norm", "kernel", "savefile", "gtype", "smooth"]
-        # Dictionary containing key (e.g. infile) and value (e.g. "input.csv")
-        self.args = {}
+        # Dictionary containing key (e.g. infile) and default value (e.g. "save.csv")
+        self.args = {"num":"", "maxiter":"100", "bound":"100", "stdev":"10.0", "t_norm":"centuries",
+        "x_norm":"ly", "kernel":"gaussian", "savefile":"example.csv", "gtype":"random", "smooth":"50.0"}
+        # Check for a default config file
         if path.isfile(config):
+            print "[+] Using default config file: %s" % config
             self.parseConfig(config)
         else:
-            name = raw_input("[?] No config file found. What would you like to name yours? ")
-            self.createConfig(name)
+            files = glob("*.conf")
+            if len(files) == 0:
+                name = raw_input("[?] No config file found. What would you like to name yours? ")
+                if not name.endswith(".conf"):
+                    name = name+".conf"
+                self.createConfig(name)
+            elif len(files) > 1:
+                config = files[0]
+                print "[+] Using first config file found in this directory: \"%s\"" % config
+                self.parseConfig(config)
+            elif len(files) == 1:
+                config = files[0]
+                print "[+] Using \"%s\" as config file" % config
+                self.parseConfig(config)
+            else:
+                raise Exception("An error occurred when looking for .conf file. Does one exist?")
 
     ######################################################
     # Grabs a config argument value. Key == 'All' returns a dictionary containing all current key-value pairs
@@ -22,7 +38,7 @@ class Config():
     def getArg(self, key):
         if key.lower() == 'all':
             return self.args
-        elif key in self.keys:
+        elif key in self.args.keys():
             return self.args[key]
         else:
             print "[-] Couldn't find %s" % key
@@ -36,14 +52,15 @@ class Config():
     ######################################################
     def createConfig(self, fname):
         if fname is '':
+            "[!] No config file name specified. Using sph.conf..."
             fname = 'sph.conf'
         print "[+] Creating new config file"
-        # Instantiate all keys to None
-        with open(name, "w") as conf:
-            for key in self.keys:
-                line = "%s=%s" % (key, '\n')
-                conf.write(line)
-                self.args[key] = None
+        # Generate new configuration from default values in self.args
+        with open(fname, "w") as conf:
+            for key in self.args.keys():
+                if key != 'num':
+                    line = "%s=%s\n" % (str(key), self.args[key])
+                    conf.write(line)
 
     ######################################################
     # Grabs data from a config file line-by-line as key-value pairs stored in self.args
@@ -67,5 +84,5 @@ class Config():
 			sys.exit(0)
                     p = line[0].split("=")
                     # check if the key is in self.keys first to avoid arbitrary key-vals
-                    if p[0] in self.keys:
+                    if p[0] in self.args.keys():
                         self.args[p[0]] = p[1]
