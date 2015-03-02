@@ -1,7 +1,7 @@
 import argparse
 from sys import exit
 import configuration
-from random import uniform, gauss
+from random import uniform, gauss, uniform
 from particle import Particle as particle
 
 
@@ -78,9 +78,12 @@ class Interface():
             y = round(uniform(0, bound), 6)
             z = round(uniform(0, bound), 6)
             m = round(float(mass), 2)
+            vx = uniform(1,100)
+            vy = uniform(1,100)
+            vz = uniform(1,100)
             # Add new particle to ppos with no initial velocity
             # particle(id, m, x, y, z, vx, vy, vz)
-            ppos.append(particle(i, m, x, y, z, 0, 0, 0))
+            ppos.append(particle(i, m, x, y, z, vx, vy, vz))
 
         return ppos
 
@@ -119,10 +122,6 @@ class Interface():
         # particle positions - just like self.genParticles
         ppos = []
         # velocity vectors
-        vx = 0
-        vy = 0
-        vz = 0
-
         try:
             with open(file, "r") as ifile:
                print "[+] Reading from input file \"%s\"" % file
@@ -133,7 +132,7 @@ class Interface():
                   p = pstrings[i].strip().split(",")
                   # must cast values, because they are read in as strings by Python
                   # casting should catch odd values as well (e.g. '40a' for a PID)
-                  ppos.append(particle(int(p[0]), float(p[1]), float(p[2]), float(p[3]), float(p[4]), vx, vy, vz))
+                  ppos.append(particle(int(p[0]), float(p[1]), float(p[2]), float(p[3]), float(p[4]), float(p[5]), float(p[6]), float(p[7])))
         except:
             raise Exception("[-] Cannot find input file! Does it exist?")
 
@@ -180,7 +179,7 @@ class Interface():
                 for i in range(0, num):
                     p = ppos[i]
                     # header = "Particle ID, X-coord, Y-coord, Z-coord\n"
-                    line = "%d,%.2f,%f,%f,%f\n" % (int(p.id), float(p.mass), float(p.pos[0]), float(ppos[i].pos[1]), float(ppos[i].pos[2]))
+                    line = "%d,%.2f,%f,%f,%f,%f,%f,%f\n" % (int(p.id), float(p.mass), float(p.pos[0]), float(ppos[i].pos[1]), float(ppos[i].pos[2]),float(p.vel[0]), float(ppos[i].vel[1]), float(ppos[i].vel[2]))
                     output.write(line)
     
             print "[+] Wrote %d particles to \"%s\"" %(i+1, fname)
