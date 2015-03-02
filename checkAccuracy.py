@@ -4,9 +4,11 @@ def main():
   cli = Interface()
   cli.args.ifile = 'example.csv'
   ppos = cli.readInputFile()
-  getTotalMassAndMomentum(ppos)
+  print getTotalMassAndMomentum(ppos)
 
 def getTotalMassAndMomentum(particles):
+  momentum = mass = 0
   for particle in particles:
-  	print particle.vel
-main()
+    mass += particle.mass
+    momentum += mass * particle.velocityMagnitude()
+  return (momentum, mass)
