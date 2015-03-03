@@ -1,4 +1,5 @@
 import numpy as np
+from math import sqrt
 
 class Particle(object):
 	def __init__(self, id, m, x, y, z, vx, vy, vz):
@@ -18,3 +19,6 @@ class Particle(object):
 			t = ''
 		# id    mass    posx, posy, posz    vx, vy, vz      ax, ay, az
 		print "%s%d\t%.2f\t%.2f, %.2f, %.2f\t%.2f, %.2f, %.2f\t%.2f, %.2f, %.2f" % (t, self.id, self.mass, p[0],p[1],p[2], v[0],v[1],v[2], a[0],a[1],a[2])
+
+	def velocityMagnitude(self):
+		return sqrt(self.vel[0] ** 2 + self.vel[1] ** 2 + self.vel[2] ** 2)
