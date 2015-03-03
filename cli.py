@@ -1,7 +1,7 @@
 import argparse
 from sys import exit
 import configuration
-from random import uniform, gauss, uniform
+from random import uniform, gauss
 from particle import Particle as particle
 
 
