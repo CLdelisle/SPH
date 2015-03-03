@@ -1,6 +1,6 @@
 from os import path
 from glob import glob   # GLOB can returns a list of files in a directory matching certain regex
-from sys import exit
+#from sys import exit
 
 class Config():
     
@@ -28,7 +28,7 @@ class Config():
                 print "[+] Using \"%s\" as config file" % config
                 self.parseConfig(config)
             else:
-                raise Exception("An error occurred when looking for .conf file. Does one exist?")
+                raise Exception("An error occurred when looking for a .conf file. Does one exist?")
 
     ######################################################
     # Grabs a config argument value. Key == 'All' returns a dictionary containing all current key-value pairs
@@ -51,10 +51,10 @@ class Config():
     # OUTPUT: none
     ######################################################
     def createConfig(self, fname):
-        if fname is '':
+        if fname == '.conf':
             "[!] No config file name specified. Using sph.conf..."
             fname = 'sph.conf'
-        print "[+] Creating new config file"
+        print "[+] Creating new config file: %s" % fname
         # Generate new configuration from default values in self.args
         with open(fname, "w") as conf:
             for key in self.args.keys():

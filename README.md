@@ -10,7 +10,7 @@ The SPH simulator needs either a CSV file as input, or it needs to be instructed
     <li>If all you want to do is generate 100 particles, you would use: ```python sph.py -g 100```</li>
     <li>Reading from an input file is as simple as: ```python sph.py -i example.csv```</li>
     <li>Having a custom output file prefix can be useful too: ```python sph.py -i example.csv -s output```
-    <ul><li>This would yield output files such as: <b>output-001.csv</b>, <b>output-100.csv</b>, etc.</li></ul>
+    <ul><li>This would yield output files such as: <b>output-1.csv</b>, <b>output-100.csv</b>, <b>output-200.csv</b>, etc.</li></ul>
 </ul>
 
 #### Available Flags
