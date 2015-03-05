@@ -109,9 +109,6 @@ class Interface():
             print "[+] No particle generation method selected. Spreading particles randomly"
             ppos = self.createRandom(num, mass)
         
-        # takes filename specified on the command-line, particles, and number of particles generated
-        self.writeParticlesToFile(self.args.savefile, ppos, num)
-
         return ppos
 
     ######################################################
@@ -151,8 +148,12 @@ class Interface():
     def setSimRules(self):
         if self.args.ifile: # If [IFILE] is specified, ignore everything else
             particles = self.readInputFile()
+            
         elif not self.args.ifile and self.args.gen: # If [IFILE] isn't specified and [NUMPRT] is specified, generate particles
             particles = self.genParticles(self.args.gen, self.args.gtype)
+            # takes filename specified on the command-line, particles, and number of particles generated
+            self.writeParticlesToFile(self.args.savefile, particles, self.args.gen)
+
         else: # If [IFILE] and [NUMPRT] are NOT specified, print help message and exit
             self.parser.print_help()
             print "\n[-] You did not specify an input file or tell me to generate particles!"
