@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from particle import Particle
+import numpy as np
 
 """
 This is the framework for iterating over a list of particles, computing particle accelerations, and numerically integrating their equations of motion.
@@ -8,18 +10,6 @@ __author__ = "Colby"
 __version__ = "1.0.1"
 
 """ THIS VERSION HAS NOT BEEN TESTED, BUT RUNS SUCCESSFULLY AT THE VERY LEAST """
-
-
-import numpy as np
-
-
-class Particle(object):
-	def __init__(self,id,m,x,y,z,vx,vy,vz):
-		self.id = id	# particle id (int)
-		self.mass = m		# particle mass (double)
-		self.pos = np.array([x,y,z])			# position vector<double>
-		self.vel = np.array([vx,vy,vz])		# velocity vector<double>
-		self.acc = np.array([0.0,0.0,0.0])	# acceleration vector<double>
 
 
 def Newtonian_gravity(p,q):
@@ -36,16 +26,12 @@ def Newtonian_gravity(p,q):
 	return ((CONST_G * q.mass) / (R**3)) * r
 
 
-def main():
-	CONST_H = 1.0 # size of timestep (this should come from config file)
-	CONST_T_MAX = 10 # max iteration time (this should come from config file)
-	t = 0.0 # elapsed time
-	particles = []
-	particles.append(Particle(1,1.0,2.0,2.0,2.0,3.0,3.0,3.0))
-	particles.append(Particle(2,1.0,-2.0,-2.0,-2.0,3.0,3.0,3.0))
-	particles.append(Particle(3,1.0,5.0,0.0,-5.0,0.0,0.0,0.0))
-	
-	'''
+def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm):
+    CONST_H = 1.0 # size of timestep (this should come from config file)
+    CONST_T_MAX = 10 # max iteration time (this should come from config file)
+    t = 0.0 # elapsed time
+
+    '''
 	So we can do this one of two ways.
 	1) Keep only one copy of the system in memory.
 	   This is what is implemented here. This does not require
@@ -56,7 +42,7 @@ def main():
 	Luckily, it is likely these problems only affect the serial algorithm.
 	'''
 	
-	while(t < CONST_T_MAX):
+    while(t < CONST_T_MAX):
 		# main simulation loop
 		for p in particles:
 			# preemptively start the Velocity Verlet computation (first half of velocity update part)
@@ -79,11 +65,5 @@ def main():
 
 		t += CONST_H # advance time
 
-		print "Iteration " + str(int(t)) + "..." # Output only to verify that this code is syntactically correct and will run
-
-
-if __name__ == '__main__':
-    try:
-        main()
-    except Exception as e:  # catch all exceptions at the last possible chokepoint - stole from Thomas' code
-        print "[-] %s" % str(e)
+    return t
+#		print "Iteration " + str(int(t)) + "..." # Output only to verify that this code is syntactically correct and will run
