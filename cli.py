@@ -156,6 +156,8 @@ class Interface():
 
     ######################################################
     # Passes necessary arguments to the simulation
+    # INPUT: particles (array of particles with form [PID, mass, X-coord, Y-coord, Z-coord, Vx, Vy, Vz])
+    # OUTPUT: none
     ######################################################
     def startSimulation(self, particles):
         print "\n[+] Starting simulation...",

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from particle import Particle
 import numpy as np
 
@@ -27,9 +26,10 @@ def Newtonian_gravity(p,q):
 
 
 def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm):
-    CONST_H = 1.0 # size of timestep (this should come from config file)
-    CONST_T_MAX = 10 # max iteration time (this should come from config file)
-    t = 0.0 # elapsed time
+    CONST_H = 1.0   # size of timestep (this should come from config file)
+#    CONST_T_MAX = 10    # max iteration time (this should come from config file)
+    CONST_T_MAX = maxiter
+    t = 0.0     # elapsed time
 
     '''
 	So we can do this one of two ways.
@@ -50,20 +50,21 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm):
 			temp = p.acc
 			p.acc = 0
 			for q in particles:
+			    # Calculate gravitational pull for each particle on every OTHER particle
 				if(p.id != q.id):
 					p.acc += Newtonian_gravity(p,q)
-			p.vel += (CONST_H/2.0) * p.acc # finish velocity update
-	
+			# finish velocity update
+			p.vel += (CONST_H/2.0) * p.acc
+
 		'''
 		Velocity Verlet integration: Works only assuming force is velocity-independent
 		http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
 		'''
-		
+
 		for p in particles:
 			# perform position update
 			p.pos += CONST_H * (p.vel + (CONST_H/2.0)*temp)
 
 		t += CONST_H # advance time
 
-    return t
-#		print "Iteration " + str(int(t)) + "..." # Output only to verify that this code is syntactically correct and will run
+    return t    # returns the last t-value, which is useful for displaying total iterations

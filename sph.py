@@ -12,7 +12,7 @@ def main():
     
     cli.startSimulation(ppos)
     print " ================ AFTER SIMULATION ENDS ================ "
-    print "\tid\tmass\tposx, posy, posz\tvx, vy, vz\t\tax, ay, az"
+    print "\tid\tmass\tposx, posy, posz\t\tvx, vy, vz\t\tax, ay, az"
     for particle in ppos:
         particle.display(tabs=1)
 
