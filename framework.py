@@ -1,5 +1,6 @@
 from particle import Particle
 import numpy as np
+import cli
 
 """
 This is the framework for iterating over a list of particles, computing particle accelerations, and numerically integrating their equations of motion.
@@ -25,7 +26,7 @@ def Newtonian_gravity(p,q):
 	return ((CONST_G * q.mass) / (R**3)) * r
 
 
-def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm):
+def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval):
     CONST_H = 1.0   # size of timestep (this should come from config file)
 #    CONST_T_MAX = 10    # max iteration time (this should come from config file)
     CONST_T_MAX = maxiter
@@ -42,9 +43,15 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm):
 	Luckily, it is likely these problems only affect the serial algorithm.
 	'''
 	
+    save = 0
     while(t < CONST_T_MAX):
+        # while CONST_T_MAX = 60 and interval = 10
+        if (save*interval) == t:
+            print "[+] Saved @ iteration %d" % int(t)
+            save = save+1
+
 		# main simulation loop
-		for p in particles:
+        for p in particles:
 			# preemptively start the Velocity Verlet computation (first half of velocity update part)
 			p.vel += (CONST_H/2.0) * p.acc
 			temp = p.acc
@@ -56,15 +63,16 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm):
 			# finish velocity update
 			p.vel += (CONST_H/2.0) * p.acc
 
-		'''
-		Velocity Verlet integration: Works only assuming force is velocity-independent
-		http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
-		'''
+        '''
+        Velocity Verlet integration: Works only assuming force is velocity-independent
+        http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
+        '''
 
-		for p in particles:
-			# perform position update
-			p.pos += CONST_H * (p.vel + (CONST_H/2.0)*temp)
+        for p in particles:
+        	# perform position update
+        	p.pos += CONST_H * (p.vel + (CONST_H/2.0)*temp)
 
-		t += CONST_H # advance time
+        t += CONST_H # advance time
 
+    print "[+] Saved @ iteration %d \t(last iteration)\n" % int(t)
     return t    # returns the last t-value, which is useful for displaying total iterations

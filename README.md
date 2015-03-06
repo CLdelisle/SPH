@@ -13,7 +13,7 @@ The SPH simulator needs either a CSV file as input, or it needs to be instructed
     ```python sph.py -i example.csv```</li>
     <li>Having a custom output file prefix can be useful too: 
     ```python sph.py -i example.csv -s output```
-        <ul><li>This would yield output files such as: <b>output-1.csv</b>, <b>output-100.csv</b>, <b>output-200.csv</b>, etc</li></ul>
+        <ul><li>This would yield output files such as: <b>output-1.csv</b>, <b>output-100.csv</b>, <b>output-200.csv</b>, etc.</li></ul>
     </li>
 </ul>
 
