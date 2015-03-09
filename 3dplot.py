@@ -25,7 +25,6 @@ for i, filename in enumerate(files):
 def update(num,sc,ax):
 	ax.cla();
 	global N
-	global t
 	global data
 	global curr_x
 	global curr_y
@@ -41,8 +40,6 @@ def update(num,sc,ax):
 			curr_y.append(data[k]['y'][i])
 			curr_z.append(data[k]['z'][i])
 
-	t = t+1
-	print "t=".format(t)
 	ax.autoscale(False)
 	sc = ax.scatter(curr_x, curr_y, curr_z, c='m', marker='o')
 	return sc
@@ -69,15 +66,15 @@ def main():
 	#ax1.plot(data['t'],data['x'],color='r',label='position')
 	#ax.scatter(curr_x, curr_y, curr_z, c='r', marker='o')
 
-	ani = animation.FuncAnimation(fig, update, frames=RUNTIME,fargs=(sc,ax),interval=100)
+	ani = animation.FuncAnimation(fig, update, frames=RUNTIME,fargs=(sc,ax))
 	
-	ani.save('test_run.gif', writer='imagemagick', fps=15);
-	#ani.save('test_run.mp4', fps=15, extra_args=['-vcodec', 'libx264'])
-	#ani.save("demo.avi",codec='avi')
-	#ani.save('test_run.mp4', fps=30,extra_args=['-vcodec', 'h264','-pix-fmt', 'yuv420p'])
+	ani.save('test_run.gif', writer='imagemagick', fps=1);
+	# ani.save('test_run.mp4', fps=15, extra_args=['-vcodec', 'libx264'])
+	# ani.save("demo.avi",codec='avi')
+	# ani.save('test_run.mp4', fps=3,extra_args=['-vcodec', 'h264','-pix-fmt', 'yuv420p'])
 	
-	#plt.show()
-	#plt.close()
+	# plt.show()
+	# plt.close()
 	return
 
 if __name__ == '__main__':
