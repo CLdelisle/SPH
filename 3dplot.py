@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from checkAccuracy import sortedFileNames
+from outputFiles import sortedFileNames
 
 prefix = raw_input('Output file prefix(defaults to \'output\'): ')
 prefix = prefix or 'output'

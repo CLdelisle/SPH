@@ -1,16 +1,9 @@
 from cli import *
-import os
+from outputFiles import *
 
 def main(prefix = 'example'):
   sorted_filenames = sortedFileNames(prefix)
   print calculatePercentChanges(sorted_filenames, prefix)
-
-# Takes a prefix, gets all files with that prefix, sorts them, and returns their file names as an array
-def sortedFileNames(prefix):
-  allOutputFiles = [filename for filename in os.listdir('.') if filename.startswith(prefix)]
-  timesteps = getOutputFileNumbers(allOutputFiles, prefix)
-  timesteps.sort()
-  return [prefix + "-" + str(n) + '.csv' for n in timesteps]
 
 # Given a filename (output-1.csv), return the total mass and momentum
 def totalsFromFile(filename):
@@ -26,15 +19,6 @@ def getTotalMassAndMomentum(particles):
     mass += particle.mass
     momentum += mass * particle.velocityMagnitude()
   return (momentum, mass)
-
-# Takes an array of filenames ['output-100.csv', 'output-1.csv']
-# Returns the numbers [100, 1]
-def getOutputFileNumbers(filenames, prefix):
-  return [getTimestep(f, prefix) for f in filenames]
-
-# Takes a filename and a prefix, and returns the timestep as an int
-def getTimestep(filename, prefix):
-  return int(filename.replace(prefix + '-', '').replace('.csv', ''))
 
 # Returns array of tuples [(percent_change_momentum, percent_change_mass, timestep), ...]
 def calculatePercentChanges(filenames, prefix):
