@@ -10,7 +10,6 @@ prefix = prefix or 'example'
 
 files = sortedFileNames(prefix)
 
-N = 60 #NUM_BODIES - READ FROM HEADER
 t = 1 #global "time" counter
 RUNTIME = len(files) #Number of frames to render
 
@@ -22,9 +21,6 @@ data = []
 # data file format: Particle ID, X-coord, Y-coord, Z-coord, X-Velocity, Y-Velocity, Z-Velocity
 for i, filename in enumerate(files):
 	data.append(np.genfromtxt(filename, delimiter=',', names=['pid', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz']))
-
-import pdb; pdb.set_trace()
-
 
 def update(num,sc,ax):
 	ax.cla();
@@ -38,11 +34,13 @@ def update(num,sc,ax):
 	curr_x = []
 	curr_y = []
 	curr_z = []
-	for i in range (0,N):
-		curr_x.append(data['x'][i+(N*t)])
-		curr_y.append(data['y'][i+(N*t)])
-		curr_z.append(data['z'][i+(N*t)])
-		#print (i, data['x'][i+(N*t)], data['y'][i+(N*t)], data['z'][i+(N*t)])
+
+	for k in range(len(files)):
+		for i in range (0, len(data[0]['x'])):
+			curr_x.append(data[k]['x'][i])
+			curr_y.append(data[k]['y'][i])
+			curr_z.append(data[k]['z'][i])
+
 	t = t+1
 	print "t=".format(t)
 	ax.autoscale(False)
@@ -56,10 +54,10 @@ def main():
 	curr_x = []
 	curr_y = []
 	curr_z = []
-	for i in range (0,N):
-		curr_x.append(data['x'][i])
-		curr_y.append(data['y'][i])
-		curr_z.append(data['z'][i])
+	for i in range (0, len(data[0]['x'])):
+		curr_x.append(data[0]['x'][i])
+		curr_y.append(data[0]['y'][i])
+		curr_z.append(data[0]['z'][i])
 		
 		
 	ax.set_xlim3d(-700,700);
