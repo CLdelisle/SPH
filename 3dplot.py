@@ -3,6 +3,13 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from checkAccuracy import sortedFileNames
+
+prefix = raw_input('Output file prefix(defaults to \'output\'): ')
+prefix = prefix or 'output'
+
+files = sortedFileNames(prefix)
+print files
 
 N = 60 #NUM_BODIES - READ FROM HEADER
 t = 1 #global "time" counter
@@ -11,7 +18,10 @@ RUNTIME = 200 #Number of frames to render
 curr_x = []
 curr_y = []
 curr_z = []
-data = np.genfromtxt('output.csv', delimiter=',', names=['x','y','z'])
+
+# data file format: Particle ID, X-coord, Y-coord, Z-coord, X-Velocity, Y-Velocity, Z-Velocity
+
+data = np.genfromtxt('output.csv', delimiter=',', names=['pid', 'x', 'y', 'z', 'vx', 'vy', 'vz'])
 
 def update(num,sc,ax):
 	ax.cla();
@@ -31,14 +41,14 @@ def update(num,sc,ax):
 		curr_z.append(data['z'][i+(N*t)])
 		#print (i, data['x'][i+(N*t)], data['y'][i+(N*t)], data['z'][i+(N*t)])
 	t = t+1
-	print t
+	print "t=".format(t)
 	ax.autoscale(False)
 	sc = ax.scatter(curr_x, curr_y, curr_z, c='m', marker='o')
 	return sc
 
 def main():
 	fig = plt.figure()
-	ax = fig.add_subplot(111,projection='3d')
+	ax = fig.add_subplot(111, projection='3d')
 
 	curr_x = []
 	curr_y = []

@@ -1,12 +1,16 @@
 from cli import *
 import os
 
-def main(prefix = 'output'):
-  allOutputFiles        = getOutputFiles(prefix)
-  timesteps             = getOutputFileNumbers(allOutputFiles, prefix)
-  sorted_filenames      = fileNamesInOrder(timesteps, prefix)
-
+def main(prefix = 'example'):
+  sorted_filenames = sortedFileNames(prefix)
   print calculatePercentChanges(sorted_filenames, prefix)
+
+# Takes a prefix, gets all files with that prefix, sorts them, and returns their file names as an array
+def sortedFileNames(prefix):
+  allOutputFiles = [filename for filename in os.listdir('.') if filename.startswith(prefix)]
+  timesteps = getOutputFileNumbers(allOutputFiles, prefix)
+  timesteps.sort()
+  return [prefix + "-" + str(n) + '.csv' for n in timesteps]
 
 # Given a filename (output-1.csv), return the total mass and momentum
 def totalsFromFile(filename):
@@ -23,22 +27,14 @@ def getTotalMassAndMomentum(particles):
     momentum += mass * particle.velocityMagnitude()
   return (momentum, mass)
 
-# Given a prefix like "output", it finds all files in the current directory with the prefix
-def getOutputFiles(prefix):
-  return [filename for filename in os.listdir('.') if filename.startswith(prefix)]
-
 # Takes an array of filenames ['output-100.csv', 'output-1.csv']
 # Returns the numbers [100, 1]
 def getOutputFileNumbers(filenames, prefix):
   return [getTimestep(f, prefix) for f in filenames]
 
+# Takes a filename and a prefix, and returns the timestep as an int
 def getTimestep(filename, prefix):
-	return int(filename.replace(prefix + '-', '').replace('.csv', ''))
-
-# Takes an array of file numbers, sorts them, and adds in the prefix
-def fileNamesInOrder(file_numbers, prefix):
-  file_numbers.sort()
-  return [prefix + "-" + str(n) + '.csv' for n in file_numbers]
+  return int(filename.replace(prefix + '-', '').replace('.csv', ''))
 
 # Returns array of tuples [(percent_change_momentum, percent_change_mass, timestep), ...]
 def calculatePercentChanges(filenames, prefix):
@@ -58,4 +54,5 @@ def filePercentChanges(filename, max_accuracy):
 def percentChange(newValue, oldValue):
   return (float(newValue) - float(oldValue)) / float(oldValue) * 100
 
-main()
+if __name__ == '__main__':
+  main()

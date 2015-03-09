@@ -182,7 +182,7 @@ class Interface():
             with open(fname, "w") as output:
                 for i in range(0, num):
                     p = ppos[i]
-                    # header = "Particle ID, X-coord, Y-coord, Z-coord\n"
+                    # header = "Particle ID, X-coord, Y-coord, Z-coord, X-Velocity, Y-Velocity, Z-Velocity\n"
                     line = "%d,%.2f,%f,%f,%f,%f,%f,%f\n" % (int(p.id), float(p.mass), float(p.pos[0]), float(ppos[i].pos[1]), float(ppos[i].pos[2]),float(p.vel[0]), float(ppos[i].vel[1]), float(ppos[i].vel[2]))
                     output.write(line)
     
