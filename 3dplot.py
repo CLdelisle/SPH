@@ -6,22 +6,25 @@ import matplotlib.animation as animation
 from outputFiles import sortedFileNames
 
 prefix = raw_input('Output file prefix(defaults to \'output\'): ')
-prefix = prefix or 'output'
+prefix = prefix or 'example'
 
 files = sortedFileNames(prefix)
-print files
 
 N = 60 #NUM_BODIES - READ FROM HEADER
 t = 1 #global "time" counter
-RUNTIME = 200 #Number of frames to render
+RUNTIME = len(files) #Number of frames to render
 
 curr_x = []
 curr_y = []
 curr_z = []
 
+data = []
 # data file format: Particle ID, X-coord, Y-coord, Z-coord, X-Velocity, Y-Velocity, Z-Velocity
+for i, filename in enumerate(files):
+	data.append(np.genfromtxt(filename, delimiter=',', names=['pid', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz']))
 
-data = np.genfromtxt('output.csv', delimiter=',', names=['pid', 'x', 'y', 'z', 'vx', 'vy', 'vz'])
+import pdb; pdb.set_trace()
+
 
 def update(num,sc,ax):
 	ax.cla();
@@ -31,7 +34,7 @@ def update(num,sc,ax):
 	global curr_x
 	global curr_y
 	global curr_z
-	
+
 	curr_x = []
 	curr_y = []
 	curr_z = []
