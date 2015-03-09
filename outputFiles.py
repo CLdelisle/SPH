@@ -6,14 +6,9 @@ import os
 # Takes a prefix, gets all files with that prefix, sorts them, and returns their file names as an array
 def sortedFileNames(prefix):
   allOutputFiles = [filename for filename in os.listdir('.') if filename.startswith(prefix)]
-  timesteps = getOutputFileNumbers(allOutputFiles, prefix)
+  timesteps = [getTimestep(f, prefix) for f in allOutputFiles] # timesteps is an array of the extracted times from filenames [100, 200, 1]
   timesteps.sort()
   return [prefix + "-" + str(n) + '.csv' for n in timesteps]
-
-# Takes an array of filenames ['output-100.csv', 'output-1.csv']
-# Returns the numbers [100, 1]
-def getOutputFileNumbers(filenames, prefix):
-  return [getTimestep(f, prefix) for f in filenames]
 
 # Takes a filename and a prefix, and returns the timestep as an int
 def getTimestep(filename, prefix):
