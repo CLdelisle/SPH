@@ -6,12 +6,10 @@ The I/O Framework encompasses the command line environment and configuration fil
 The SPH simulator needs either a CSV file as input, or it needs to be instructed to generate a set amount of particles. Most options have defaults pre-set in the config file
 (generally <b>sph.conf</b>).
 <br><br>Some simple examples are shown below:
-<ul>
-    <li>If all you want to do is generate 100 particles, you would use: ```python sph.py -g 100```</li>
-    <li>Reading from an input file is as simple as: ```python sph.py -i example.csv```</li>
-    <li>Having a custom output file prefix can be useful too: ```python sph.py -i example.csv -s output```
-    <ul><li>This would yield output files such as: <b>output-1.csv</b>, <b>output-100.csv</b>, <b>output-200.csv</b>, etc.</li></ul>
-</ul>
+* If all you want to do is generate 100 particles, you would use: ```python sph.py -g 100```
+* Reading from an input file is as simple as: ```python sph.py -i example.csv```
+* Having a custom output file prefix can be useful too: ```python sph.py -i example.csv -s output```
+ * This would yield output files such as: <b>output-1.csv</b>, <b>output-100.csv</b>, <b>output-200.csv</b>, etc.
 
 #### Available Flags
 ```
@@ -24,27 +22,21 @@ sph.py [-h] [-g GEN] [-i IFILE] [--gtype {gaussian,random}]
 
 ### SPH.py
 The entrypoint for the SPH simulator application.
-<ul>
-    <li>Aggregates the Configuration and CLI Python modules</li>
-    <li>Provides a chokepoint for catching exceptions</li>
-</ul>
+* Aggregates the Configuration and CLI Python modules
+* Provides a chokepoint for catching exceptions
 
 ### Configuration.py
-Responsible for interpreting the simulator's configuration file. The configuration file is used to set default values in the simulation when they haven't been explicitly set in the initial program invocation. 
-<ul>
-    <li>Parses configuration file</li>
-    <li>Creates new configuration file if missing</li>
-    <li>Returns configuration files to other SPH modules</li>
-</ul>
+Responsible for interpreting the simulator's configuration file. The configuration file is used to set default values in the simulation when they haven't been explicitly set in the initial program invocation.
+* Parses configuration file
+* Creates new configuration file if missing
+* Returns configuration files to other SPH modules
 
 ### CLI.py
 Builds the command line interface, and is the only interaction between the user and the simulation.
-<ul>
-    <li>Interprets user arguments, and attempts to resolve errors in program input</li>
-    <li>Generates particles if '-g | --gen' option is specified</li>
-    <li>Reads in particles from an input file if '-i | --input' option is specified</li>
-    <li>Periodically save program state by writing particles to output files</li>
-</ul>
+* Interprets user arguments, and attempts to resolve errors in program input
+* Generates particles if '-g | --gen' option is specified
+* Reads in particles from an input file if '-i | --input' option is specified
+* Periodically save program state by writing particles to output files
 
 ### Particle.py
 Simply stores particle IDs, X, Y, and Z coordinates, mass, velocity, and acceleration for each particle.
@@ -53,7 +45,5 @@ Simply stores particle IDs, X, Y, and Z coordinates, mass, velocity, and acceler
 This is the configuration file for the simulator. Options take a 'key=value' format. Newlines are ignored, and lines are considered commented when #'s are found at the beginning of them. In addition, each option has a small description above it in the .conf file.
 
 ### Necessary Dependencies
-<ul>
-    <li>Python 2.7 - Tested with Python 2.7.8 and 2.7.9</li>
-    <li>Numpy - Used for the Particle.py module to build arrays</li>
-</ul>
+* Python 2.7 - Tested with Python 2.7.8 and 2.7.9
+* Numpy - Used for the Particle.py module to build arrays
