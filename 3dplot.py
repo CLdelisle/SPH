@@ -13,6 +13,9 @@ args = parser.parse_args()
 
 files = sortedFileNames(args.prefix)
 
+if (len(files) == 0):
+	raise ValueError("No output csv files found with the prefix '{}'".format(args.prefix))
+
 RUNTIME = len(files) - 1 #Number of frames to render
 
 curr_x = []
