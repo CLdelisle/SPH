@@ -10,21 +10,22 @@ prefix = prefix or 'example'
 
 files = sortedFileNames(prefix)
 
-t = 1 #global "time" counter
-RUNTIME = len(files) #Number of frames to render
+RUNTIME = len(files) - 1 #Number of frames to render
 
 curr_x = []
 curr_y = []
 curr_z = []
 
 data = []
+
 # data file format: Particle ID, X-coord, Y-coord, Z-coord, X-Velocity, Y-Velocity, Z-Velocity
 for i, filename in enumerate(files):
 	data.append(np.genfromtxt(filename, delimiter=',', names=['pid', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz']))
 
+t = 0
 def update(num,sc,ax):
 	ax.cla();
-	global N
+	global t
 	global data
 	global curr_x
 	global curr_y
@@ -33,13 +34,13 @@ def update(num,sc,ax):
 	curr_x = []
 	curr_y = []
 	curr_z = []
+	
+	for particle in range(len(data[0]['x'])):
+		curr_x.append(data[t]['x'][particle])
+		curr_y.append(data[t]['y'][particle])
+		curr_z.append(data[t]['z'][particle])
 
-	for k in range(len(files)):
-		for i in range (0, len(data[0]['x'])):
-			curr_x.append(data[k]['x'][i])
-			curr_y.append(data[k]['y'][i])
-			curr_z.append(data[k]['z'][i])
-
+	t += 1
 	ax.autoscale(False)
 	sc = ax.scatter(curr_x, curr_y, curr_z, c='m', marker='o')
 	return sc
@@ -51,24 +52,21 @@ def main():
 	curr_x = []
 	curr_y = []
 	curr_z = []
-	for i in range (0, len(data[0]['x'])):
-		curr_x.append(data[0]['x'][i])
-		curr_y.append(data[0]['y'][i])
-		curr_z.append(data[0]['z'][i])
+	for particle in range(len(data[0]['x'])):
+		curr_x.append(data[0]['x'][particle])
+		curr_y.append(data[0]['y'][particle])
+		curr_z.append(data[0]['z'][particle])
 		
 		
 	ax.set_xlim3d(-700,700);
 	ax.set_ylim3d(-700,700);
 	ax.set_zlim3d(-700,700);
 
-	sc=ax.scatter(curr_x, curr_y, curr_z, c='r', marker='o')
-
-	#ax1.plot(data['t'],data['x'],color='r',label='position')
-	#ax.scatter(curr_x, curr_y, curr_z, c='r', marker='o')
+	sc = ax.scatter(curr_x, curr_y, curr_z, c='r', marker='o')
 
 	ani = animation.FuncAnimation(fig, update, frames=RUNTIME,fargs=(sc,ax))
 	
-	ani.save('test_run.gif', writer='imagemagick', fps=1);
+	ani.save('test_run.gif', writer='imagemagick', fps=15);
 	# ani.save('test_run.mp4', fps=15, extra_args=['-vcodec', 'libx264'])
 	# ani.save("demo.avi",codec='avi')
 	# ani.save('test_run.mp4', fps=3,extra_args=['-vcodec', 'h264','-pix-fmt', 'yuv420p'])
