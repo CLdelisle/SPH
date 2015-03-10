@@ -4,11 +4,14 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from outputFiles import sortedFileNames
+import argparse
 
-prefix = raw_input('Output file prefix(defaults to \'output\'): ')
-prefix = prefix or 'example'
+parser = argparse.ArgumentParser(description='Create a 3D particle plot')
+parser.add_argument("--prefix", help="Output file prefix. Defaults to 'output'.",
+	                        default='output')
+args = parser.parse_args()
 
-files = sortedFileNames(prefix)
+files = sortedFileNames(args.prefix)
 
 RUNTIME = len(files) - 1 #Number of frames to render
 
