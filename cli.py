@@ -93,7 +93,7 @@ class Interface():
         mass = 5
 
         if method == 'gaussian':
-            print "[+] Generating particles with %s%s distribution in a %s%s^3 space" % (str(self.args.stdev), self.args.x_norm, str(self.args.bound), self.args.x_norm)
+            print "[+] Generating particles with %s%s distribution in a %s%s^3 space\n" % (str(self.args.stdev), self.args.x_norm, str(self.args.bound), self.args.x_norm)
             ppos = self.createGaussian(num, mass)
         elif method == 'random':
             print "[+] Spreading particles randomly within %s%s^3 space" % (str(self.args.bound), self.args.x_norm)
@@ -144,7 +144,6 @@ class Interface():
             
         elif not self.args.ifile and self.args.gen: # If [IFILE] isn't specified and [NUMPRT] is specified, generate particles
             particles = self.genParticles(self.args.gen, self.args.gtype)
-        #    self.writeParticlesToFile(particles, self.args.gen, 0)
 
         else: # If [IFILE] and [NUMPRT] are NOT specified, print help message and exit
             self.parser.print_help()
@@ -161,28 +160,4 @@ class Interface():
     ######################################################
     def startSimulation(self, particles):
         print "\n[+] Starting simulation..."
-        iterations = framework.sim(particles, self.args.bound, self.args.kernel, self.args.maxiter, self.args.gen, self.args.smooth, self.args.t_norm, self.args.x_norm, self.args.interval)
-
-    ######################################################
-    # Writes particle positions [PID, X-coord, Y-coord, Z-coord] to a file, line-by-line
-    # Should be primarily used to save particle positions during a simulation
-    # Should be the first function called after self.genParticles()
-    # INPUT: ppos (particles list to write), num (number of particles), interval (simulation iteration)
-    # OUTPUT: None directly, but an output file will be generated
-    ######################################################
-    def writeParticlesToFile(self, ppos, num, interval):
-        if interval > 0:
-            savefile = self.args.savefile.split(".")
-            # output-100.csv = prefix + interval + file extension
-            fname = "%s-%s.%s" % (savefile[0], str(loop), savefile[1])
-        elif interval == 0:
-            fname = self.args.savefile
-        with open(fname, "w") as output:
-            for i in range(0, num):
-                p = ppos[i]
-                # header = "Particle ID, X-coord, Y-coord, Z-coord\n"
-                line = "%d,%.2f,%f,%f,%f,%f,%f,%f\n" % (int(p.id), float(p.mass), float(p.pos[0]), float(ppos[i].pos[1]), float(ppos[i].pos[2]),float(p.vel[0]),
-                        float(ppos[i].vel[1]), float(ppos[i].vel[2]))
-                output.write(line)
-
-        print "[+] Wrote %d particles to \"%s\"" %(i+1, fname)
+        iterations = framework.sim(particles, self.args.bound, self.args.kernel, self.args.maxiter, self.args.gen, self.args.smooth, self.args.t_norm, self.args.x_norm, self.args.interval, self.args.savefile)
