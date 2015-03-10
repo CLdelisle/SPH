@@ -7,8 +7,8 @@ from outputFiles import sortedFileNames
 import argparse
 
 parser = argparse.ArgumentParser(description='Create a 3D particle plot')
-parser.add_argument("--prefix", help="Output file prefix. Defaults to 'output'.",
-	                        default='output')
+parser.add_argument("--prefix", help="Output file prefix. Defaults to 'output'.", default='output')
+parser.add_argument("--fps", help="Frames per second Defaults to 15", type=int, default=15)
 args = parser.parse_args()
 
 files = sortedFileNames(args.prefix)
@@ -72,13 +72,14 @@ def main():
 
 	ani = animation.FuncAnimation(fig, update, frames=RUNTIME,fargs=(sc,ax))
 	
-	ani.save('test_run.gif', writer='imagemagick', fps=15);
+	ani.save('plot.gif', writer='imagemagick', fps=args.fps);
 	# ani.save('test_run.mp4', fps=15, extra_args=['-vcodec', 'libx264'])
 	# ani.save("demo.avi",codec='avi')
 	# ani.save('test_run.mp4', fps=3,extra_args=['-vcodec', 'h264','-pix-fmt', 'yuv420p'])
 	
 	# plt.show()
 	# plt.close()
+	print 'Animation saved to plot.gif'
 	return
 
 if __name__ == '__main__':
