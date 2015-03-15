@@ -1,2 +1,0 @@
-# SPH
-Capstone
