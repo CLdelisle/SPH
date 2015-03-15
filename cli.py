@@ -5,6 +5,7 @@ from random import uniform, gauss
 from particle import Particle as particle
 import framework
 
+
 class Interface():
 
     def __init__(self):
@@ -160,4 +161,6 @@ class Interface():
     ######################################################
     def startSimulation(self, particles):
         print "\n[+] Starting simulation..."
-        iterations = framework.sim(particles, self.args.bound, self.args.kernel, self.args.maxiter, self.args.gen, self.args.smooth, self.args.t_norm, self.args.x_norm, self.args.interval, self.args.savefile)
+        iterations = framework.sim(particles, self.args.bound, self.args.kernel, self.args.maxiter,
+                                self.args.gen, self.args.smooth, self.args.t_norm, self.args.x_norm,
+                                self.args.interval, self.args.savefile)

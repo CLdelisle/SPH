@@ -51,7 +51,7 @@ Builds the command line interface, and is the only interaction between the user 
 </ul>
 
 ### Framework.py
-Calculates particle accelerations and numerically integrates their equations of motion
+Calculates particle accelerations and numerically integrates their equations of motion.
 
 ### Particle.py
 Simply stores particle IDs, X, Y, and Z coordinates, mass, velocity, and acceleration for each particle.

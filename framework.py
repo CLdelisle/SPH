@@ -1,6 +1,7 @@
 from particle import Particle
 import numpy as np
 
+
 """
 This is the framework for iterating over a list of particles, computing particle accelerations, and numerically integrating their equations of motion.
 """
@@ -14,12 +15,10 @@ __version__ = "1.0.1"
 def Newtonian_gravity(p,q):
 	# Newton's gravitational constant
 	CONST_G = 6.67384 # * 10^(-11) m^3 kg^-1 s^-2
-	
 	'''
 	F = (m_p)a = G(m_p)(m_q)(r)/r^3 -> a = (G * m_q)(r)/(g(r,r)^(3/2)), with g(_,_) the Euclidian inner product
 	Note that this is all in the r-direction vectorially
 	'''
-
 	r = q.pos - p.pos # separation vector
 	R = np.sqrt(r.dot(r)) # magnitude of the separation vector
 	return ((CONST_G * q.mass) / (R**3)) * r
@@ -35,7 +34,6 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
         #    CONST_T_MAX = 10    # max iteration time (this should come from config file)
         CONST_T_MAX = maxiter
         t = 0.0     # elapsed time
-
         '''
 	So we can do this one of two ways.
 	1) Keep only one copy of the system in memory.
@@ -51,6 +49,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
         save = 0
         print "[+] Saved @ iterations: ",
         while(t < CONST_T_MAX):
+		# save particles before they are moved in the loop - Should we do this after?
                 if (save*interval) == t:
                         fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
                         save += 1  # bump save counter
