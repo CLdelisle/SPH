@@ -1,7 +1,6 @@
 import numpy as np
 from math import sqrt
 
-
 class Particle(object):
 	def __init__(self, id, m, x, y, z, vx, vy, vz):
 		self.id = id				# particle id (int)
@@ -25,7 +24,7 @@ class Particle(object):
 	def velocityMagnitude(self):
 		return sqrt(self.vel[0] ** 2 + self.vel[1] ** 2 + self.vel[2] ** 2)
 
-        #  Requires an open file handle for output
+        #  Requires current an open file handle
         def writeToFile(self, output):
                 #   "Particle ID, X-coord, Y-coord, Z-coord"
                 line = "%d,%.2f,%f,%f,%f,%f,%f,%f\n" % (int(self.id), float(self.mass), float(self.pos[0]), float(self.pos[1]),

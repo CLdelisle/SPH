@@ -5,7 +5,6 @@ from random import uniform, gauss
 from particle import Particle as particle
 import framework
 
-
 class Interface():
 
     def __init__(self):
@@ -145,8 +144,6 @@ class Interface():
             
         elif not self.args.ifile and self.args.gen: # If [IFILE] isn't specified and [NUMPRT] is specified, generate particles
             particles = self.genParticles(self.args.gen, self.args.gtype)
-            # takes filename specified on the command-line, particles, and number of particles generated
-            self.writeParticlesToFile(self.args.savefile, particles, self.args.gen)
 
         else: # If [IFILE] and [NUMPRT] are NOT specified, print help message and exit
             self.parser.print_help()

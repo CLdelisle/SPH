@@ -6,9 +6,8 @@ def main(prefix = 'output'):
   timesteps             = getOutputFileNumbers(allOutputFiles, prefix)
   sorted_filenames      = fileNamesInOrder(timesteps, prefix)
 
-#  print calculatePercentChanges(sorted_filenames, prefix)
-  for val in calculatePercentChanges(sorted_filenames, prefix):
-    print val
+  for x in calculatePercentChanges(sorted_filenames, prefix):
+          print x
 
 # Given a filename (output-1.csv), return the total mass and momentum
 def totalsFromFile(filename):
