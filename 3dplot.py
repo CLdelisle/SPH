@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser(description='Create a 3D particle plot')
 parser.add_argument("--prefix", help="Output file prefix. Defaults to 'output'.", default='output')
 parser.add_argument("--fps", help="Frames per second Defaults to 15", type=int, default=15)
 parser.add_argument("--file", help="Filename to save animation to", default='plot.gif')
+parser.add_argument("--title", help="Plot title (defaults to blank)", default='')
 args = parser.parse_args()
 
 files = sortedFileNames(args.prefix)
@@ -55,6 +56,9 @@ def update(num,sc,ax):
 def main():
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection='3d')
+
+	if args.title != "":
+		fig.suptitle(args.title, fontsize=20)
 
 	curr_x = []
 	curr_y = []
