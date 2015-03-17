@@ -45,10 +45,18 @@ Simply stores particle IDs, X, Y, and Z coordinates, mass, velocity, and acceler
 This is the configuration file for the simulator. Options take a 'key=value' format. Newlines are ignored, and lines are considered commented when #'s are found at the beginning of them. In addition, each option has a small description above it in the .conf file.
 
 ### Generating 3D Plots
-Use ```python 3dplot.py --prefix output --fps=15``` to generate the graph.  The prefix is the prefix of the output files that contain the particle locations at a given timestep (<b>output-1.csv</b>, <b>output-100.csv</b>, <b>output-200.csv</b>, etc).
+Command line usage:
+```
+3dplot.py [-h] [--prefix PREFIX] [--fps FPS] [--file FILE]
+                 [--title TITLE]
+```
+Basic example: ```python 3dplot.py --prefix output```
+
+Advanced example: ```python 3dplot.py --prefix output --fps=15 --file test.gif --title="multiword title use quotes"```
+
+The prefix parameter is the prefix of the output files that contain particle locations at a given timestep (<b>output</b>-1.csv, <b>output</b>-100.csv, <b>output</b>-200.csv, etc).
 * Todo:
  * Auto scale the axis
- * Add command line arguments for graph title and output file name
 
 ### Necessary Dependencies
 * Python 2.7 - Tested with Python 2.7.8 and 2.7.9
