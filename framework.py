@@ -77,11 +77,11 @@ def saveParticles(particles, fname):
         fhandle.close()
 
 def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep):
-        t = 0.0     # elapsed time
-		if(kernel == "gaussian"):
-			CHOOSE_KERNEL_CONST = 1
-		else:
-			CHOOSE_KERNEL_CONST = 0
+	t = 0.0     # elapsed time
+	if(kernel == "gaussian"):
+		CHOOSE_KERNEL_CONST = 1
+	else:
+		CHOOSE_KERNEL_CONST = 0
 
         '''
 	So we can do this one of two ways.
@@ -95,53 +95,53 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 	'''
         # output-100.csv = prefix + interval + file extension
 	ary = savefile.split(".")  # only split savefile once ([0]=prefix, [1]=extension)
-        save = 0
-        print "[+] Saved @ iterations: ",
-        while(t < (maxiter*timestep)):
-                if (save*interval) == t:
-                        fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
-                        save += 1  # bump save counter
-                        string = "\b%d..." % int(t)     # '\b' prints a backspace character to remove previous space
-                        print string,
-                        saveParticles(particles, fname)
-                                
-                # main simulation loop
-                for p in particles:
-                        # preemptively start the Velocity Verlet computation (first half of velocity update part)
-                        p.vel += (timestep/2.0) * p.acc
-                        temp = p.acc
-                        p.acc = 0.0
-						p.rho = 0.0
-						p.pressure = 0.0
-						#get density
-                        for q in particles:
-							p.rho += ( q.mass * (kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
-                            # while we're iterating, add contribution from gravity
-                            if(p.id != q.id):
-								p.acc += Newtonian_gravity(p,q)
-						# normalize density
-						p.rho = ( p,rho / particles.size )
-						p.pressure = pressure(p)
-
-				for p in particles:
-					# acceleration from pressure gradient
-					for q in particles:
-						p.acc -= ( q.mass * ((p.P / (p.rho ** 2)) + (q.P / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, h) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
-					# finish velocity update
+	save = 0
+	print "[+] Saved @ iterations: ",
+	while(t < (maxiter*timestep)):
+			if (save*interval) == t:
+					fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
+					save += 1  # bump save counter
+					string = "\b%d..." % int(t)     # '\b' prints a backspace character to remove previous space
+					print string,
+					saveParticles(particles, fname)
+							
+			# main simulation loop
+			for p in particles:
+					# preemptively start the Velocity Verlet computation (first half of velocity update part)
 					p.vel += (timestep/2.0) * p.acc
-                        '''
-                        Velocity Verlet integration: Works only assuming force is velocity-independent
-                        http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
-                        '''
-				# iterate AGAIN to do final position updates
-				for p in particles:
-					# perform position update
-                    p.pos += timestep * (p.vel + (timestep/2.0)*temp)
-                                
-                t += timestep  # advance time
+					temp = p.acc
+					p.acc = 0.0
+					p.rho = 0.0
+					p.pressure = 0.0
+					#get density
+					for q in particles:
+						p.rho += ( q.mass * (kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
+						# while we're iterating, add contribution from gravity
+						if(p.id != q.id):
+							p.acc += Newtonian_gravity(p,q)
+					# normalize density
+					p.rho = ( p,rho / particles.size )
+					p.pressure = pressure(p)
 
-        # Always save the last interval
-        print "\b%d\n" % int(t)
-        fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
-        saveParticles(particles, fname)
-        return t    # returns the last t-value, which is useful for displaying total iterations
+			for p in particles:
+				# acceleration from pressure gradient
+				for q in particles:
+					p.acc -= ( q.mass * ((p.P / (p.rho ** 2)) + (q.P / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, h) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
+				# finish velocity update
+				p.vel += (timestep/2.0) * p.acc
+				'''
+				Velocity Verlet integration: Works only assuming force is velocity-independent
+				http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
+				'''
+			# iterate AGAIN to do final position updates
+			for p in particles:
+				# perform position update
+				p.pos += timestep * (p.vel + (timestep/2.0)*temp)
+							
+			t += timestep  # advance time
+
+	# Always save the last interval
+	print "\b%d\n" % int(t)
+	fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
+	saveParticles(particles, fname)
+	return t    # returns the last t-value, which is useful for displaying total iterations
