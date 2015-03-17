@@ -94,13 +94,13 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
         # output-100.csv = prefix + interval + file extension
 	ary = savefile.split(".")  # only split savefile once ([0]=prefix, [1]=extension)
 	save = 0
-	print "[+] Saved @ iterations: ",
+#	print "[+] Saved @ iterations: ",
 	while(t < (maxiter*timestep)):
 			if (save*interval) == t:
 					fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 					save += 1  # bump save counter
 					string = "\b%d..." % int(t)     # '\b' prints a backspace character to remove previous space
-					print string,
+			#		print string,
 					saveParticles(particles, fname)
 							
 			# main simulation loop
@@ -113,7 +113,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 					p.pressure = 0.0
 					#get density
 					for q in particles:
-					        print find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)
+				#	        print find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)
 						p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
 						# while we're iterating, add contribution from gravity
 						if(p.id != q.id):
@@ -134,14 +134,21 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 				http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
 				'''
 			# iterate AGAIN to do final position updates
+			# save particles list to temporary holder - ensures we have consistent indexing throughout for loop
+			tempp = particles
 			for p in particles:
 				# perform position update
 				p.pos += timestep * (p.vel + (timestep/2.0)*temp)
-							
+		                if np.linalg.norm(p.pos) > bound:
+		                        print "Particle %d position: %f out of range at iteration %d" % (p.id, np.linalg.norm(p.pos), int(t))
+		                        tempp.remove(p)
+		        particles = tempp
+						
 			t += timestep  # advance time
 
 	# Always save the last interval
-	print "\b%d\n" % int(t)
+#	print "\b%d\n" % int(t)
+        print
 	fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 	saveParticles(particles, fname)
 	return t    # returns the last t-value, which is useful for displaying total iterations

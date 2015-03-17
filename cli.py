@@ -50,9 +50,12 @@ class Interface():
                     coords[j] = round(gauss(mean, self.args.stdev), 6)
 
             m = round(float(mass), 2)
-            vx = uniform(1,100)
-            vy = uniform(1,100)
-            vz = uniform(1,100)
+            vx = 0.0
+            vy = 0.0
+            vz = 0.0
+        #    vx = uniform(1,100)
+        #    vy = uniform(1,100)
+        #    vz = uniform(1,100)
             # Add new particle to ppos with no initial velocity
             # particle(id, m, x, y, z, vx, vy, vz)
             ppos.append(particle(i, m, coords[0], coords[1], coords[2], vx, vy, vz))
@@ -75,9 +78,12 @@ class Interface():
             y = round(uniform(0, bound), 6)
             z = round(uniform(0, bound), 6)
             m = round(float(mass), 2)
-            vx = uniform(1,100)
-            vy = uniform(1,100)
-            vz = uniform(1,100)
+            vx = 0.0
+            vy = 0.0
+            vz = 0.0
+        #    vx = uniform(1,100)
+        #    vy = uniform(1,100)
+        #    vz = uniform(1,100)
             # Add new particle to ppos with no initial velocity
             # particle(id, m, x, y, z, vx, vy, vz)
             ppos.append(particle(i, m, x, y, z, vx, vy, vz))
