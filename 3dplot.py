@@ -18,13 +18,15 @@ files = sortedFileNames(args.prefix)
 if (len(files) == 0):
 	raise ValueError("No output csv files found with the prefix '{}'".format(args.prefix))
 
-RUNTIME = len(files) - 1 #Number of frames to render
 
 data = []
 
 # data file format: Particle ID, X-coord, Y-coord, Z-coord, X-Velocity, Y-Velocity, Z-Velocity
 for i, filename in enumerate(files):
 	data.append(np.genfromtxt(filename, delimiter=',', names=['pid', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz']))
+
+RUNTIME = len(files) - 1 #Number of frames to render
+NUM_PARTICLES = len(data[0]['x'])
 
 t = 0
 def update(num,sc,ax):
@@ -34,8 +36,8 @@ def update(num,sc,ax):
 	curr_x = []
 	curr_y = []
 	curr_z = []
-	
-	for particle in range(len(data[0]['x'])):
+
+	for particle in range(NUM_PARTICLES):
 		curr_x.append(data[t]['x'][particle])
 		curr_y.append(data[t]['y'][particle])
 		curr_z.append(data[t]['z'][particle])
@@ -55,12 +57,11 @@ def main():
 	curr_x = []
 	curr_y = []
 	curr_z = []
-	for particle in range(len(data[0]['x'])):
+	for particle in range(NUM_PARTICLES):
 		curr_x.append(data[0]['x'][particle])
 		curr_y.append(data[0]['y'][particle])
 		curr_z.append(data[0]['z'][particle])
-		
-		
+
 	ax.set_xlim3d(-700,700);
 	ax.set_ylim3d(-700,700);
 	ax.set_zlim3d(-700,700);
@@ -68,7 +69,7 @@ def main():
 	sc = ax.scatter(curr_x, curr_y, curr_z, c='r', marker='o')
 
 	ani = animation.FuncAnimation(fig, update, frames=RUNTIME,fargs=(sc,ax))
-	
+
 	ani.save(args.file, writer='imagemagick', fps=args.fps);
 	# ani.save('test_run.mp4', fps=15, extra_args=['-vcodec', 'libx264'])
 	# ani.save("demo.avi",codec='avi')
