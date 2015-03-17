@@ -20,10 +20,6 @@ if (len(files) == 0):
 
 RUNTIME = len(files) - 1 #Number of frames to render
 
-curr_x = []
-curr_y = []
-curr_z = []
-
 data = []
 
 # data file format: Particle ID, X-coord, Y-coord, Z-coord, X-Velocity, Y-Velocity, Z-Velocity
