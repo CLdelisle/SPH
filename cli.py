@@ -91,7 +91,7 @@ class Interface():
     # OUTPUT: ppos (array containing particle objects)
     ######################################################
     def genParticles(self, num, method):
-        mass = 5
+        mass = 50
 
         if method == 'gaussian':
             print "[+] Generating particles with %s%s distribution in a %s%s^3 space\n" % (str(self.args.stdev), self.args.x_norm, str(self.args.bound), self.args.x_norm)

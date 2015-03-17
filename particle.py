@@ -21,7 +21,7 @@ class Particle(object):
 		else:
 			t = ''
 		#        id  mass  posx, posy, posz      vx, vy, vz       ax, ay, az
-		print "%s%s\t%.2f\t%.2f, %.2f, %.2f\t%.2f, %.2f, %.2f\t%.2f, %.2f, %.2f\t%.2f\t%.2f" % (t, str(self.id), self.mass, p[0],p[1],p[2], v[0],v[1],v[2], a[0],a[1],a[2], self.pressure, self.rho)
+		print "%s%s\t%.2f\t%.2f, %.2f, %.2f\t%.2f, %.2f, %.2f\t%.2f, %.2f, %.2f\t%.16f\t%.16f" % (t, str(self.id), self.mass, p[0],p[1],p[2], v[0],v[1],v[2], a[0],a[1],a[2], self.pressure, self.rho)
 
 	def velocityMagnitude(self):
 		return sqrt(self.vel[0] ** 2 + self.vel[1] ** 2 + self.vel[2] ** 2)
@@ -29,6 +29,7 @@ class Particle(object):
         #  Requires current an open file handle
         def writeToFile(self, output):
                 #   "Particle ID, X-coord, Y-coord, Z-coord"
-                line = "%d,%.2f,%f,%f,%f,%f,%f,%f\n" % (int(self.id), float(self.mass), float(self.pos[0]), float(self.pos[1]),
-                                                        float(self.pos[2]),float(self.vel[0]), float(self.vel[1]), float(self.vel[2]))
+                line = "%d,%.2f,%f,%f,%f,%f,%f,%f,%f,%f\n" % (int(self.id), float(self.mass), float(self.pos[0]), float(self.pos[1]),
+                                                        float(self.pos[2]),float(self.vel[0]), float(self.vel[1]), float(self.vel[2]),
+                                                        float(self.pressure), float(self.rho))
                 output.write(line)

@@ -64,7 +64,7 @@ def del_cubic_spline(r, h):
 	return 0.5 # this is a bullshit placeholder
 
 def pressure(p):
-	k = 0.15 #this may need to stay hardcoded for our purposes, though could be read in from config file
+	k = 1.0 #this may need to stay hardcoded for our purposes, though could be read in from config file
 	gamma = 1.5 #but i'm keeping these constants segregated in this function for now instead of inlining because of this issue
 	return (k * (p.rho ** gamma))
 
@@ -113,6 +113,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 					p.pressure = 0.0
 					#get density
 					for q in particles:
+					        print find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)
 						p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
 						# while we're iterating, add contribution from gravity
 						if(p.id != q.id):
@@ -124,7 +125,6 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 			for p in particles:
 				# acceleration from pressure gradient
 				for q in particles:
-	#			        pass
 				        if p.id != q.id:
         					p.acc -= ( q.mass * ((p.pressure / (p.rho ** 2)) + (q.pressure / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
 				# finish velocity update
