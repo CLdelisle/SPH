@@ -8,6 +8,8 @@ class Particle(object):
 		self.pos = np.array([x,y,z]) 		# position vector<double>
 		self.vel = np.array([vx,vy,vz]) 	# velocity vector<double>
 		self.acc = np.array([0.0,0.0,0.0])	# acceleration vector<double>
+		self.rho = 0.0
+		self.pressure = 0.0
 
     # Display the attributes of a given particle - ID, Mass, Position Vector, Velocity Vector, Acceleration Vector
 	def display(self, tabs=0):

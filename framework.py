@@ -6,7 +6,7 @@ This is the framework for iterating over a list of particles, computing particle
 """
 
 __author__ = "Colby"
-__version__ = "1.0.1"
+__version__ = "2.0.0"
 
 """ THIS VERSION HAS NOT BEEN TESTED, BUT RUNS SUCCESSFULLY AT THE VERY LEAST """
 
@@ -21,8 +21,54 @@ def Newtonian_gravity(p,q):
 	'''
 
 	r = q.pos - p.pos # separation vector
-	R = np.sqrt(r.dot(r)) # magnitude of the separation vector
+	R = np.linalg.norm(r) # magnitude of the separation vector
 	return ((CONST_G * q.mass) / (R**3)) * r
+
+
+def kernel(x, r, h):
+	# if 1 (true) use Gaussian
+	# if 0 (false) use spline
+	if(x):
+		return Gaussian_kernel(r, h)
+	else:
+		return cubic_spline_kernel(r, h)
+
+
+def del_kernel(x, r, h):
+	# if 1 (true) use Gaussian
+	# if 0 (false) use spline
+	if(x):
+		return del_Gaussian(r, h)
+	else:
+		return del_cubic_spline(r, h)
+
+
+def Gaussian_kernel(r, h):
+	# Gaussian function
+	r = np.linalg.norm(r)
+	return ( (((1/(np.pi * (h**2)))) ** (3/2) ) * ( np.exp( - ((r**2) / (h**2)) )) )
+
+
+def del_Gaussian(r, h):
+	# derivative of Gaussian kernel
+	r = np.linalg.norm(r)
+	return ( ((-2 * r) / (h**2)) * Gaussian_kernel(r,h) )
+
+
+def cubic_spline_kernel(r, h):
+	# cubic spline function - used if one needs compact support
+	return 0.5 # this is a bullshit placeholder
+
+def del_cubic_spline(r, h):
+	# derivative of cubic spline
+	return 0.5 # this is a bullshit placeholder
+
+
+def pressure(p):
+	k = 1.0 #this may need to stay hardcoded for our purposes, though could be read in from config file
+	gamma = 1.5 #but i'm keeping these constants segregated in this function for now instead of inlining because of this issue
+	return (k * (p.rho ** gamma))
+
 
 def saveParticles(particles, fname):
         fhandle = open(fname, "w")
@@ -30,11 +76,12 @@ def saveParticles(particles, fname):
                 p.writeToFile(fhandle)
         fhandle.close()
 
-def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile):
-        CONST_H = 1.0   # size of timestep (this should come from config file)
-        #    CONST_T_MAX = 10    # max iteration time (this should come from config file)
-        CONST_T_MAX = maxiter
+def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep):
         t = 0.0     # elapsed time
+		if(kernel == "gaussian"):
+			CHOOSE_KERNEL_CONST = 1
+		else:
+			CHOOSE_KERNEL_CONST = 0
 
         '''
 	So we can do this one of two ways.
@@ -50,7 +97,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 	ary = savefile.split(".")  # only split savefile once ([0]=prefix, [1]=extension)
         save = 0
         print "[+] Saved @ iterations: ",
-        while(t < CONST_T_MAX):
+        while(t < (maxiter*timestep)):
                 if (save*interval) == t:
                         fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
                         save += 1  # bump save counter
@@ -61,25 +108,37 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
                 # main simulation loop
                 for p in particles:
                         # preemptively start the Velocity Verlet computation (first half of velocity update part)
-                        p.vel += (CONST_H/2.0) * p.acc
+                        p.vel += (timestep/2.0) * p.acc
                         temp = p.acc
-                        p.acc = 0
+                        p.acc = 0.0
+						p.rho = 0.0
+						p.pressure = 0.0
+						#get density
                         for q in particles:
-                                # Calculate gravitational pull for each particle on every OTHER particle
-                                if(p.id != q.id):
-                                        p.acc += Newtonian_gravity(p,q)
-                                
-                        # finish velocity update
-                        p.vel += (CONST_H/2.0) * p.acc
+							p.rho += ( q.mass * (kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
+                            # while we're iterating, add contribution from gravity
+                            if(p.id != q.id):
+								p.acc += Newtonian_gravity(p,q)
+						# normalize density
+						p.rho = ( p,rho / particles.size )
+						p.pressure = pressure(p)
+
+				for p in particles:
+					# acceleration from pressure gradient
+					for q in particles:
+						p.acc -= ( q.mass * ((p.P / (p.rho ** 2)) + (q.P / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, h) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
+					# finish velocity update
+					p.vel += (timestep/2.0) * p.acc
                         '''
                         Velocity Verlet integration: Works only assuming force is velocity-independent
                         http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
                         '''
-                        for p in particles:
-                        	# perform position update
-                        	p.pos += CONST_H * (p.vel + (CONST_H/2.0)*temp)
+				# iterate AGAIN to do final position updates
+				for p in particles:
+					# perform position update
+                    p.pos += timestep * (p.vel + (timestep/2.0)*temp)
                                 
-                t += CONST_H  # advance time
+                t += timestep  # advance time
 
         # Always save the last interval
         print "\b%d\n" % int(t)
