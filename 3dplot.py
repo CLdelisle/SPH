@@ -30,7 +30,6 @@ t = 0
 def update(num,sc,ax):
 	ax.cla();
 	global t
-	global data
 
 	curr_x = []
 	curr_y = []
