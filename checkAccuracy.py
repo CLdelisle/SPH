@@ -1,7 +1,8 @@
 from cli import *
 from outputFiles import *
 
-def main(prefix = 'example'):
+def main(prefix = 'output'):
+  sorted_filenames = sortedFileNames(prefix)
   for x in calculatePercentChanges(sorted_filenames, prefix):
           print x
 

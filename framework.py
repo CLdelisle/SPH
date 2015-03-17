@@ -30,7 +30,8 @@ def saveParticles(particles, fname):
                 p.writeToFile(fhandle)
         fhandle.close()
 
-def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile):
+def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep):
+        print "[+] Timestep is %s" % timestep
         CONST_H = 1.0   # size of timestep (this should come from config file)
         #    CONST_T_MAX = 10    # max iteration time (this should come from config file)
         CONST_T_MAX = maxiter
