@@ -31,9 +31,6 @@ def update(num,sc,ax):
 	ax.cla();
 	global t
 	global data
-	global curr_x
-	global curr_y
-	global curr_z
 
 	curr_x = []
 	curr_y = []
