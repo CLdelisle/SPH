@@ -70,3 +70,4 @@ The prefix parameter is the prefix of the output files that contain particle loc
 ### Necessary Dependencies
 * Python 2.7 - Tested with Python 2.7.8 and 2.7.9
 * Numpy - Used for the Particle.py module to build arrays
+* MatPlotLib - Needed to generate 3d plots by <b>3dplot.py</b>
