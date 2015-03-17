@@ -22,6 +22,7 @@ class Interface():
         self.parser.add_argument("--bound", help="Sets boundaries of particle space. Default is "+defaults['bound'], type=int, default=int(defaults['bound']))
         self.parser.add_argument("--stdev", help="Standard deviation of particle space. Default is "+defaults['stdev'], type=float, default=float(defaults['stdev']))
         self.parser.add_argument("--maxiter", help="Maximum iterations to run the simulation through. Default is "+defaults['maxiter'], type=int, default=int(defaults['maxiter']))
+        self.parser.add_argument("--timestep", help="The temporal resolution of the simulation. Default is "+defaults['timestep'], type=int, default=defaults['timestep'])
         self.parser.add_argument("--t_norm", help="Time normalization. Default is "+defaults['t_norm'], choices=['months', 'years', 'decades', 'centuries'], default=defaults['t_norm'])
         self.parser.add_argument("--x_norm", help="Space normalization. Default is "+defaults['x_norm'], choices=['m', 'km', 'ly'], default=defaults['x_norm'])
         self.parser.add_argument("--kernel", help="Kernel function to use. Default is "+defaults['kernel'], choices=['gaussian', 'cubic'], default=defaults['kernel'])
@@ -162,4 +163,4 @@ class Interface():
         print "\n[+] Starting simulation..."
         iterations = framework.sim(particles, self.args.bound, self.args.kernel, self.args.maxiter,
                                 self.args.gen, self.args.smooth, self.args.t_norm, self.args.x_norm,
-                                self.args.interval, self.args.savefile)
+                                self.args.interval, self.args.savefile, self.args.timestep)

@@ -28,27 +28,21 @@ sph.py [-h] [-g GEN] [-i IFILE] [--gtype {gaussian,random}]
 
 ### SPH.py
 The entrypoint for the SPH simulator application.
-<ul>
-    <li>Aggregates the Configuration and CLI Python modules</li>
-    <li>Provides a chokepoint for catching exceptions</li>
-</ul>
+* Aggregates the Configuration and CLI Python modules
+* Provides a chokepoint for catching exceptions
 
 ### Configuration.py
-Responsible for interpreting the simulator's configuration file. The configuration file is used to set default values in the simulation when they haven't been explicitly set in the initial program invocation. 
-<ul>
-    <li>Parses configuration file</li>
-    <li>Creates new configuration file if missing</li>
-    <li>Returns configuration files to other SPH modules</li>
-</ul>
+Responsible for interpreting the simulator's configuration file. The configuration file is used to set default values in the simulation when they haven't been explicitly set in the initial program invocation.
+* Parses configuration file
+* Creates new configuration file if missing
+* Returns configuration files to other SPH modules
 
 ### CLI.py
 Builds the command line interface, and is the only interaction between the user and the simulation.
-<ul>
-    <li>Interprets user arguments, and attempts to resolve errors in program input</li>
-    <li>Generates particles if '-g | --gen' option is specified</li>
-    <li>Reads in particles from an input file if '-i | --input' option is specified</li>
-    <li>Periodically save program state by writing particles to output files</li>
-</ul>
+* Interprets user arguments, and attempts to resolve errors in program input
+* Generates particles if '-g | --gen' option is specified
+* Reads in particles from an input file if '-i | --input' option is specified
+* Periodically save program state by writing particles to output files
 
 ### Framework.py
 Calculates particle accelerations and numerically integrates their equations of motion
@@ -59,8 +53,21 @@ Simply stores particle IDs, X, Y, and Z coordinates, mass, velocity, and acceler
 ### SPH.conf
 This is the configuration file for the simulator. Options take a 'key=value' format. Newlines are ignored, and lines are considered commented when #'s are found at the beginning of them. In addition, each option has a small description above it in the .conf file.
 
+### Generating 3D Plots
+Command line usage:
+```
+3dplot.py [-h] [--prefix PREFIX] [--fps FPS] [--file FILE]
+                 [--title TITLE]
+```
+Basic example: ```python 3dplot.py --prefix output```
+
+Advanced example: ```python 3dplot.py --prefix output --fps=15 --file test.gif --title="multiword title use quotes"```
+
+The prefix parameter is the prefix of the output files that contain particle locations at a given timestep (<b>output</b>-1.csv, <b>output</b>-100.csv, <b>output</b>-200.csv, etc).
+* Todo:
+ * Auto scale the axis
+
 ### Necessary Dependencies
-<ul>
-    <li>Python 2.7 - Tested with Python 2.7.8 and 2.7.9</li>
-    <li>Numpy - Used for the Particle.py module to build arrays</li>
-</ul>
+* Python 2.7 - Tested with Python 2.7.8 and 2.7.9
+* Numpy - Used for the Particle.py module to build arrays
+* MatPlotLib - Needed to generate 3d plots by <b>3dplot.py</b>

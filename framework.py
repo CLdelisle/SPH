@@ -25,7 +25,7 @@ def Newtonian_gravity(p,q):
 	return ((CONST_G * q.mass) / (R**3)) * r
 
 
-def kernel(x, r, h):
+def find_kernel(x, r, h):
 	# if 1 (true) use Gaussian
 	# if 0 (false) use spline
 	if(x):
@@ -63,12 +63,10 @@ def del_cubic_spline(r, h):
 	# derivative of cubic spline
 	return 0.5 # this is a bullshit placeholder
 
-
 def pressure(p):
-	k = 1.0 #this may need to stay hardcoded for our purposes, though could be read in from config file
+	k = 0.15 #this may need to stay hardcoded for our purposes, though could be read in from config file
 	gamma = 1.5 #but i'm keeping these constants segregated in this function for now instead of inlining because of this issue
 	return (k * (p.rho ** gamma))
-
 
 def saveParticles(particles, fname):
         fhandle = open(fname, "w")
@@ -115,20 +113,22 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 					p.pressure = 0.0
 					#get density
 					for q in particles:
-						p.rho += ( q.mass * (kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
+						p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
 						# while we're iterating, add contribution from gravity
 						if(p.id != q.id):
 							p.acc += Newtonian_gravity(p,q)
 					# normalize density
-					p.rho = ( p,rho / particles.size )
+					p.rho = ( p.rho / len(particles) )
 					p.pressure = pressure(p)
 
 			for p in particles:
 				# acceleration from pressure gradient
 				for q in particles:
-					p.acc -= ( q.mass * ((p.P / (p.rho ** 2)) + (q.P / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, h) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
+	#			        pass
+				        if p.id != q.id:
+        					p.acc -= ( q.mass * ((p.pressure / (p.rho ** 2)) + (q.pressure / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
 				# finish velocity update
-				p.vel += (timestep/2.0) * p.acc
+                                p.vel += (timestep/2.0) * p.acc
 				'''
 				Velocity Verlet integration: Works only assuming force is velocity-independent
 				http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet

@@ -6,7 +6,7 @@ class Config():
     
     def __init__(self, config="sph.conf"):
         # Dictionary containing key (e.g. infile) and default value (e.g. "save.csv")
-        self.args = {"num":"", "maxiter":"100", "bound":"100", "stdev":"10.0", "t_norm":"centuries",
+        self.args = {"num":"", "maxiter":"100", "bound":"100", "stdev":"10.0", "t_norm":"centuries", "timestep":"10",
         "x_norm":"ly", "kernel":"gaussian", "savefile":"example.csv", "gtype":"random", "smooth":"50.0", "interval":"10"}
         # Check for a default config file
         if path.isfile(config):

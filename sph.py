@@ -18,7 +18,7 @@ def main():
 
 
 if __name__ == '__main__':
-    try:
+#    try:
         main()
-    except Exception as e:  # catch all exceptions at the last possible chokepoint
-        print "[-] %s" % str(e)
+#    except Exception as e:  # catch all exceptions at the last possible chokepoint
+#        print "[-] %s" % str(e)

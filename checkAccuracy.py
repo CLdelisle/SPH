@@ -1,11 +1,8 @@
 from cli import *
-import os
+from outputFiles import *
 
 def main(prefix = 'output'):
-  allOutputFiles        = getOutputFiles(prefix)
-  timesteps             = getOutputFileNumbers(allOutputFiles, prefix)
-  sorted_filenames      = fileNamesInOrder(timesteps, prefix)
-
+  sorted_filenames = sortedFileNames(prefix)
   for x in calculatePercentChanges(sorted_filenames, prefix):
           print x
 
@@ -23,23 +20,6 @@ def getTotalMassAndMomentum(particles):
     mass += particle.mass
     momentum += mass * particle.velocityMagnitude()
   return (momentum, mass)
-
-# Given a prefix like "output", it finds all files in the current directory with the prefix
-def getOutputFiles(prefix):
-  return [filename for filename in os.listdir('.') if filename.startswith(prefix)]
-
-# Takes an array of filenames ['output-100.csv', 'output-1.csv']
-# Returns the numbers [100, 1]
-def getOutputFileNumbers(filenames, prefix):
-  return [getTimestep(f, prefix) for f in filenames]
-
-def getTimestep(filename, prefix):
-	return int(filename.replace(prefix + '-', '').replace('.csv', ''))
-
-# Takes an array of file numbers, sorts them, and adds in the prefix
-def fileNamesInOrder(file_numbers, prefix):
-  file_numbers.sort()
-  return [prefix + "-" + str(n) + '.csv' for n in file_numbers]
 
 # Returns array of tuples [(percent_change_momentum, percent_change_mass, timestep), ...]
 def calculatePercentChanges(filenames, prefix):
@@ -59,4 +39,5 @@ def filePercentChanges(filename, max_accuracy):
 def percentChange(newValue, oldValue):
   return (float(newValue) - float(oldValue)) / float(oldValue) * 100
 
-main()
+if __name__ == '__main__':
+  main()
