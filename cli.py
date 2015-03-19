@@ -3,7 +3,7 @@ from sys import exit
 import configuration
 from random import uniform, gauss
 from particle import Particle as particle
-
+import framework
 
 class Interface():
 
@@ -14,26 +14,20 @@ class Interface():
         self.parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter, description="SPH.py is the user interface for "
                                 "our physics simulation program.\n'SPH' stands for Smoothed Particle Hydrodynamics, which is an algorithm for "
                                 "simulating fluid flows.\nYou can read more on it at https://en.wikipedia.org/wiki/Smoothed-particle_hydrodynamics")
-        self.parser.add_argument("-g", "--gen", help="Number of particles to generate. Conflicts with [IFILE] argument",
-                                type=int)
-        self.parser.add_argument("-i", "--ifile", help="Input file path to read particles from. "
-                                "Takes precedence over [GEN] argument")
-        self.parser.add_argument("--gtype", help="Type of particle generation to perform. Default is "+defaults['gtype'],
-                                choices=['gaussian', 'random'], default=defaults['gtype'])
-        self.parser.add_argument("-s", "--savefile", help="Output file path to write particles to. Suffix is currently "+defaults['savefile'],
-                                default=defaults['savefile'])
-        self.parser.add_argument("--bound", help="Sets boundaries of particle space. Default is "+defaults['bound'],
-                                type=int, default=int(defaults['bound']))
-        self.parser.add_argument("--stdev", help="Standard deviation of particle space. Default is "+defaults['stdev'],
-                                type=float, default=float(defaults['stdev']))
-        self.parser.add_argument("--maxiter", help="Maximum iterations to run the simulation through. Default is "+defaults['maxiter'],
-                                type=int, default=int(defaults['maxiter']))
-        self.parser.add_argument("--t_norm", help="Time normalization. Default is "+defaults['t_norm'],
-                                choices=['months', 'years', 'decades', 'centuries'], default=defaults['t_norm'])
-        self.parser.add_argument("--x_norm", help="Space normalization. Default is "+defaults['x_norm'],
-                                choices=['m', 'km', 'ly'], default=defaults['x_norm'])
-        self.parser.add_argument("--kernel", help="Kernel function to use. Default is "+defaults['kernel'],
-                                choices=['gaussian', 'cubic'], default=defaults['kernel'])
+
+        self.parser.add_argument("-g", "--gen", help="Number of particles to generate. Conflicts with [IFILE] argument", type=int)
+        self.parser.add_argument("-i", "--ifile", help="Input file path to read particles from. Takes precedence over [GEN] argument")
+        self.parser.add_argument("--gtype", help="Type of particle generation to perform. Default is "+defaults['gtype'], choices=['gaussian', 'random'], default=defaults['gtype'])
+        self.parser.add_argument("-s", "--savefile", help="Output file path to write particles to. Suffix is currently "+defaults['savefile'], default=defaults['savefile'])
+        self.parser.add_argument("--bound", help="Sets boundaries of particle space. Default is "+defaults['bound'], type=int, default=int(defaults['bound']))
+        self.parser.add_argument("--stdev", help="Standard deviation of particle space. Default is "+defaults['stdev'], type=float, default=float(defaults['stdev']))
+        self.parser.add_argument("--maxiter", help="Maximum iterations to run the simulation through. Default is "+defaults['maxiter'], type=int, default=int(defaults['maxiter']))
+        self.parser.add_argument("--timestep", help="The temporal resolution of the simulation. Default is "+defaults['timestep'], type=int, default=defaults['timestep'])
+        self.parser.add_argument("--t_norm", help="Time normalization. Default is "+defaults['t_norm'], choices=['months', 'years', 'decades', 'centuries'], default=defaults['t_norm'])
+        self.parser.add_argument("--x_norm", help="Space normalization. Default is "+defaults['x_norm'], choices=['m', 'km', 'ly'], default=defaults['x_norm'])
+        self.parser.add_argument("--kernel", help="Kernel function to use. Default is "+defaults['kernel'], choices=['gaussian', 'cubic'], default=defaults['kernel'])
+        self.parser.add_argument("--smooth", help="Smoothing for the kernel function. Default is "+defaults['smooth'], type=float, default=float(defaults['smooth']))
+        self.parser.add_argument("--interval", help="How many loops before particles are saved. Default is "+defaults['interval'], type=int, default=int(defaults['interval']))
         # Actually begin to parse the arguments
         self.args = self.parser.parse_args()
 
@@ -100,7 +94,7 @@ class Interface():
         mass = 5
 
         if method == 'gaussian':
-            print "[+] Generating particles with %s%s distribution in a %s%s^3 space" % (str(self.args.stdev), self.args.x_norm, str(self.args.bound), self.args.x_norm)
+            print "[+] Generating particles with %s%s distribution in a %s%s^3 space\n" % (str(self.args.stdev), self.args.x_norm, str(self.args.bound), self.args.x_norm)
             ppos = self.createGaussian(num, mass)
         elif method == 'random':
             print "[+] Spreading particles randomly within %s%s^3 space" % (str(self.args.bound), self.args.x_norm)
@@ -151,8 +145,6 @@ class Interface():
             
         elif not self.args.ifile and self.args.gen: # If [IFILE] isn't specified and [NUMPRT] is specified, generate particles
             particles = self.genParticles(self.args.gen, self.args.gtype)
-            # takes filename specified on the command-line, particles, and number of particles generated
-            self.writeParticlesToFile(self.args.savefile, particles, self.args.gen)
 
         else: # If [IFILE] and [NUMPRT] are NOT specified, print help message and exit
             self.parser.print_help()
@@ -164,26 +156,11 @@ class Interface():
 
     ######################################################
     # Passes necessary arguments to the simulation
+    # INPUT: particles (array of particles with form [PID, mass, X-coord, Y-coord, Z-coord, Vx, Vy, Vz])
+    # OUTPUT: none
     ######################################################
-    def startSimulation(self):
-        print "[+] Starting simulation..."
-        
-    #   Fake function call to start simulation. Will link together parts later...
-    #   sim(bound, kernel, maxiter, pnum, smooth, t_norm, x_norm)
-
-    ######################################################
-    # Writes particle positions [PID, X-coord, Y-coord, Z-coord] to a file, line-by-line
-    # Should be primarily used to save particle positions during a simulation
-    # Should be the first function called after self.genParticles()
-    # INPUT: fname (filename to write to), ppos (particles list to write), num (number of particles)
-    # OUTPUT: None directly, but an output file will be generated
-    ######################################################
-    def writeParticlesToFile(self, fname, ppos, num):
-            with open(fname, "w") as output:
-                for i in range(0, num):
-                    p = ppos[i]
-                    # header = "Particle ID, X-coord, Y-coord, Z-coord, X-Velocity, Y-Velocity, Z-Velocity\n"
-                    line = "%d,%.2f,%f,%f,%f,%f,%f,%f\n" % (int(p.id), float(p.mass), float(p.pos[0]), float(ppos[i].pos[1]), float(ppos[i].pos[2]),float(p.vel[0]), float(ppos[i].vel[1]), float(ppos[i].vel[2]))
-                    output.write(line)
-    
-            print "[+] Wrote %d particles to \"%s\"" %(i+1, fname)
+    def startSimulation(self, particles):
+        print "\n[+] Starting simulation..."
+        iterations = framework.sim(particles, self.args.bound, self.args.kernel, self.args.maxiter,
+                                self.args.gen, self.args.smooth, self.args.t_norm, self.args.x_norm,
+                                self.args.interval, self.args.savefile, self.args.timestep)

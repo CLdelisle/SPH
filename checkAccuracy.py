@@ -1,9 +1,10 @@
 from cli import *
 from outputFiles import *
 
-def main(prefix = 'example'):
+def main(prefix = 'output'):
   sorted_filenames = sortedFileNames(prefix)
-  print calculatePercentChanges(sorted_filenames, prefix)
+  for x in calculatePercentChanges(sorted_filenames, prefix):
+          print x
 
 # Given a filename (output-1.csv), return the total mass and momentum
 def totalsFromFile(filename):
