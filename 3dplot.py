@@ -26,14 +26,12 @@ for i, filename in enumerate(files):
 	data.append(np.genfromtxt(filename, delimiter=',', names=['pid', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz']))
 
 RUNTIME = len(files) - 1 #Number of frames to render
-NUM_PARTICLES = len(data[0]['x'])
-
 
 # Returns arrays (x,y,z) for all particles at a given time, defaults to initial configuration
 def get_particle_positions(time=0):
 	curr_x, curr_y, curr_z = [], [], []
 
-	for particle in range(NUM_PARTICLES):
+	for particle in range(len(data[time]['x'])):
 		curr_x.append(data[time]['x'][particle])
 		curr_y.append(data[time]['y'][particle])
 		curr_z.append(data[time]['z'][particle])
