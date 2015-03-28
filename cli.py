@@ -28,6 +28,7 @@ class Interface():
         self.parser.add_argument("--kernel", help="Kernel function to use. Default is "+defaults['kernel'], choices=['gaussian', 'cubic'], default=defaults['kernel'])
         self.parser.add_argument("--smooth", help="Smoothing for the kernel function. Default is "+defaults['smooth'], type=float, default=float(defaults['smooth']))
         self.parser.add_argument("--interval", help="How many loops before particles are saved. Default is "+defaults['interval'], type=int, default=int(defaults['interval']))
+	self.parser.add_argument("--mass", help="Mass of the particles in the simulation. Default is "+defaults['mass'], type=float, default=float(defaults['mass']))
         # Actually begin to parse the arguments
         self.args = self.parser.parse_args()
 
@@ -50,12 +51,13 @@ class Interface():
                     coords[j] = round(gauss(mean, self.args.stdev), 6)
 
             m = round(float(mass), 2)
+	# Set initial velocities to 0.0 for TESTING ONLY
             vx = 0.0
             vy = 0.0
             vz = 0.0
-        #    vx = uniform(1,100)
-        #    vy = uniform(1,100)
-        #    vz = uniform(1,100)
+      #      vx = uniform(1,100)
+      #      vy = uniform(1,100)
+      #      vz = uniform(1,100)
             # Add new particle to ppos with no initial velocity
             # particle(id, m, x, y, z, vx, vy, vz)
             ppos.append(particle(i, m, coords[0], coords[1], coords[2], vx, vy, vz))
@@ -78,6 +80,7 @@ class Interface():
             y = round(uniform(0, bound), 6)
             z = round(uniform(0, bound), 6)
             m = round(float(mass), 2)
+	# Set initial velocities to 0.0 for TESTING ONLY
             vx = 0.0
             vy = 0.0
             vz = 0.0
@@ -97,7 +100,7 @@ class Interface():
     # OUTPUT: ppos (array containing particle objects)
     ######################################################
     def genParticles(self, num, method):
-        mass = 50
+        mass = self.args.mass
 
         if method == 'gaussian':
             print "[+] Generating particles with %s%s distribution in a %s%s^3 space\n" % (str(self.args.stdev), self.args.x_norm, str(self.args.bound), self.args.x_norm)
