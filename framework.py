@@ -69,10 +69,13 @@ def pressure(p):
 	return (k * (p.rho ** gamma))
 
 def saveParticles(particles, fname):
-        fhandle = open(fname, "w")
-        for p in particles:
-                p.writeToFile(fhandle)
-        fhandle.close()
+#	if particles:
+	        fhandle = open(fname, "w")
+	        for p in particles:
+	                p.writeToFile(fhandle)
+	        fhandle.close()
+#	else:
+#		print "[-] No more particles in list!"
 
 def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep):
 	t = 0.0     # elapsed time
@@ -99,8 +102,8 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 			if (save*interval) == t:
 					fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 					save += 1  # bump save counter
-					string = "\b%d..." % int(t)     # '\b' prints a backspace character to remove previous space
-			#		print string,
+				#	string = "\b%d..." % int(t)     # '\b' prints a backspace character to remove previous space
+				#	print string,
 					saveParticles(particles, fname)
 							
 			# main simulation loop
@@ -135,14 +138,14 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 				'''
 			# iterate AGAIN to do final position updates
 			# save particles list to temporary holder - ensures we have consistent indexing throughout for loop
-			tempp = particles
+		#	tempp = particles
 			for p in particles:
 				# perform position update
 				p.pos += timestep * (p.vel + (timestep/2.0)*temp)
-		                if np.linalg.norm(p.pos) > bound:
-		                        print "Particle %d position: %f out of range at iteration %d" % (p.id, np.linalg.norm(p.pos), int(t))
-		                        tempp.remove(p)
-		        particles = tempp
+		#                if np.linalg.norm(p.pos) > bound:
+		#                        print "Particle %d position: %f out of range at iteration %d" % (p.id, np.linalg.norm(p.pos), int(t))
+		#                        tempp.remove(p)
+		#        particles = tempp
 						
 			t += timestep  # advance time
 

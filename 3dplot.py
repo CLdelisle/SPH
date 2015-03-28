@@ -11,6 +11,7 @@ parser.add_argument("--prefix", help="Output file prefix. Defaults to 'output'."
 parser.add_argument("--fps", help="Frames per second Defaults to 15", type=int, default=15)
 parser.add_argument("--file", help="Filename to save animation to", default='plot.gif')
 parser.add_argument("--title", help="Plot title (defaults to blank)", default='')
+parser.add_argument("--bound", help="Bound of the simulation used", default=1000, type=int)
 args = parser.parse_args()
 
 files = sortedFileNames(args.prefix)
@@ -59,9 +60,9 @@ def main():
 
 	curr_x, curr_y, curr_z = get_particle_positions()
 
-	ax.set_xlim3d(-700,700);
-	ax.set_ylim3d(-700,700);
-	ax.set_zlim3d(-700,700);
+	ax.set_xlim3d((-1*args.bound), args.bound)
+	ax.set_ylim3d((-1*args.bound), args.bound)
+	ax.set_zlim3d((-1*args.bound), args.bound)
 
 	sc = ax.scatter(curr_x, curr_y, curr_z, c='r', marker='o')
 
