@@ -1,5 +1,8 @@
 from particle import Particle
 import numpy as np
+import pycuda.driver as cuda
+import pycuda.autoinit
+from pycuda.compiler import SourceModule
 
 """
 This is the framework for iterating over a list of particles, computing particle accelerations, and numerically integrating their equations of motion.
