@@ -1,7 +1,9 @@
 from particle import Particle
 import numpy as np
+
 import pycuda.driver as cuda
 import pycuda.autoinit
+import numpy
 from pycuda.compiler import SourceModule
 
 """
@@ -79,6 +81,7 @@ def saveParticles(particles, fname):
 	        fhandle.close()
 #	else:
 #		print "[-] No more particles in list!"
+
 
 def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep):
 	t = 0.0     # elapsed time
