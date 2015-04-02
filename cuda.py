@@ -17,26 +17,29 @@ class DoubleOpStruct:
     def __str__(self):
         return str(cuda.from_device(self.data, self.shape, self.dtype))
 
+# Define particle attributes and their types
+particle_attributes = [
+  ("id", numpy.int16),
+  ("mass", numpy.float64),
+  ("rho", numpy.float64),
+  ("pressure", numpy.float64),
+  ("pos_x", numpy.float64),
+  ("pos_y", numpy.float64),
+  ("pos_z", numpy.float64),
+  ("vel_x", numpy.float64),
+  ("vel_y", numpy.float64),
+  ("vel_z", numpy.float64),
+  ("accel_x", numpy.float64),
+  ("accel_y", numpy.float64),
+  ("accel_z", numpy.float64)
+]
+
 #pointer to datasets
-datasets = {
-  "id": None,
-  "mass": None,
-  "rho": None,
-  "pressure": None,
-  "pos_x": None,
-  "pos_y": None,
-  "pos_z": None,
-  "vel_x": None,
-  "vel_y": None,
-  "vel_z": None,
-  "accel_x": None,
-  "accel_y": None,
-  "accel_z": None
-}
+datasets = {}
 
 # Iterate through datasets and allocate memory on the device
-for dataset_name in datasets:
-    datasets[dataset_name] = {
+for attr in particle_attributes:
+    datasets[attr[0]] = {
         "gpu_ptr": cuda.mem_alloc(DoubleOpStruct.mem_size),
         "input": [],
         "results": None
@@ -67,17 +70,8 @@ for particle in particles:
     datasets['accel_y']['input'].append(particle.acc[1])
     datasets['accel_z']['input'].append(particle.acc[2])
 
-datasets['id']['result'] = DoubleOpStruct(numpy.array(datasets['id']['input'], dtype=numpy.int16), datasets['id']['gpu_ptr'])
-datasets['mass']['result'] = DoubleOpStruct(numpy.array(datasets['mass']['input'], dtype=numpy.float64), datasets['mass']['gpu_ptr'])
-datasets['pos_x']['result'] = DoubleOpStruct(numpy.array(datasets['pos_x']['input'], dtype=numpy.float64), datasets['pos_x']['gpu_ptr'])
-datasets['pos_y']['result'] = DoubleOpStruct(numpy.array(datasets['pos_y']['input'], dtype=numpy.float64), datasets['pos_y']['gpu_ptr'])
-datasets['pos_z']['result'] = DoubleOpStruct(numpy.array(datasets['pos_z']['input'], dtype=numpy.float64), datasets['pos_z']['gpu_ptr'])
-datasets['vel_x']['result'] = DoubleOpStruct(numpy.array(datasets['vel_x']['input'], dtype=numpy.float64), datasets['vel_x']['gpu_ptr'])
-datasets['vel_y']['result'] = DoubleOpStruct(numpy.array(datasets['vel_y']['input'], dtype=numpy.float64), datasets['vel_y']['gpu_ptr'])
-datasets['vel_z']['result'] = DoubleOpStruct(numpy.array(datasets['vel_z']['input'], dtype=numpy.float64), datasets['vel_z']['gpu_ptr'])
-datasets['accel_x']['result'] = DoubleOpStruct(numpy.array(datasets['accel_x']['input'], dtype=numpy.float64), datasets['accel_x']['gpu_ptr'])
-datasets['accel_y']['result'] = DoubleOpStruct(numpy.array(datasets['accel_y']['input'], dtype=numpy.float64), datasets['accel_y']['gpu_ptr'])
-datasets['accel_z']['result'] = DoubleOpStruct(numpy.array(datasets['accel_z']['input'], dtype=numpy.float64), datasets['accel_z']['gpu_ptr'])
+for attr in particle_attributes:
+	datasets[attr[0]]['result'] = DoubleOpStruct(numpy.array(datasets[attr[0]]['input'], dtype=attr[1]), datasets[attr[0]]['gpu_ptr'])
 
 print "original arrays"
 print datasets['id']['result']
@@ -98,9 +92,9 @@ mod = SourceModule("""
             double *mass_ptr = (double*) mass_array->ptr;
             double *pos_x_ptr = (double*) pos_x->ptr;
 
-            mass_ptr[idx] *= 2;
-            id_ptr[idx] *= 2;
-            pos_x_ptr[idx] *= 2;
+            mass_ptr[idx] *= 10;
+            id_ptr[idx] *= 100;
+            pos_x_ptr[idx] *= 1000;
         }
     }
     """)
