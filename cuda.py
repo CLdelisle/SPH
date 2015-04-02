@@ -24,7 +24,7 @@ class DoubleOpStruct:
 
 # Define particle attributes and their types
 particle_attributes = [
-  ParticleAttribute("id", numpy.int16),
+  ParticleAttribute("id", numpy.int32),
   ParticleAttribute("mass", numpy.float64),
   ParticleAttribute("rho", numpy.float64),
   ParticleAttribute("pressure", numpy.float64),
@@ -86,23 +86,22 @@ print datasets['id']['result']
 print datasets['mass']['result']
 print datasets['pos_x']['result']
 mod = SourceModule("""
-    struct data_array {
-        int array_length;
-        int *ptr;
-    };
+struct data_array {
+    int array_length;
+    void *ptr;
+};
 
-    __global__ void double_array(data_array *id_array, data_array *mass_array, data_array *pos_x) 
-    {
-        mass_array = mass_array + blockIdx.x;
-        for (int idx = threadIdx.x; idx < mass_array->array_length; idx += blockDim.x) {
-            int *id_ptr = (int*) id_array->ptr;
-            double *mass_ptr = (double*) mass_array->ptr;
-            double *pos_x_ptr = (double*) pos_x->ptr;
+__global__ void double_array(data_array *id_array, data_array *mass_array, data_array *pos_x_array) {
+    int idx = threadIdx.x;
+    
+    int    *id    = (int*)    id_array->ptr;
+    double *mass  = (double*) mass_array->ptr;
+    double *pos_x = (double*) pos_x_array->ptr;
 
-            id_ptr[idx] = (int) (mass_ptr[idx] + pos_x_ptr[idx]);
-        }
-    }
-    """)
+    id[idx] = (int) (mass[idx] + pos_x[idx]);
+
+}
+""")
 func = mod.get_function("double_array")
 func(datasets['id']['gpu_ptr'], datasets['mass']['gpu_ptr'], datasets['pos_x']['gpu_ptr'], block = (len(particles), 1, 1), grid=(1, 1))
 
