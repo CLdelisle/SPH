@@ -21,11 +21,15 @@ class DoubleOpStruct:
     def __str__(self):
         return str(cuda.from_device(self.data, self.shape, self.dtype))
 
+    def transfer_from_device_to_host(self):
+        return cuda.from_device(self.data, self.shape, self.dtype)
+
+
 class ParticleGPUInterface(object):
   def __init__(self, particles):
     self.particles = particles
     # Define particle attributes and their types
-    particle_attributes = [
+    self.particle_attributes = [
       ParticleAttribute("id", numpy.int32),
       ParticleAttribute("mass", numpy.float64),
       ParticleAttribute("rho", numpy.float64),
@@ -45,21 +49,13 @@ class ParticleGPUInterface(object):
     self.datasets = {}
 
     # Iterate through datasets and allocate memory on the device
-    for attr in particle_attributes:
+    for attr in self.particle_attributes:
         self.datasets[attr.name] = {
             "gpu_ptr": cuda.mem_alloc(DoubleOpStruct.mem_size),
             "input": [],
-            "results": None
+            "results": None, # python numpy array of results in memory
+            "result": None # ptr to gpu results
         }
-
-    # # Create particles
-    # particles = []
-
-    # particles.append(Particle(2,2,2,2,2,2,2,2))
-    # particles.append(Particle(3,3,3,3,3,3,3,3))
-    # particles.append(Particle(4,4,4,4,4,4,4,4))
-    # particles.append(Particle(5,5,5,5,5,5,5,5))
-    # particles.append(Particle(6,6,6,6,6,6,6,6))
 
     # populate the arrays with the particle data
     for particle in self.particles:
@@ -80,15 +76,32 @@ class ParticleGPUInterface(object):
         self.datasets['accel_y']['input'].append(particle.acc[1])
         self.datasets['accel_z']['input'].append(particle.acc[2])
 
-    for attr in particle_attributes:
+    for attr in self.particle_attributes:
       self.datasets[attr.name]['result'] = DoubleOpStruct(numpy.array(self.datasets[attr.name]['input'], dtype=attr.type), self.datasets[attr.name]['gpu_ptr'])
 
-  def double_array(self):
-    print "original arrays"
-    print self.datasets['id']['result']
-    print self.datasets['mass']['result']
-    print self.datasets['pos_x']['result']
-    
+  # Convert the int, float arrays back to particle objects
+  def getResultsFromDevice(self):
+    for attr in self.particle_attributes:
+      self.datasets[attr.name]['results'] = self.datasets[attr.name]['result'].transfer_from_device_to_host()
+
+    particles = []
+    for i in xrange(len(self.datasets['pos_x']['results'])):
+        particles.append(
+            Particle(
+                self.datasets['id']['results'][i],
+                self.datasets['mass']['results'][i],
+                self.datasets['pos_x']['results'][i],
+                self.datasets['pos_y']['results'][i],
+                self.datasets['pos_z']['results'][i],
+                self.datasets['vel_x']['results'][i],
+                self.datasets['vel_y']['results'][i],
+                self.datasets['vel_z']['results'][i]
+            )
+        )
+
+    return particles
+
+  def double_array(self):    
     mod = SourceModule("""
     struct data_array {
         int array_length;
@@ -108,8 +121,3 @@ class ParticleGPUInterface(object):
     """)
     func = mod.get_function("double_array")
     func(self.datasets['id']['gpu_ptr'], self.datasets['mass']['gpu_ptr'], self.datasets['pos_x']['gpu_ptr'], block = (len(self.particles), 1, 1), grid=(1, 1))
-
-    print "doubled arrays"
-    print self.datasets['id']['result']
-    print self.datasets['mass']['result']
-    print self.datasets['pos_x']['result']
