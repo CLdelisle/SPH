@@ -52,9 +52,12 @@ for attr in particle_attributes:
 
 # Create particles
 particles = []
-for x in range(0, 4):
-    p = Particle(x,x*2,x*3,x*4,x,x,x,x)
-    particles.append(p)
+
+particles.append(Particle(2,2,2,2,2,2,2,2))
+particles.append(Particle(3,3,3,3,3,3,3,3))
+particles.append(Particle(4,4,4,4,4,4,4,4))
+particles.append(Particle(5,5,5,5,5,5,5,5))
+particles.append(Particle(6,6,6,6,6,6,6,6))
 
 # populate the arrays with the particle data
 for particle in particles:
@@ -91,15 +94,12 @@ mod = SourceModule("""
     __global__ void double_array(data_array *id_array, data_array *mass_array, data_array *pos_x) 
     {
         mass_array = mass_array + blockIdx.x;
-        for (int idx = threadIdx.x; idx < mass_array->array_length; idx += blockDim.x) 
-        {
+        for (int idx = threadIdx.x; idx < mass_array->array_length; idx += blockDim.x) {
             int *id_ptr = (int*) id_array->ptr;
             double *mass_ptr = (double*) mass_array->ptr;
             double *pos_x_ptr = (double*) pos_x->ptr;
 
-            mass_ptr[idx] *= 10;
-            id_ptr[idx] *= 100;
-            pos_x_ptr[idx] *= 1000;
+            id_ptr[idx] = (int) (mass_ptr[idx] + pos_x_ptr[idx]);
         }
     }
     """)
