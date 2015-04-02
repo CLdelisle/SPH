@@ -18,9 +18,9 @@ class DoubleOpStruct:
         return str(cuda.from_device(self.data, self.shape, self.dtype))
 
 #pointer to datasets
-dataset_ptrs = {
-  "id_array_ptr": None,
-  "mass_array_ptr": None,
+datasets = {
+  "id": None,
+  "mass": None,
   "pos_x_ptr": None,
   "pos_y_ptr": None,
   "pos_z_ptr": None,
@@ -32,8 +32,8 @@ dataset_ptrs = {
   "accel_z_ptr": None
 }
 
-for dataset_name in dataset_ptrs:
-    dataset_ptrs[dataset_name] = cuda.mem_alloc(DoubleOpStruct.mem_size)
+for dataset_name in datasets:
+    datasets[dataset_name] = cuda.mem_alloc(DoubleOpStruct.mem_size)
 
 # Create particles
 particles = []
@@ -78,17 +78,17 @@ for particle in particles:
     acc_y.append(particle.acc[1])
     acc_z.append(particle.acc[2])
 
-id_array = DoubleOpStruct(numpy.array(ids, dtype=numpy.int16), dataset_ptrs['id_array_ptr'])
-mass_array = DoubleOpStruct(numpy.array(mass, dtype=numpy.float64), dataset_ptrs['mass_array_ptr'])
-pos_x_array = DoubleOpStruct(numpy.array(pos_x, dtype=numpy.float64), dataset_ptrs['pos_x_ptr'])
-pos_y_array = DoubleOpStruct(numpy.array(pos_y, dtype=numpy.float64), dataset_ptrs['pos_y_ptr'])
-pos_z_array = DoubleOpStruct(numpy.array(pos_z, dtype=numpy.float64), dataset_ptrs['pos_z_ptr'])
-vel_x_array = DoubleOpStruct(numpy.array(vel_x, dtype=numpy.float64), dataset_ptrs['vel_x_ptr'])
-vel_y_array = DoubleOpStruct(numpy.array(vel_y, dtype=numpy.float64), dataset_ptrs['vel_y_ptr'])
-vel_z_array = DoubleOpStruct(numpy.array(vel_z, dtype=numpy.float64), dataset_ptrs['vel_z_ptr'])
-accel_x_array = DoubleOpStruct(numpy.array(acc_x, dtype=numpy.float64), dataset_ptrs['accel_x_ptr'])
-accel_y_array = DoubleOpStruct(numpy.array(acc_y, dtype=numpy.float64), dataset_ptrs['accel_y_ptr'])
-accel_z_array = DoubleOpStruct(numpy.array(acc_z, dtype=numpy.float64), dataset_ptrs['accel_z_ptr'])
+id_array = DoubleOpStruct(numpy.array(ids, dtype=numpy.int16), datasets['id'])
+mass_array = DoubleOpStruct(numpy.array(mass, dtype=numpy.float64), datasets['mass'])
+pos_x_array = DoubleOpStruct(numpy.array(pos_x, dtype=numpy.float64), datasets['pos_x_ptr'])
+pos_y_array = DoubleOpStruct(numpy.array(pos_y, dtype=numpy.float64), datasets['pos_y_ptr'])
+pos_z_array = DoubleOpStruct(numpy.array(pos_z, dtype=numpy.float64), datasets['pos_z_ptr'])
+vel_x_array = DoubleOpStruct(numpy.array(vel_x, dtype=numpy.float64), datasets['vel_x_ptr'])
+vel_y_array = DoubleOpStruct(numpy.array(vel_y, dtype=numpy.float64), datasets['vel_y_ptr'])
+vel_z_array = DoubleOpStruct(numpy.array(vel_z, dtype=numpy.float64), datasets['vel_z_ptr'])
+accel_x_array = DoubleOpStruct(numpy.array(acc_x, dtype=numpy.float64), datasets['accel_x_ptr'])
+accel_y_array = DoubleOpStruct(numpy.array(acc_y, dtype=numpy.float64), datasets['accel_y_ptr'])
+accel_z_array = DoubleOpStruct(numpy.array(acc_z, dtype=numpy.float64), datasets['accel_z_ptr'])
 
 
 print "original arrays"
@@ -117,7 +117,7 @@ mod = SourceModule("""
     }
     """)
 func = mod.get_function("double_array")
-func(dataset_ptrs['id_array_ptr'], dataset_ptrs['mass_array_ptr'], dataset_ptrs['pos_x_ptr'], block = (len(particles), 1, 1), grid=(1, 1))
+func(datasets['id'], datasets['mass'], datasets['pos_x_ptr'], block = (len(particles), 1, 1), grid=(1, 1))
 
 print "doubled arrays"
 print id_array
