@@ -121,3 +121,21 @@ class ParticleGPUInterface(object):
     """)
     func = mod.get_function("demo_particle_function")
     func(self.datasets['id']['gpu_ptr'], self.datasets['mass']['gpu_ptr'], self.datasets['pos_x']['gpu_ptr'], block = (len(self.particles), 1, 1), grid=(1, 1))
+
+  # passes a constant to the GPU along with the particles
+  def demo_particle_function_with_argument(self, constant1):
+    mod = SourceModule("""
+    struct data_array {
+        int array_length;
+        void *ptr;
+    };
+
+    __global__ void demo_particle_function_with_argument(data_array *id_array, data_array *mass_array, data_array *pos_x_array, int constant1) {
+        int idx = threadIdx.x;
+        int *id    = (int*) id_array->ptr;
+        id[idx] = id[idx] + constant1;
+
+    }
+    """)
+    func = mod.get_function("demo_particle_function_with_argument")
+    func(self.datasets['id']['gpu_ptr'], self.datasets['mass']['gpu_ptr'], self.datasets['pos_x']['gpu_ptr'], numpy.intp(constant1), block = (len(self.particles), 1, 1), grid=(1, 1))
