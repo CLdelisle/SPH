@@ -14,14 +14,15 @@ particles.append(Particle(6,6,6,6,6,6,6,6))
 for particle in particles:
 	print particle.formatProperties()
 
-tester = ParticleGPUInterface(particles)
+# Initialize the gpu interface, pass in particles
+gpu_particles = ParticleGPUInterface(particles)
 
 # Calls the demo function on GPU, no data transfered back
 # Formula for demo function: id[i] = mass[i] + pos_x[i]
-tester.double_array()
+gpu_particles.demo_particle_function()
 
 # Transfer the results back to CPU
-updated_particles = tester.getResultsFromDevice()
+updated_particles = gpu_particles.getResultsFromDevice()
 
 # Print final particle states
 for particle in updated_particles:

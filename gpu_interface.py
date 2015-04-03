@@ -101,14 +101,14 @@ class ParticleGPUInterface(object):
 
     return particles
 
-  def double_array(self):    
+  def demo_particle_function(self):
     mod = SourceModule("""
     struct data_array {
         int array_length;
         void *ptr;
     };
 
-    __global__ void double_array(data_array *id_array, data_array *mass_array, data_array *pos_x_array) {
+    __global__ void demo_particle_function(data_array *id_array, data_array *mass_array, data_array *pos_x_array) {
         int idx = threadIdx.x;
         
         int    *id    = (int*)    id_array->ptr;
@@ -119,5 +119,5 @@ class ParticleGPUInterface(object):
 
     }
     """)
-    func = mod.get_function("double_array")
+    func = mod.get_function("demo_particle_function")
     func(self.datasets['id']['gpu_ptr'], self.datasets['mass']['gpu_ptr'], self.datasets['pos_x']['gpu_ptr'], block = (len(self.particles), 1, 1), grid=(1, 1))
