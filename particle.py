@@ -37,3 +37,6 @@ class Particle(object):
 				float(self.pos[2]),float(self.vel[0]),
 				float(self.vel[1]), float(self.vel[2]),
 				float(self.pressure), float(self.rho))
+
+	def flatten(self):
+		return [self.id, self.mass, self.pos[0], self.pos[1], self.pos[2]]
