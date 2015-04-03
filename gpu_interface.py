@@ -43,26 +43,40 @@ print "original arrays"
 print particles_array
 
 mod = SourceModule("""
+    // MUST match the particle.flatten() format
+    //   return [self.id, self.mass, self.pos[0], self.pos[1], self.pos[2], self.vel[0], self.vel[1], self.vel[2], self.acc[0], self.acc[1], self.acc[2], self.rho, self.pressure]
+
     struct Particle {
       float id; //must be same type
       float mass;
+
       float pos_x;
       float pos_y;
       float pos_z;
+
+      float vel_x;
+      float vel_y;
+      float vel_z;
+
+      float acc_x;
+      float acc_y;
+      float acc_z;
+
+      float rho;
+      float pressure;
     };
 
-    struct DoubleOperation {
+    struct ParticleArray {
         int datalen, __padding; // so 64-bit ptrs can be aligned
         Particle *ptr;
     };
 
-    __global__ void double_array(DoubleOperation *a)
-    {
+    __global__ void double_array(ParticleArray *a) {
         a = a + blockIdx.x;
         for (int idx = threadIdx.x; idx < a->datalen; idx += blockDim.x)
         {
-            Particle *a_ptr = a->ptr;
-            a_ptr[idx].mass *= 2;
+            Particle *particle = a->ptr;
+            particle[idx].mass *= 2;
         }
     }
     """)
