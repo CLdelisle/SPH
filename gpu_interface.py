@@ -1,5 +1,3 @@
-# prepared invocations and structures -----------------------------------------
-
 import pycuda.driver as cuda
 import pycuda.autoinit
 import numpy
@@ -22,66 +20,56 @@ class DoubleOpStruct:
         cuda.memcpy_htod(int(struct_arr_ptr) + 8,
                          numpy.getbuffer(numpy.intp(int(self.data))))
 
-    def __str__(self):
-        return str(cuda.from_device(self.data, self.shape, self.dtype))
+    def getDataFromDevice(self):
+        return cuda.from_device(self.data, self.shape, self.dtype)
 
-struct_arr = cuda.mem_alloc(2 * DoubleOpStruct.mem_size)
-do2_ptr = int(struct_arr) + DoubleOpStruct.mem_size
+class ParticleGPUInterface:
+  def __init__(self, particles):
+    self.struct_arr = cuda.mem_alloc(2 * DoubleOpStruct.mem_size)
+    particles = [x.flatten() for x in particles]
+    self.particles_array = DoubleOpStruct(numpy.array([particles], numpy.float32), self.struct_arr)
 
-# Generate test particles
-particles = [
-  Particle(2,2.35,2.78,2,2,2,2,2),
-  Particle(3,3.89,3.105,3,3,3,3,3),
-  Particle(4,4.789,4.456,4.197,4,4,4,4),
-]
+  def sample_operation(self):
+    mod = SourceModule("""
+        // MUST match the particle.flatten() format
+        //   return [self.id, self.mass, self.pos[0], self.pos[1], self.pos[2], self.vel[0], self.vel[1], self.vel[2], self.acc[0], self.acc[1], self.acc[2], self.rho, self.pressure]
 
-particles = bar = [x.flatten() for x in particles]
+        struct Particle {
+          float id; //must be same type
+          float mass;
 
-particles_array = DoubleOpStruct(numpy.array([particles], numpy.float32), struct_arr)
+          float pos_x;
+          float pos_y;
+          float pos_z;
 
-print "original arrays"
-print particles_array
+          float vel_x;
+          float vel_y;
+          float vel_z;
 
-mod = SourceModule("""
-    // MUST match the particle.flatten() format
-    //   return [self.id, self.mass, self.pos[0], self.pos[1], self.pos[2], self.vel[0], self.vel[1], self.vel[2], self.acc[0], self.acc[1], self.acc[2], self.rho, self.pressure]
+          float acc_x;
+          float acc_y;
+          float acc_z;
 
-    struct Particle {
-      float id; //must be same type
-      float mass;
+          float rho;
+          float pressure;
+        };
 
-      float pos_x;
-      float pos_y;
-      float pos_z;
+        struct ParticleArray {
+            int datalen, __padding; // so 64-bit ptrs can be aligned
+            Particle *ptr;
+        };
 
-      float vel_x;
-      float vel_y;
-      float vel_z;
-
-      float acc_x;
-      float acc_y;
-      float acc_z;
-
-      float rho;
-      float pressure;
-    };
-
-    struct ParticleArray {
-        int datalen, __padding; // so 64-bit ptrs can be aligned
-        Particle *ptr;
-    };
-
-    __global__ void double_array(ParticleArray *a) {
-        a = a + blockIdx.x;
-        for (int idx = threadIdx.x; idx < a->datalen; idx += blockDim.x)
-        {
-            Particle *particle = a->ptr;
-            particle[idx].mass *= 2;
+        __global__ void double_array(ParticleArray *a) {
+            a = a + blockIdx.x;
+            for (int idx = threadIdx.x; idx < a->datalen; idx += blockDim.x)
+            {
+                Particle *particle = a->ptr;
+                particle[idx].mass = particle[idx].pos_x + particle[idx].pos_y;
+            }
         }
-    }
-    """)
-func = mod.get_function("double_array")
-func(struct_arr, block=(32, 1, 1), grid=(2, 1))
+        """)
+    func = mod.get_function("double_array")
+    func(self.struct_arr, block=(32, 1, 1), grid=(2, 1))
 
-print "doubled arrays"
-print particles_array
+  def getResultsFromDevice(self):
+    return [Particle.unflatten(raw_data) for raw_data in self.particles_array.getDataFromDevice()[0]]

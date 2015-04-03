@@ -40,3 +40,7 @@ class Particle(object):
 
 	def flatten(self):
 		return [self.id, self.mass, self.pos[0], self.pos[1], self.pos[2], self.vel[0], self.vel[1], self.vel[2], self.acc[0], self.acc[1], self.acc[2], self.rho, self.pressure]
+
+	@staticmethod
+	def unflatten(float_array):
+		return Particle(float_array[0], float_array[1], float_array[2], float_array[2], float_array[2], float_array[3], float_array[4], float_array[5])

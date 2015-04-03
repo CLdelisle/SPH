@@ -21,24 +21,12 @@ gpu_particles = ParticleGPUInterface(particles)
 
 # Calls the demo function on GPU, no data transfered back
 # Formula for demo function: id[i] = mass[i] + pos_x[i]
-gpu_particles.demo_particle_function()
+gpu_particles.sample_operation()
 
 # Transfer the results back to CPU
 updated_particles = gpu_particles.getResultsFromDevice()
 
-print "ID = MASS + POS_X"
-# Print final particle states
-for particle in updated_particles:
-	print particle.formatProperties()
-
-
-# Calls the demo function on GPU, no data transfered back
-# Formula for demo function: id[i] = mass[i] + pos_x[i]
-gpu_particles.demo_particle_function_with_argument(500)
-
-# Transfer the results back to CPU
-updated_particles = gpu_particles.getResultsFromDevice()
-print "ID = ID + 500"
+print "particle[idx].mass = particle[idx].pos_x + particle[idx].pos_y;\n"
 # Print final particle states
 for particle in updated_particles:
 	print particle.formatProperties()
