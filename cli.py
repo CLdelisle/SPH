@@ -28,7 +28,7 @@ class Interface():
         self.parser.add_argument("--kernel", help="Kernel function to use. Default is "+defaults['kernel'], choices=['gaussian', 'cubic'], default=defaults['kernel'])
         self.parser.add_argument("--smooth", help="Smoothing for the kernel function. Default is "+defaults['smooth'], type=float, default=float(defaults['smooth']))
         self.parser.add_argument("--interval", help="How many loops before particles are saved. Default is "+defaults['interval'], type=int, default=int(defaults['interval']))
-	self.parser.add_argument("--mass", help="Mass of the particles in the simulation. Default is "+defaults['mass'], type=float, default=float(defaults['mass']))
+        self.parser.add_argument("--mass", help="Mass of the particles in the simulation. Default is "+defaults['mass'], type=float, default=float(defaults['mass']))
         # Actually begin to parse the arguments
         self.args = self.parser.parse_args()
 
@@ -100,19 +100,22 @@ class Interface():
     # OUTPUT: ppos (array containing particle objects)
     ######################################################
     def genParticles(self, num, method):
-        mass = self.args.mass
-
-        if method == 'gaussian':
-            print "[+] Generating particles with %s%s distribution in a %s%s^3 space\n" % (str(self.args.stdev), self.args.x_norm, str(self.args.bound), self.args.x_norm)
-            ppos = self.createGaussian(num, mass)
-        elif method == 'random':
-            print "[+] Spreading particles randomly within %s%s^3 space" % (str(self.args.bound), self.args.x_norm)
-            ppos = self.createRandom(num, mass)
-        else:
-            print "[+] No particle generation method selected. Spreading particles randomly"
-            ppos = self.createRandom(num, mass)
-        
-        return ppos
+        try:
+            mass = self.args.mass
+    
+            if method == 'gaussian':
+                print "[+] Generating particles with %s%s distribution in a %s%s^3 space\n" % (str(self.args.stdev), self.args.x_norm, str(self.args.bound), self.args.x_norm)
+                ppos = self.createGaussian(num, mass)
+            elif method == 'random':
+                print "[+] Spreading particles randomly within %s%s^3 space" % (str(self.args.bound), self.args.x_norm)
+                ppos = self.createRandom(num, mass)
+            else:
+                print "[+] No particle generation method selected. Spreading particles randomly"
+                ppos = self.createRandom(num, mass)
+            return ppos
+        except:
+            line = "An error occurred during %s particle generation." % method
+            raise RuntimeError(line)
 
     ######################################################
     # Called when --ifile flag is set
@@ -136,10 +139,9 @@ class Interface():
                   # must cast values, because they are read in as strings by Python
                   # casting should catch odd values as well (e.g. '40a' for a PID)
                   ppos.append(particle(int(p[0]), float(p[1]), float(p[2]), float(p[3]), float(p[4]), float(p[5]), float(p[6]), float(p[7])))
+            return ppos
         except:
-            raise Exception("[-] Cannot find input file! Does it exist?")
-
-        return ppos
+            raise IOError("[-] Cannot find input file! Does it exist?")
 
     ######################################################
     # This is where all the CLI rules will be set and interpreted, and further function calls done
@@ -157,8 +159,9 @@ class Interface():
 
         else: # If [IFILE] and [NUMPRT] are NOT specified, print help message and exit
             self.parser.print_help()
-            print "\n[-] You did not specify an input file or tell me to generate particles!"
-            exit(1)
+            raise IOError("You did not specify an input file or tell me to generate particles!")
+# OLD            print "\n[-] You did not specify an input file or tell me to generate particles!"
+# OLD            exit(1)
 
         # retrieved from either an input file or generated in self.genParticles
         return particles
