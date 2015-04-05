@@ -29,6 +29,7 @@ class Interface():
         self.parser.add_argument("--smooth", help="Smoothing for the kernel function. Default is "+defaults['smooth'], type=float, default=float(defaults['smooth']))
         self.parser.add_argument("--interval", help="How many loops before particles are saved. Default is "+defaults['interval'], type=int, default=int(defaults['interval']))
         self.parser.add_argument("--mass", help="Mass of the particles in the simulation. Default is "+defaults['mass'], type=float, default=float(defaults['mass']))
+        self.parser.add_argument("--mode", help="Simulation mode (parallel or serial) Default is "+defaults['mode'], choices=['serial', 'parallel'], default=defaults['mode'])
         # Actually begin to parse the arguments
         self.args = self.parser.parse_args()
 
