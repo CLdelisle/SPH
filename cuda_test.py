@@ -21,7 +21,7 @@ gpu_particles = ParticleGPUInterface(particles)
 
 # Calls the demo function on GPU, no data transfered back
 # Formula for demo function: id[i] = mass[i] + pos_x[i]
-gpu_particles.sample_operation()
+gpu_particles.first_sim_loop(5, 45.2, 1)
 
 # Transfer the results back to CPU
 updated_particles = gpu_particles.getResultsFromDevice()
