@@ -83,7 +83,7 @@ def saveParticles(particles, fname):
 #		print "[-] No more particles in list!"
 
 
-def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep):
+def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep, mode):
 	t = 0.0     # elapsed time
 	if(kernel == "gaussian"):
 		CHOOSE_KERNEL_CONST = 1

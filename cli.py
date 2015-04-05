@@ -176,4 +176,4 @@ class Interface():
         print "\n[+] Starting simulation..."
         iterations = framework.sim(particles, self.args.bound, self.args.kernel, self.args.maxiter,
                                 self.args.gen, self.args.smooth, self.args.t_norm, self.args.x_norm,
-                                self.args.interval, self.args.savefile, self.args.timestep)
+                                self.args.interval, self.args.savefile, self.args.timestep, self.args.mode)
