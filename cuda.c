@@ -22,15 +22,8 @@ struct ParticleArray {
 //np.linalg.norm
 //http://thisthread.blogspot.com/2012/03/frobenius-norm.html
 
-__device__ float linalg_norm(float* matrix, int size1, int size2) {
-  float result = 0.0;
-  for (int i=0; i<size1; i++) {
-    for (int j=0; j<size2; j++) {
-      float value = *(matrix + (i*size2) + j);
-      result += value * value;
-    }
-  }
-  return sqrt(result);
+__device__ float linalg_norm(float* matrix) {
+    return sqrt(matrix[0] * matrix[0] + matrix[1] * matrix[1] + matrix[2] * matrix[2]);
 }
 
 
@@ -48,8 +41,19 @@ def Gaussian_kernel(r, h):
 
 __device__ float Gaussian_kernel(float* r, float h) {
   // r = np.linalg.norm(r)
-  //@todo
-  return 0;
+  float norm_result = linalg_norm(r);
+  // return ( (((1/(np.pi * (h**2)))) ** (3/2) ) * ( np.exp( - ((r**2) / (h**2)) )) )
+  return
+  (
+    powf(
+      (1/
+        (M_PI * powf(h, 2)
+        )
+      ), (3.0/2.0))
+  )
+   *
+  powf(M_E,
+    ( - ((powf(norm_result, 2) / powf(h, 2)) )));
 }
 
 

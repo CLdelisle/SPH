@@ -31,7 +31,7 @@ class ParticleGPUInterface:
 
   # collects all the cuda c files with the import order determined by their sorted file names
   def get_cuda_functions(self):
-    with open('cuda_func_ports/cuda.c', 'r') as content_file:
+    with open('cuda.c', 'r') as content_file:
         return content_file.read()
 
   # gpu_particles.first_sim_loop(timestep, smooth, CHOOSE_KERNEL_CONST)
