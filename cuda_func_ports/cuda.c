@@ -52,8 +52,8 @@ def Gaussian_kernel(r, h):
   return ( (((1/(np.pi * (h**2)))) ** (3/2) ) * ( np.exp( - ((r**2) / (h**2)) )) )  
 */
 
-float find_and_execute_kernel(int CHOOSE_KERNEL_CONST, float* r, float h) {
-  return 0;
+__device__ float find_and_execute_kernel(int CHOOSE_KERNEL_CONST, float* r, float h) {
+  return 1;
 }
 
 //        float Newtonian_gravity(Particle p, Particle q) {
@@ -72,7 +72,13 @@ float find_and_execute_kernel(int CHOOSE_KERNEL_CONST, float* r, float h) {
 //
 //
 
-// float[3] vector_difference()
+// a - b
+__device__ float* vector_difference(float a[3], float b[3]) {
+  for (int i=0; i<3; i++) {
+    a[i] = a[i] - b[i];
+  }
+  return a;
+}
 
 /**
   for p in particles:
@@ -119,8 +125,10 @@ __global__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
     // for q in particles:
     for (int i=0; i<particle_array->datalen; i++) {
       Particle* q = particle_array->ptr + i;
-      // p->rho = (q->mass * find_and_execute_kernel(CHOOSE_KERNEL_CONST, , smooth)
+
       //   p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
+      p->rho = (q->mass * find_and_execute_kernel(CHOOSE_KERNEL_CONST, vector_difference(p->pos, q->pos), smooth));
+
       //   # while we're iterating, add contribution from gravity
       //   if(p.id != q.id):
       //     p.acc += Newtonian_gravity(p,q)
