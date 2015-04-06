@@ -6,6 +6,8 @@ import pycuda.autoinit
 import numpy
 from pycuda.compiler import SourceModule
 
+from gpu_interface import ParticleGPUInterface
+
 """
 This is the framework for iterating over a list of particles, computing particle accelerations, and numerically integrating their equations of motion.
 """
@@ -15,7 +17,7 @@ __version__ = "2.0.0"
 
 """ THIS VERSION HAS NOT BEEN TESTED, BUT RUNS SUCCESSFULLY AT THE VERY LEAST """
 
-
+# Params p,q particles
 def Newtonian_gravity(p,q):
 	# Newton's gravitational constant
 	CONST_G = 6.67384 # * 10^(-11) m^3 kg^-1 s^-2
@@ -83,7 +85,7 @@ def saveParticles(particles, fname):
 #		print "[-] No more particles in list!"
 
 
-def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep):
+def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep, mode):
 	t = 0.0     # elapsed time
 	if(kernel == "gaussian"):
 		CHOOSE_KERNEL_CONST = 1
@@ -111,25 +113,36 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 				#	string = "\b%d..." % int(t)     # '\b' prints a backspace character to remove previous space
 				#	print string,
 					saveParticles(particles, fname)
-							
+
 			# main simulation loop
-			for p in particles:
-					# preemptively start the Velocity Verlet computation (first half of velocity update part)
-					p.vel += (timestep/2.0) * p.acc
-					temp = p.acc
-					p.acc = 0.0
-					p.rho = 0.0
-					p.pressure = 0.0
-					#get density
-					for q in particles:
-				#	        print find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)
-						p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
-						# while we're iterating, add contribution from gravity
-						if(p.id != q.id):
-							p.acc += Newtonian_gravity(p,q)
-					# normalize density
-					p.rho = ( p.rho / len(particles) )
-					p.pressure = pressure(p)
+			if mode == "parallel":
+				# init gpu interface, pass particles
+				gpu_particles = ParticleGPUInterface(particles)
+				# run the first sim loop, pass in constants
+				gpu_particles.first_sim_loop(timestep, smooth, CHOOSE_KERNEL_CONST)
+				
+				# Transfer the results back to CPU
+				# Just for testing, this should not be done here
+				updated_particles = gpu_particles.getResultsFromDevice()
+			if mode == "serial":
+				# first sim loop (could use a better name, but I have no idea what this loop is doing)
+				for p in particles:
+						# preemptively start the Velocity Verlet computation (first half of velocity update part)
+						p.vel += (timestep/2.0) * p.acc
+						temp = p.acc
+						p.acc = 0.0
+						p.rho = 0.0
+						p.pressure = 0.0
+						#get density
+						for q in particles:
+					#	        print find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)
+							p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
+							# while we're iterating, add contribution from gravity
+							if(p.id != q.id):
+								p.acc += Newtonian_gravity(p,q)
+						# normalize density
+						p.rho = ( p.rho / len(particles) )
+						p.pressure = pressure(p)
 
 			for p in particles:
 				# acceleration from pressure gradient

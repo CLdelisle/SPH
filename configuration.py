@@ -1,13 +1,12 @@
 from os import path
 from glob import glob   # GLOB can returns a list of files in a directory matching certain regex
-#from sys import exit
 
 class Config():
-    
+
     def __init__(self, config="sph.conf"):
         # Dictionary containing key (e.g. infile) and default value (e.g. "save.csv")
         self.args = {"num":"", "maxiter":"100", "bound":"100", "stdev":"10.0", "t_norm":"centuries", "timestep":"10", "mass":"50.0",
-        "x_norm":"ly", "kernel":"gaussian", "savefile":"example.csv", "gtype":"random", "smooth":"50.0", "interval":"10"}
+        "x_norm":"ly", "kernel":"gaussian", "savefile":"example.csv", "gtype":"random", "smooth":"50.0", "interval":"10", "mode":"serial"}
         # Check for a default config file
         if path.isfile(config):
             print "[+] Using default config file: %s" % config
@@ -28,7 +27,8 @@ class Config():
                 print "[+] Using \"%s\" as config file" % config
                 self.parseConfig(config)
             else:
-                raise Exception("An error occurred when looking for a .conf file. Does one exist?")
+# OLD                raise Exception("An error occurred when looking for a .conf file. Does one exist?")
+                raise IOError("An error occurred when looking for a configuration file. Does one exist?")
 
     ######################################################
     # Grabs a config argument value. Key == 'All' returns a dictionary containing all current key-value pairs
@@ -36,31 +36,37 @@ class Config():
     # OUTPUT: Either a value matching a key pair, or False, indicating the key does not exist
     ######################################################
     def getArg(self, key):
-        if key.lower() == 'all':
-            return self.args
-        elif key in self.args.keys():
-            return self.args[key]
-        else:
-            print "[-] Couldn't find %s" % key
-            return False
+        try:
+                if key.lower() == 'all':
+                    return self.args
+                elif key in self.args.keys():
+                    return self.args[key]
+        except:
+            line = "Couldn't find %s" % key
+            raise IndexError(line)
+# OLD            print "[-] Couldn't find %s" % key
+# OLD            return False
 
     ######################################################
-    # Creates a configuration file with keys from self.keys, and no values defined
+    # Creates a configuration file with keys from self.args - a dictionary of keys and values
     # Should only be called when it's determined that no configuration file is found
     # INPUT: fname (configuration filename to create)
     # OUTPUT: none
     ######################################################
     def createConfig(self, fname):
-        if fname == '.conf':
-            "[!] No config file name specified. Using sph.conf..."
-            fname = 'sph.conf'
-        print "[+] Creating new config file: %s" % fname
-        # Generate new configuration from default values in self.args
-        with open(fname, "w") as conf:
-            for key in self.args.keys():
-                if key != 'num':
-                    line = "%s=%s\n" % (str(key), self.args[key])
-                    conf.write(line)
+        try:
+            if fname == '.conf':
+                "[!] No config file name specified. Using sph.conf..."
+                fname = 'sph.conf'
+            print "[+] Creating new config file: %s" % fname
+            # Generate new configuration from default values in self.args
+            with open(fname, "w") as conf:
+                for key in self.args.keys():
+                    if key != 'num':
+                        line = "%s=%s\n" % (str(key), self.args[key])
+                        conf.write(line)
+        except:
+            raise IOError("An error occurred when creating the configuration file.")
 
     ######################################################
     # Grabs data from a config file line-by-line as key-value pairs stored in self.args
@@ -70,19 +76,21 @@ class Config():
     # OUTPUT: none
     ######################################################
     def parseConfig(self, config="sph.conf"):
-        with open(config, "r") as conf:
-            lines = conf.readlines()
-            for line in lines:
-                # skip commented out and empty lines
-                if line.startswith("#") or line.startswith("\n"):
-                    pass
-                else:  # read in everything as 'key=value' with NO newlines or spaces
-                    line = line.strip().split(" ")
-		    # make sure there is a key-value pair of form 'key=value' to read
-		    if "=" not in line[0]:
-			raise Exception("Config file is incorrectly formatted. Exiting...")
-			sys.exit(0)
-                    p = line[0].split("=")
-                    # check if the key is in self.keys first to avoid arbitrary key-vals
-                    if p[0] in self.args.keys():
-                        self.args[p[0]] = p[1]
+        try:
+            with open(config, "r") as conf:
+                lines = conf.readlines()
+                for line in lines:
+                    # skip commented out and empty lines
+                    if line.startswith("#") or line.startswith("\n"):
+                        pass
+                    else:  # read in everything as 'key=value' with NO newlines or spaces
+                        line = line.strip().split(" ")
+    		    # make sure there is a key-value pair of form 'key=value' to read
+     		        if "=" not in line[0]:
+     			        raise Exception
+                p = line[0].split("=")
+                # check if the key is in self.keys first to avoid arbitrary key-vals
+                if p[0] in self.args.keys():
+                    self.args[p[0]] = p[1]
+        except:
+            raise Exception("Config file is incorrectly formatted.")
