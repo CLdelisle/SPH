@@ -5,17 +5,11 @@ struct Particle {
   float id; //must be same type as the other properties
   float mass;
 
-  float pos_x;
-  float pos_y;
-  float pos_z;
+  float pos[3];
 
-  float vel_x;
-  float vel_y;
-  float vel_z;
+  float vel[3];
 
-  float acc_x;
-  float acc_y;
-  float acc_z;
+  float acc[3];
 
   float rho;
   float pressure;
@@ -58,7 +52,7 @@ def Gaussian_kernel(r, h):
   return ( (((1/(np.pi * (h**2)))) ** (3/2) ) * ( np.exp( - ((r**2) / (h**2)) )) )  
 */
 
-float find_kernel(int CHOOSE_KERNEL_CONST, float* r, float h) {
+float find_and_execute_kernel(int CHOOSE_KERNEL_CONST, float* r, float h) {
   return 0;
 }
 
@@ -78,6 +72,7 @@ float find_kernel(int CHOOSE_KERNEL_CONST, float* r, float h) {
 //
 //
 
+// float[3] vector_difference()
 
 /**
   for p in particles:
@@ -101,28 +96,37 @@ float find_kernel(int CHOOSE_KERNEL_CONST, float* r, float h) {
 
 __global__ void first_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
     // for p in particles
-    Particle* particle = particle_array->ptr + blockIdx.x;
+    Particle* p = particle_array->ptr + blockIdx.x;
     // preemptively start the Velocity Verlet computation (first half of velocity update part)
     // p.vel += (timestep/2.0) * p.acc
-    particle->vel_x += (timestep/2.0) * particle->acc_x;
-    particle->vel_y += (timestep/2.0) * particle->acc_y;
-    particle->vel_z += (timestep/2.0) * particle->acc_z;
+    for (int i=0; i<3; i++)
+      p->vel[i] += (timestep/2.0) * p->acc[i];
 
     // temp = p.acc
-    float temp[3] = {particle->acc_x, particle->acc_y, particle->acc_z};
+    float temp[3] = {p->acc[0], p->acc[1], p->acc[2]};
 
     // p.acc = 0.0
-    particle->acc_x = 0;
-    particle->acc_y = 0;
-    particle->acc_z = 0;
+    p->acc[0] = 0;
+    p->acc[1] = 0;
+    p->acc[2] = 0;
 
     // p.rho = 0.0
-    particle->rho = 0;
+    p->rho = 0;
     // p.pressure = 0.0
-    particle->pressure = 0;
+    p->pressure = 0;
 
-    // particle.
-    //     Particle *particle = a->ptr;
-    //     particle[idx].mass = particle[idx].pos_x + particle[idx].pos_y;
-    // }
+    // #get density
+    // for q in particles:
+    for (int i=0; i<particle_array->datalen; i++) {
+      Particle* q = particle_array->ptr + i;
+      // p->rho = (q->mass * find_and_execute_kernel(CHOOSE_KERNEL_CONST, , smooth)
+      //   p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
+      //   # while we're iterating, add contribution from gravity
+      //   if(p.id != q.id):
+      //     p.acc += Newtonian_gravity(p,q)
+      // # normalize density
+      // p.rho = ( p.rho / len(particles) )
+      //     p.pressure = pressure(p)
+    }
+
 }
