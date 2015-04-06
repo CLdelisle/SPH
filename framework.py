@@ -1,13 +1,6 @@
 from particle import Particle
 import numpy as np
 
-import pycuda.driver as cuda
-import pycuda.autoinit
-import numpy
-from pycuda.compiler import SourceModule
-
-from gpu_interface import ParticleGPUInterface
-
 """
 This is the framework for iterating over a list of particles, computing particle accelerations, and numerically integrating their equations of motion.
 """
@@ -93,6 +86,13 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 	else:
 		CHOOSE_KERNEL_CONST = 0
 
+	if mode == "parallel":
+		import pycuda.driver as cuda
+		import pycuda.autoinit
+		import numpy
+		from pycuda.compiler import SourceModule
+
+		from gpu_interface import ParticleGPUInterface
         '''
 	So we can do this one of two ways.
 	1) Keep only one copy of the system in memory.
