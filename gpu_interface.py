@@ -29,60 +29,15 @@ class ParticleGPUInterface:
     particles = [x.flatten() for x in particles]
     self.particles_array = ParticleArrayStruct(numpy.array([particles], numpy.float32), self.struct_arr)
 
+  # collects all the cuda c files with the import order determined by their sorted file names
+  def get_cuda_functions(self):
+    with open('cuda_func_ports/cuda.c', 'r') as content_file:
+        return content_file.read()
+
   # gpu_particles.first_sim_loop(timestep, smooth, CHOOSE_KERNEL_CONST)
   def first_sim_loop(self, timestep, smooth, CHOOSE_KERNEL_CONST):
-    mod = SourceModule("""
-        // MUST match the particle.flatten() format
-        //   return [self.id, self.mass, self.pos[0], self.pos[1], self.pos[2], self.vel[0], self.vel[1], self.vel[2], self.acc[0], self.acc[1], self.acc[2], self.rho, self.pressure]
-
-        struct Particle {
-          float id; //must be same type
-          float mass;
-
-          float pos_x;
-          float pos_y;
-          float pos_z;
-
-          float vel_x;
-          float vel_y;
-          float vel_z;
-
-          float acc_x;
-          float acc_y;
-          float acc_z;
-
-          float rho;
-          float pressure;
-        };
-
-        struct ParticleArray {
-            int datalen, __padding; // so 64-bit ptrs can be aligned
-            Particle *ptr;
-        };
-
-        //        float Newtonian_gravity(Particle p, Particle q) {
-        //          // Newton's gravitational constant
-        //          CONST_G = 6.67384 # * 10^(-11) m^3 kg^-1 s^-2
-        //
-        //          /**
-        //            F = (m_p)a = G(m_p)(m_q)(r)/r^3 -> a = (G * m_q)(r)/(g(r,r)^(3/2)), with g(_,_) the Euclidian inner product
-        //            Note that this is all in the r-direction vectorially
-        //          **/
-        //
-        //          float r = q.pos - p.pos # separation vector
-        //          float R = np.linalg.norm(r) # magnitude of the separation vector
-        //          return ((CONST_G * q.mass) / (R**3)) * r
-        //        }
-        //
-        //
-        __global__ void first_sim_loop(ParticleArray *a, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
-            a = a + blockIdx.x;
-            for (int idx = threadIdx.x; idx < a->datalen; idx += blockDim.x) {
-                Particle *particle = a->ptr;
-                particle[idx].mass = particle[idx].pos_x + particle[idx].pos_y;
-            }
-        }
-        """)
+    cuda_code = self.get_cuda_functions()
+    mod = SourceModule(cuda_code)
     func = mod.get_function("first_sim_loop")
     func(self.struct_arr, numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST), block=(32, 1, 1), grid=(2, 1))
 
