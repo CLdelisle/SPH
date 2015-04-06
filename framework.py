@@ -53,6 +53,7 @@ def del_kernel(x, r, h):
 def Gaussian_kernel(r, h):
 	# Gaussian function
 	r = np.linalg.norm(r)
+
 	return ( (((1/(np.pi * (h**2)))) ** (3/2) ) * ( np.exp( - ((r**2) / (h**2)) )) )
 
 

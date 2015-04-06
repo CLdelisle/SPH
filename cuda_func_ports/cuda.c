@@ -1,18 +1,16 @@
+#include <math.h>
+
 // MUST match the particle.flatten() format
 //   return [self.id, self.mass, self.pos[0], self.pos[1], self.pos[2], self.vel[0], self.vel[1], self.vel[2], self.acc[0], self.acc[1], self.acc[2], self.rho, self.pressure]
 
 struct Particle {
-  float id; //must be same type as the other properties
-  float mass;
-
-  float pos[3];
-
-  float vel[3];
-
-  float acc[3];
-
-  float rho;
-  float pressure;
+  float id, //must be same type as the other propertie
+        mass,
+        pos[3],
+        vel[3],
+        acc[3],
+        rho,
+        pressure;
 };
 
 
@@ -22,8 +20,47 @@ struct ParticleArray {
 };
 
 //np.linalg.norm
+//http://thisthread.blogspot.com/2012/03/frobenius-norm.html
 
-// subtract vectors
+__device__ float linalg_norm(float* matrix, int size1, int size2) {
+  float result = 0.0;
+  for (int i=0; i<size1; i++) {
+    for (int j=0; j<size2; j++) {
+      float value = *(matrix + (i*size2) + j);
+      result += value * value;
+    }
+  }
+  return sqrt(result);
+}
+
+
+/*
+params
+r - position vector difference
+h - smooth (float)
+
+returns float
+def Gaussian_kernel(r, h):
+  # Gaussian function
+  r = np.linalg.norm(r)
+  return ( (((1/(np.pi * (h**2)))) ** (3/2) ) * ( np.exp( - ((r**2) / (h**2)) )) )
+*/
+
+__device__ float Gaussian_kernel(float* r, float h) {
+  // r = np.linalg.norm(r)
+  //@todo
+  return 0;
+}
+
+
+// def cubic_spline_kernel(r, h):
+//   # cubic spline function - used if one needs compact support
+//   return 0.5 # this is a bullshit placeholder
+
+__device__ float cubic_spline_kernel(float* r, float h) {
+  // return 0.5 # this is a bullshit placeholder
+  return 0.5;
+}
 
 /*
 params
@@ -40,20 +77,14 @@ def find_kernel(x, r, h):
     return cubic_spline_kernel(r, h)
 */
 
-/*
-params
-r - position vector difference
-h - smooth (float)
-
-returns float
-def Gaussian_kernel(r, h):
-  # Gaussian function
-  r = np.linalg.norm(r)
-  return ( (((1/(np.pi * (h**2)))) ** (3/2) ) * ( np.exp( - ((r**2) / (h**2)) )) )  
-*/
-
 __device__ float find_and_execute_kernel(int CHOOSE_KERNEL_CONST, float* r, float h) {
-  return 1;
+  // if 1 (true) use Gaussian
+  // if 0 (false) use spline
+  if (CHOOSE_KERNEL_CONST) {
+    return Gaussian_kernel(r, h);
+  } else {
+    return cubic_spline_kernel(r, h);
+  }
 }
 
 //        float Newtonian_gravity(Particle p, Particle q) {
@@ -72,6 +103,7 @@ __device__ float find_and_execute_kernel(int CHOOSE_KERNEL_CONST, float* r, floa
 //
 //
 
+// subtract vectors
 // a - b
 __device__ float* vector_difference(float a[3], float b[3]) {
   for (int i=0; i<3; i++) {
