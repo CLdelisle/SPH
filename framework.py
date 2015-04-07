@@ -1,13 +1,6 @@
 from particle import Particle
 import numpy as np
 
-import pycuda.driver as cuda
-import pycuda.autoinit
-import numpy
-from pycuda.compiler import SourceModule
-
-from gpu_interface import ParticleGPUInterface
-
 """
 This is the framework for iterating over a list of particles, computing particle accelerations, and numerically integrating their equations of motion.
 """
@@ -27,9 +20,10 @@ def Newtonian_gravity(p,q):
 	Note that this is all in the r-direction vectorially
 	'''
 
-	r = q.pos - p.pos # separation vector
-	R = np.linalg.norm(r) # magnitude of the separation vector
-	return ((CONST_G * q.mass) / (R**3)) * r
+	zz = q.pos - p.pos # separation vector
+	R = np.linalg.norm(zz) # magnitude of the separation vector
+	import pdb; pdb.set_trace()
+	return ((CONST_G * q.mass) / (R**3)) * zz
 
 
 def find_kernel(x, r, h):
@@ -53,6 +47,7 @@ def del_kernel(x, r, h):
 def Gaussian_kernel(r, h):
 	# Gaussian function
 	r = np.linalg.norm(r)
+
 	return ( (((1/(np.pi * (h**2)))) ** (3/2) ) * ( np.exp( - ((r**2) / (h**2)) )) )
 
 
@@ -92,6 +87,13 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 	else:
 		CHOOSE_KERNEL_CONST = 0
 
+	if mode == "parallel":
+		import pycuda.driver as cuda
+		import pycuda.autoinit
+		import numpy
+		from pycuda.compiler import SourceModule
+
+		from gpu_interface import ParticleGPUInterface
         '''
 	So we can do this one of two ways.
 	1) Keep only one copy of the system in memory.
@@ -120,7 +122,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 				gpu_particles = ParticleGPUInterface(particles)
 				# run the first sim loop, pass in constants
 				gpu_particles.first_sim_loop(timestep, smooth, CHOOSE_KERNEL_CONST)
-				
+
 				# Transfer the results back to CPU
 				# Just for testing, this should not be done here
 				updated_particles = gpu_particles.getResultsFromDevice()

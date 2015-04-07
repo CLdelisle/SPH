@@ -43,4 +43,4 @@ class Particle(object):
 
 	@staticmethod
 	def unflatten(float_array):
-		return Particle(float_array[0], float_array[1], float_array[2], float_array[2], float_array[2], float_array[3], float_array[4], float_array[5])
+		return Particle(float_array[0], float_array[1], float_array[2], float_array[3], float_array[4], float_array[5], float_array[6], float_array[7])
