@@ -14,18 +14,11 @@ np.testing.assert_equal(updated_particle.id, particles_test_data[0].id + 1)
 np.testing.assert_equal(updated_particle.mass, numpy.float32(particles_test_data[0].mass) + 1)
 np.testing.assert_equal(updated_particle.pos, np.array(particles_test_data[0].pos, dtype=np.float32) + 1)
 np.testing.assert_equal(updated_particle.vel, np.array(particles_test_data[0].vel, dtype=np.float32) + 1)
-np.testing.assert_equal(updated_particle.acc, np.array(particles_test_data[0].acc, dtype=np.float32) + 1)
-np.testing.assert_equal(updated_particle.rho, numpy.float32(particles_test_data[0]).rho + 1)
-np.testing.assert_equal(updated_particle.pressure, numpy.float32(particles_test_data[0].pressure) + 1)
 
 
-# self.id = id						# particle id (int)
-# 		self.mass = m						# particle mass (double)
-# 		self.pos = np.array([x,y,z])		# position vector<double>
-# 		self.vel = np.array([vx,vy,vz])		# velocity vector<double>
-# 		self.acc = np.array([0.0,0.0,0.0])	# acceleration vector<double>
-# 		self.rho = 0.0
-# 		self.pressure = 0.0
+
+
+
 
 # Generate test particles
 particles = [
