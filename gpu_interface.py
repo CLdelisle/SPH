@@ -47,13 +47,13 @@ class ParticleGPUInterface:
     func(self.struct_arr, numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST), block=(32, 1, 1), grid=(1, 1))
 
   # Runs cuda tests
-  def cudaTests(self, number_particles):
+  def cudaTests(self, test_name, number_particles):
     cuda_code = self.get_cuda_functions()
     # Append the test functions to the sim and lib code
     with open('cuda_tests.c', 'r') as content_file:
         cuda_code += "\n" + content_file.read()
     mod = SourceModule(cuda_code)
-    func = mod.get_function("cuda_tests")
+    func = mod.get_function(test_name)
     func(self.struct_arr, block=(number_particles, 1, 1), grid=(1, 1))
 
 
