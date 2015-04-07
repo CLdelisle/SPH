@@ -27,9 +27,10 @@ def Newtonian_gravity(p,q):
 	Note that this is all in the r-direction vectorially
 	'''
 
-	r = q.pos - p.pos # separation vector
-	R = np.linalg.norm(r) # magnitude of the separation vector
-	return ((CONST_G * q.mass) / (R**3)) * r
+	zz = q.pos - p.pos # separation vector
+	R = np.linalg.norm(zz) # magnitude of the separation vector
+	import pdb; pdb.set_trace()
+	return ((CONST_G * q.mass) / (R**3)) * zz
 
 
 def find_kernel(x, r, h):
@@ -121,7 +122,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 				gpu_particles = ParticleGPUInterface(particles)
 				# run the first sim loop, pass in constants
 				gpu_particles.first_sim_loop(timestep, smooth, CHOOSE_KERNEL_CONST)
-				
+
 				# Transfer the results back to CPU
 				# Just for testing, this should not be done here
 				updated_particles = gpu_particles.getResultsFromDevice()

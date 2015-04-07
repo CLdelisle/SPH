@@ -19,6 +19,15 @@ struct ParticleArray {
     Particle *ptr;
 };
 
+// subtract vectors
+// a - b
+__device__ float* vector_difference(float a[3], float b[3]) {
+  for (int i=0; i<3; i++) {
+    a[i] = a[i] - b[i];
+  }
+  return a;
+}
+
 //np.linalg.norm
 //http://thisthread.blogspot.com/2012/03/frobenius-norm.html
 
@@ -26,6 +35,22 @@ __device__ float linalg_norm(float* matrix) {
     return sqrt(matrix[0] * matrix[0] + matrix[1] * matrix[1] + matrix[2] * matrix[2]);
 }
 
+/*
+def pressure(p):
+  k = 1.0 #this may need to stay hardcoded for our purposes, though could be read in from config file
+  gamma = 1.5 #but i'm keeping these constants segregated in this function for now instead of inlining because of this issue
+  return (k * (p.rho ** gamma))
+*/
+
+__device__ float pressure(Particle* p) {
+  //  k = 1.0 #this may need to stay hardcoded for our purposes, though could be read in from config file
+  float k = 1.0;
+
+  // gamma = 1.5 #but i'm keeping these constants segregated in this function for now instead of inlining because of this issue
+  float gamma = 1.5;
+  // return (k * (p.rho ** gamma))
+  return (k * powf(p->rho, gamma));
+}
 
 /*
 params
@@ -91,30 +116,43 @@ __device__ float find_and_execute_kernel(int CHOOSE_KERNEL_CONST, float* r, floa
   }
 }
 
-//        float Newtonian_gravity(Particle p, Particle q) {
-//          // Newton's gravitational constant
-//          CONST_G = 6.67384 # * 10^(-11) m^3 kg^-1 s^-2
-//
-//          /**
-//            F = (m_p)a = G(m_p)(m_q)(r)/r^3 -> a = (G * m_q)(r)/(g(r,r)^(3/2)), with g(_,_) the Euclidian inner product
-//            Note that this is all in the r-direction vectorially
-//          **/
-//
-//          float r = q.pos - p.pos # separation vector
-//          float R = np.linalg.norm(r) # magnitude of the separation vector
-//          return ((CONST_G * q.mass) / (R**3)) * r
-//        }
-//
-//
+// # Params p,q particles
+// def Newtonian_gravity(p,q):
+//   # Newton's gravitational constant
+//   CONST_G = 6.67384 # * 10^(-11) m^3 kg^-1 s^-2
+  
+//   '''
+//   F = (m_p)a = G(m_p)(m_q)(r)/r^3 -> a = (G * m_q)(r)/(g(r,r)^(3/2)), with g(_,_) the Euclidian inner product
+//   Note that this is all in the r-direction vectorially
+//   '''
 
-// subtract vectors
-// a - b
-__device__ float* vector_difference(float a[3], float b[3]) {
-  for (int i=0; i<3; i++) {
-    a[i] = a[i] - b[i];
-  }
-  return a;
+//   r = q.pos - p.pos # separation vector
+//   R = np.linalg.norm(r) # magnitude of the separation vector
+//   return ((CONST_G * q.mass) / (R**3)) * r
+
+__device__ float* Newtonian_gravity(Particle* p, Particle* q) {
+  //   # Newton's gravitational constant
+  //   CONST_G = 6.67384 # * 10^(-11) m^3 kg^-1 s^-2
+  float CONST_G = 6.67384;
+  //   '''
+  //   F = (m_p)a = G(m_p)(m_q)(r)/r^3 -> a = (G * m_q)(r)/(g(r,r)^(3/2)), with g(_,_) the Euclidian inner product
+  //   Note that this is all in the r-direction vectorially
+  //   '''
+  //   r = q.pos - p.pos # separation vector
+  float* r = vector_difference(q->pos, p->pos);
+
+  //   R = np.linalg.norm(r) # magnitude of the separation vector
+  float R = linalg_norm(r);
+  //   return ((CONST_G * q.mass) / (R**3)) * r
+
+  float scalar = (CONST_G * q->mass) / (powf(R, 3));
+  float* result = (float*) malloc(sizeof(float) * 3);
+  result[0] = r[0] * scalar;
+  result[1] = r[1] * scalar;
+  result[2] = r[2] * scalar;
+  return result;
 }
+
 
 /**
   for p in particles:
@@ -167,10 +205,19 @@ __global__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
 
       //   # while we're iterating, add contribution from gravity
       //   if(p.id != q.id):
-      //     p.acc += Newtonian_gravity(p,q)
-      // # normalize density
-      // p.rho = ( p.rho / len(particles) )
-      //     p.pressure = pressure(p)
+      if (p->id != q->id) {
+        // p.acc += Newtonian_gravity(p,q)
+        float* newtonian_gravity_result = Newtonian_gravity(p, q);
+        p->acc[0] += newtonian_gravity_result[0];
+        p->acc[1] += newtonian_gravity_result[1];
+        p->acc[2] += newtonian_gravity_result[2];
+
+        // # normalize density
+        // p.rho = ( p.rho / len(particles) )
+        p->rho = p->rho / (float) particle_array->datalen;
+        //     p.pressure = pressure(p)
+        p->pressure = pressure(p);
+      }
     }
 
 }
