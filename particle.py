@@ -2,14 +2,23 @@ import numpy as np
 from math import sqrt
 
 class Particle(object):
-	def __init__(self, id, m, x, y, z, vx, vy, vz):
-		self.id = id						# particle id (int)
-		self.mass = m						# particle mass (double)
+	def __init__(self, id, m, x, y, z, vx, vy, vz, acc=None, rho=None, pre=None):
+		self.id = id				# particle id (int)
+		self.mass = m				# particle mass (double)
 		self.pos = np.array([x,y,z])		# position vector<double>
 		self.vel = np.array([vx,vy,vz])		# velocity vector<double>
-		self.acc = np.array([0.0,0.0,0.0])	# acceleration vector<double>
-		self.rho = 0.0
-		self.pressure = 0.0
+		if acc is None:
+			self.acc = np.array([0.0,0.0,0.0])	# acceleration vector<double>
+		else:
+			self.acc = acc
+		if rho is None:
+			self.rho = 0.0
+		else:
+			self.rho = rho
+		if pre is None:
+			self.pressure = 0.0
+		else:
+			self.pressure = pre
 
     # Display the attributes of a given particle - ID, Mass, Position Vector, Velocity Vector, Acceleration Vector
 	def display(self, tabs=0):
