@@ -22,12 +22,10 @@ struct ParticleArray {
 };
 
 // subtract vectors
-// a - b
-__device__ float* vector_difference(float a[3], float b[3]) {
-  for (int i=0; i<3; i++) {
-    a[i] = a[i] - b[i];
-  }
-  return a;
+// a - b, result stored in first param
+__device__ void vector_difference(float* result, float* a, float* b) {
+  for (int i=0; i<3; i++)
+    result[i] = a[i] - b[i];
 }
 
 //np.linalg.norm

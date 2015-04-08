@@ -33,3 +33,8 @@ __global__ void increment_particle_properties_on_multiple_particles(ParticleArra
     p->rho      += 1;
     p->pressure += 1;
 }
+
+__global__ void vector_difference_test(ParticleArray *particle_array) {
+    Particle* p = particle_array->ptr + threadIdx.x;
+    vector_difference(p->acc, p->pos, p->vel);
+}

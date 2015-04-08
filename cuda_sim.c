@@ -103,7 +103,8 @@ __device__ float* Newtonian_gravity(Particle* p, Particle* q) {
   //   Note that this is all in the r-direction vectorially
   //   '''
   //   r = q.pos - p.pos # separation vector
-  float* r = vector_difference(q->pos, p->pos);
+  float r[3];
+  vector_difference(r, q->pos, p->pos);
 
   //   R = np.linalg.norm(r) # magnitude of the separation vector
   float R = linalg_norm(r);
@@ -165,7 +166,9 @@ __global__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
       Particle* q = particle_array->ptr + i;
 
       //   p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
-      p->rho = (q->mass * find_and_execute_kernel(CHOOSE_KERNEL_CONST, vector_difference(p->pos, q->pos), smooth));
+      float pos_difference[3];
+      vector_difference(pos_difference, p->pos, q->pos);
+      p->rho = (q->mass * find_and_execute_kernel(CHOOSE_KERNEL_CONST, pos_difference, smooth));
 
       //   # while we're iterating, add contribution from gravity
       //   if(p.id != q.id):
