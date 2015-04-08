@@ -10,7 +10,7 @@ class Particle(object):
 		if acc is None:
 			self.acc = np.array([0.0,0.0,0.0])	# acceleration vector<double>
 		else:
-			self.acc = acc
+			self.acc = np.array(acc) # force acc to be a numpy array
 		if rho is None:
 			self.rho = 0.0
 		else:
