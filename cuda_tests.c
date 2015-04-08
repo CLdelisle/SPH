@@ -38,3 +38,8 @@ __global__ void vector_difference_test(ParticleArray *particle_array) {
     Particle* p = particle_array->ptr + threadIdx.x;
     vector_difference(p->acc, p->pos, p->vel);
 }
+
+__global__ void particle_pressure_test(ParticleArray *particle_array) {
+    Particle* p = particle_array->ptr + threadIdx.x;
+    p->pressure = pressure(p);
+}
