@@ -11,8 +11,12 @@ def generateTestParticle():
 	return Particle(random.randint(1, 10000), randomFloat(), randomFloat(), randomFloat(), randomFloat(), randomFloat(), randomFloat(), randomFloat(),
 		acc=[randomFloat(), randomFloat(), randomFloat()], rho=randomFloat(), pre=randomFloat())
 
+def generateParticles(n):
+	return [generateTestParticle() for i in xrange(n)]
+
+
 # Test 1 - increment all particle property values by 1
-particles_test_data = [generateTestParticle()]
+particles_test_data = generateParticles(1)
 gpu_particles = ParticleGPUInterface(particles_test_data)
 gpu_particles.cudaTests("increment_particle_properties", len(particles_test_data))
 updated_particle = gpu_particles.getResultsFromDevice()[0]
@@ -26,13 +30,7 @@ np.testing.assert_almost_equal(updated_particle.vel, np.array(particles_test_dat
 
 
 # # Test 2 - Same as test 1, but apply +1 to all properties on multiple particles. Tests thread access index
-particles_test_data = [
-	generateTestParticle(),
-	generateTestParticle(),
-	generateTestParticle(),
-	generateTestParticle(),
-	generateTestParticle()
-]
+particles_test_data = generateParticles(5)
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
 gpu_particles.cudaTests("increment_particle_properties_on_multiple_particles", len(particles_test_data))
@@ -43,7 +41,5 @@ for idx in xrange(len(particles_test_data)):
 	np.testing.assert_almost_equal(updated_particles[idx].mass, numpy.float32(particles_test_data[idx].mass) + 1, 5)
 	np.testing.assert_almost_equal(updated_particles[idx].pos, np.array(particles_test_data[idx].pos, dtype=np.float32) + 1, 5)
 	np.testing.assert_almost_equal(updated_particles[idx].vel, np.array(particles_test_data[idx].vel, dtype=np.float32) + 1, 5)
-
-
 
 print "All tests passed."
