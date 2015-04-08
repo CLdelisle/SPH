@@ -1,10 +1,18 @@
 from particle import Particle
 from gpu_interface import ParticleGPUInterface
 import numpy
+import random
 import numpy as np
 
+def randomFloat():
+	return random.uniform(1, 1000)
+
+def generateTestParticle():
+	return Particle(random.randint(1, 10000), randomFloat(), randomFloat(), randomFloat(), randomFloat(), randomFloat(), randomFloat(), randomFloat(),
+		acc=[randomFloat(), randomFloat(), randomFloat()], rho=randomFloat(), pre=randomFloat())
+
 # Test 1 - increment all particle property values by 1
-particles_test_data = [Particle(89, 2.223, 52.3, 12.4, 72.5, 2.556, 2.25637, 2.80123)]
+particles_test_data = [generateTestParticle()]
 gpu_particles = ParticleGPUInterface(particles_test_data)
 gpu_particles.cudaTests("increment_particle_properties", len(particles_test_data))
 updated_particle = gpu_particles.getResultsFromDevice()[0]
@@ -17,13 +25,13 @@ np.testing.assert_almost_equal(updated_particle.vel, np.array(particles_test_dat
 
 
 
-# Test 2 - Same as test 1, but apply +1 to all properties on multiple particles. Tests thread access index
+# # Test 2 - Same as test 1, but apply +1 to all properties on multiple particles. Tests thread access index
 particles_test_data = [
-	Particle(2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8),
-	Particle(3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8),
-	Particle(4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8),
-	Particle(5.1,5.2,5.3,5.4,5.5,5.6,5.7,5.8),
-	Particle(6.1,6.2,6.3,6.4,6.5,6.6,6.7,6.8)
+	generateTestParticle(),
+	generateTestParticle(),
+	generateTestParticle(),
+	generateTestParticle(),
+	generateTestParticle()
 ]
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
