@@ -178,6 +178,7 @@ __global__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
         p->acc[0] += newtonian_gravity_result[0];
         p->acc[1] += newtonian_gravity_result[1];
         p->acc[2] += newtonian_gravity_result[2];
+        free(&newtonian_gravity_result);
 
         // # normalize density
         // p.rho = ( p.rho / len(particles) )
