@@ -43,3 +43,9 @@ __global__ void particle_pressure_test(ParticleArray *particle_array) {
     Particle* p = particle_array->ptr + threadIdx.x;
     p->pressure = pressure(p);
 }
+
+__global__ void gaussian_kernel_test(ParticleArray *particle_array) {
+    Particle* p = particle_array->ptr + threadIdx.x;
+    //I know these values don't normally seed this function, but I'm just throwing a random vector and float at it.
+    p->pressure = Gaussian_kernel(p->acc, p->rho);
+}
