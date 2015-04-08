@@ -1,6 +1,5 @@
 from particle import Particle
 from gpu_interface import ParticleGPUInterface
-import numpy
 import random
 import numpy as np
 
@@ -22,13 +21,13 @@ gpu_particles.cudaTests("increment_particle_properties", len(particles_test_data
 updated_particle = gpu_particles.getResultsFromDevice()[0]
 
 
-np.testing.assert_almost_equal(updated_particle.id, particles_test_data[0].id + 1)
-np.testing.assert_almost_equal(updated_particle.mass, numpy.float32(particles_test_data[0].mass) + 1)
-np.testing.assert_almost_equal(updated_particle.pos, np.array(particles_test_data[0].pos, dtype=np.float32) + 1)
-np.testing.assert_almost_equal(updated_particle.vel, np.array(particles_test_data[0].vel, dtype=np.float32) + 1)
-np.testing.assert_almost_equal(updated_particle.acc, np.array(particles_test_data[0].acc, dtype=np.float32) + 1)
-np.testing.assert_almost_equal(updated_particle.pressure, numpy.float32(particles_test_data[0].pressure) + 1)
-np.testing.assert_almost_equal(updated_particle.rho, numpy.float32(particles_test_data[0].rho) + 1)
+np.testing.assert_almost_equal(updated_particle.id, particles_test_data[0].id + 1, 3)
+np.testing.assert_almost_equal(updated_particle.mass, np.float32(particles_test_data[0].mass) + 1, 3)
+np.testing.assert_almost_equal(updated_particle.pos, np.array(particles_test_data[0].pos, dtype=np.float32) + 1, 3)
+np.testing.assert_almost_equal(updated_particle.vel, np.array(particles_test_data[0].vel, dtype=np.float32) + 1, 3)
+np.testing.assert_almost_equal(updated_particle.acc, np.array(particles_test_data[0].acc, dtype=np.float32) + 1, 3)
+np.testing.assert_almost_equal(updated_particle.pressure, np.float32(particles_test_data[0].pressure) + 1, 3)
+np.testing.assert_almost_equal(updated_particle.rho, np.float32(particles_test_data[0].rho) + 1, 3)
 
 
 # Test 2 - Same as test 1, but apply +1 to all properties on multiple particles. Tests thread access index
@@ -40,9 +39,9 @@ updated_particles = gpu_particles.getResultsFromDevice()
 
 for idx in xrange(len(particles_test_data)):
 	np.testing.assert_almost_equal(updated_particles[idx].id, particles_test_data[idx].id + 1, 3)
-	np.testing.assert_almost_equal(updated_particles[idx].mass, numpy.float32(particles_test_data[idx].mass) + 1, 3)
-	np.testing.assert_almost_equal(updated_particles[idx].pressure, numpy.float32(particles_test_data[idx].pressure) + 1, 3)
-	np.testing.assert_almost_equal(updated_particles[idx].rho, numpy.float32(particles_test_data[idx].rho) + 1, 3)
+	np.testing.assert_almost_equal(updated_particles[idx].mass, np.float32(particles_test_data[idx].mass) + 1, 3)
+	np.testing.assert_almost_equal(updated_particles[idx].pressure, np.float32(particles_test_data[idx].pressure) + 1, 3)
+	np.testing.assert_almost_equal(updated_particles[idx].rho, np.float32(particles_test_data[idx].rho) + 1, 3)
 	np.testing.assert_almost_equal(updated_particles[idx].pos, np.array(particles_test_data[idx].pos, dtype=np.float32) + 1, 3)
 	np.testing.assert_almost_equal(updated_particles[idx].vel, np.array(particles_test_data[idx].vel, dtype=np.float32) + 1, 3)
 	np.testing.assert_almost_equal(updated_particles[idx].acc, np.array(particles_test_data[idx].acc, dtype=np.float32) + 1, 3)
