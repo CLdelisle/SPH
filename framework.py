@@ -125,7 +125,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 
 				# Transfer the results back to CPU
 				# Just for testing, this should not be done here
-				updated_particles = gpu_particles.getResultsFromDevice()
+				particles = gpu_particles.getResultsFromDevice()
 			if mode == "serial":
 				# first sim loop (could use a better name, but I have no idea what this loop is doing)
 				for p in particles:
