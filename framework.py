@@ -22,7 +22,6 @@ def Newtonian_gravity(p,q):
 
 	zz = q.pos - p.pos # separation vector
 	R = np.linalg.norm(zz) # magnitude of the separation vector
-	import pdb; pdb.set_trace()
 	return ((CONST_G * q.mass) / (R**3)) * zz
 
 
@@ -131,7 +130,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 				for p in particles:
 						# preemptively start the Velocity Verlet computation (first half of velocity update part)
 						p.vel += (timestep/2.0) * p.acc
-						temp = p.acc
+						p.temp = p.acc
 						p.acc = 0.0
 						p.rho = 0.0
 						p.pressure = 0.0
@@ -162,7 +161,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 		#	tempp = particles
 			for p in particles:
 				# perform position update
-				p.pos += timestep * (p.vel + (timestep/2.0)*temp)
+				p.pos += timestep * (p.vel + (timestep/2.0)*p.temp)
 		#                if np.linalg.norm(p.pos) > bound:
 		#                        print "Particle %d position: %f out of range at iteration %d" % (p.id, np.linalg.norm(p.pos), int(t))
 		#                        tempp.remove(p)
