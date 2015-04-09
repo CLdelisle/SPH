@@ -2,11 +2,17 @@ import numpy as np
 from math import sqrt
 
 class Particle(object):
-	def __init__(self, id, m, x, y, z, vx, vy, vz, acc=None, rho=None, pre=None):
+	def __init__(self, id, m, x, y, z, vx, vy, vz, acc=None, rho=None, pre=None, temp=None):
 		self.id = id				# particle id (int)
 		self.mass = m				# particle mass (double)
 		self.pos = np.array([x,y,z])		# position vector<double>
 		self.vel = np.array([vx,vy,vz])		# velocity vector<double>
+		
+		if temp is None:
+			self.temp = np.array([0.0,0.0,0.0])	# temp vector<double>
+		else:
+			self.temp = np.array(temp) # force temp to be a numpy array
+		
 		if acc is None:
 			self.acc = np.array([0.0,0.0,0.0])	# acceleration vector<double>
 		else:
@@ -48,8 +54,8 @@ class Particle(object):
 				float(self.pressure), float(self.rho))
 
 	def flatten(self):
-		return [self.id, self.mass, self.pos[0], self.pos[1], self.pos[2], self.vel[0], self.vel[1], self.vel[2], self.acc[0], self.acc[1], self.acc[2], self.rho, self.pressure]
+		return [self.id, self.mass, self.pos[0], self.pos[1], self.pos[2], self.vel[0], self.vel[1], self.vel[2], self.acc[0], self.acc[1], self.acc[2], self.rho, self.pressure, self.temp[0], self.temp[1], self.temp[2]]
 
 	@staticmethod
 	def unflatten(float_array):
-		return Particle(float_array[0], float_array[1], float_array[2], float_array[3], float_array[4], float_array[5], float_array[6], float_array[7], [float_array[8], float_array[9], float_array[10]], float_array[11], float_array[12])
+		return Particle(float_array[0], float_array[1], float_array[2], float_array[3], float_array[4], float_array[5], float_array[6], float_array[7], [float_array[8], float_array[9], float_array[10]], float_array[11], float_array[12], [float_array[13], float_array[14], float_array[15]])

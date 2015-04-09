@@ -10,7 +10,7 @@ def randomFloat():
 
 def generateTestParticle():
 	return Particle(random.randint(1, 10000), randomFloat(), randomFloat(), randomFloat(), randomFloat(), randomFloat(), randomFloat(), randomFloat(),
-		acc=[randomFloat(), randomFloat(), randomFloat()], rho=randomFloat(), pre=randomFloat())
+		acc=[randomFloat(), randomFloat(), randomFloat()], rho=randomFloat(), pre=randomFloat(), temp=[randomFloat(), randomFloat(), randomFloat()])
 
 def generateParticles(n):
 	return [generateTestParticle() for i in xrange(n)]
@@ -30,6 +30,7 @@ np.testing.assert_almost_equal(updated_particle.vel, particles_test_data[0].vel 
 np.testing.assert_almost_equal(updated_particle.acc, particles_test_data[0].acc + 1, required_decimal_accuray)
 np.testing.assert_almost_equal(updated_particle.pressure, particles_test_data[0].pressure + 1, required_decimal_accuray)
 np.testing.assert_almost_equal(updated_particle.rho, particles_test_data[0].rho + 1, required_decimal_accuray)
+np.testing.assert_almost_equal(updated_particle.temp, particles_test_data[0].temp + 1, required_decimal_accuray)
 
 
 # Test 2 - Same as test 1, but apply +1 to all properties on multiple particles. Tests thread access index
@@ -47,6 +48,7 @@ for idx in xrange(len(particles_test_data)):
 	np.testing.assert_almost_equal(updated_particles[idx].pos, particles_test_data[idx].pos + 1, required_decimal_accuray)
 	np.testing.assert_almost_equal(updated_particles[idx].vel, particles_test_data[idx].vel + 1, required_decimal_accuray)
 	np.testing.assert_almost_equal(updated_particles[idx].acc, particles_test_data[idx].acc + 1, required_decimal_accuray)
+	np.testing.assert_almost_equal(updated_particles[idx].temp, particles_test_data[idx].temp + 1, required_decimal_accuray)
 
 
 

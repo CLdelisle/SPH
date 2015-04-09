@@ -12,7 +12,8 @@ struct Particle {
         vel[3],
         acc[3],
         rho,
-        pressure;
+        pressure,
+        temp[3];
 };
 
 

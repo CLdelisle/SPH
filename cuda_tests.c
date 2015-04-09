@@ -15,6 +15,9 @@ __global__ void increment_particle_properties(ParticleArray *particle_array) {
     p->acc[2]   += 1;
     p->rho      += 1;
     p->pressure += 1;
+    p->temp[0]   += 1;
+    p->temp[1]   += 1;
+    p->temp[2]   += 1;
 }
 
 __global__ void increment_particle_properties_on_multiple_particles(ParticleArray *particle_array) {
@@ -32,6 +35,9 @@ __global__ void increment_particle_properties_on_multiple_particles(ParticleArra
     p->acc[2]   += 1;
     p->rho      += 1;
     p->pressure += 1;
+    p->temp[0]   += 1;
+    p->temp[1]   += 1;
+    p->temp[2]   += 1;
 }
 
 __global__ void vector_difference_test(ParticleArray *particle_array) {
