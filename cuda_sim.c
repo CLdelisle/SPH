@@ -123,7 +123,7 @@ __device__ float* Newtonian_gravity(Particle* p, Particle* q) {
   for p in particles:
       # preemptively start the Velocity Verlet computation (first half of velocity update part)
       p.vel += (timestep/2.0) * p.acc
-      temp = p.acc
+      p.temp = p.acc
       p.acc = 0.0
       p.rho = 0.0
       p.pressure = 0.0
@@ -147,8 +147,10 @@ __global__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
     for (int i=0; i<3; i++)
       p->vel[i] += (timestep/2.0) * p->acc[i];
 
-    // temp = p.acc
-    float temp[3] = {p->acc[0], p->acc[1], p->acc[2]};
+    // p.temp = p.acc
+    p->temp[0] = p->acc[0];
+    p->temp[1] = p->acc[1];
+    p->temp[2] = p->acc[2];
 
     // p.acc = 0.0
     p->acc[0] = 0;
