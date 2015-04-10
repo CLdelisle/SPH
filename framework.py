@@ -96,6 +96,8 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 	'''
         # output-100.csv = prefix + interval + file extension
 	ary = savefile.split(".")  # only split savefile once ([0]=prefix, [1]=extension)
+	tempacc = [len(particles)]
+	count = 0
 	save = 0
 #	print "[+] Saved @ iterations: ",
 	while(t < (maxiter*timestep)):
@@ -110,7 +112,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 			for p in particles:
 					# preemptively start the Velocity Verlet computation (first half of velocity update part)
 					p.vel += (timestep/2.0) * p.acc
-					temp = p.acc
+					tempacc.append(p.acc)
 					p.acc = 0.0
 					p.rho = 0.0
 					p.pressure = 0.0
@@ -141,13 +143,14 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 		#	tempp = particles
 			for p in particles:
 				# perform position update
-				p.pos += timestep * (p.vel + (timestep/2.0)*temp)
+				p.pos += timestep * (p.vel + (timestep/2.0)*tempacc[count])
 		#                if np.linalg.norm(p.pos) > bound:
 		#                        print "Particle %d position: %f out of range at iteration %d" % (p.id, np.linalg.norm(p.pos), int(t))
 		#                        tempp.remove(p)
 		#        particles = tempp
 						
 			t += timestep  # advance time
+			count += 1	# bump count for tempacc[]
 
 	# Always save the last interval
 #	print "\b%d\n" % int(t)
