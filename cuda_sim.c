@@ -45,6 +45,18 @@ __device__ float Gaussian_kernel(float* r, float h) {
     ( - ((powf(norm_result, 2) / powf(h, 2)) )));
 }
 
+// def del_Gaussian(r, h):
+//   # derivative of Gaussian kernel
+//   r = np.linalg.norm(r)
+//   return ( ((-2 * r) / (h**2)) * Gaussian_kernel(r,h) )
+
+__device__ float del_Gaussian(float* r, float h) {
+  float r_ = linalg_norm(r)
+
+  // ERROR - why are we now passing Gaussian_kernel a scalar???
+    return ( ((-2 * r) / (h**2)) * Gaussian_kernel(r, h) )
+}
+
 
 // def cubic_spline_kernel(r, h):
 //   # cubic spline function - used if one needs compact support
@@ -206,4 +218,17 @@ for p in particles:
 
 __global__ void second_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
     Particle* p = particle_array->ptr + threadIdx.x;
+
+    // for q in particles:
+    for (int i=0; i<particle_array->datalen; i++) {
+      Particle* q = particle_array->ptr + i;
+      // if p.id != q.id:
+        if (p->id != q->id) {
+          float pos_difference[3];
+          vector_difference(pos_difference, p->pos, q->pos);
+          float a=((p->pressure / powf(p->rho, 2)) + (q->pressure / powf(q->rho, 2)));
+          p.acc -= (q->mass * a * del_kernel(CHOOSE_KERNEL_CONST, pos_difference, smooth)) * (1 / linalg_norm(pos_difference)) * pos_difference
+
+        }
+    }
 }
