@@ -191,3 +191,19 @@ __global__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
     }
 
 }
+
+/*
+//second sim loop
+for p in particles:
+          # acceleration from pressure gradient
+          for q in particles:
+                  if p.id != q.id:
+                    p.acc -= ( q.mass * ((p.pressure / (p.rho ** 2)) + (q.pressure / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
+          # finish velocity update
+                                  p.vel += (timestep/2.0) * p.acc
+
+*/
+
+__global__ void second_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
+    Particle* p = particle_array->ptr + threadIdx.x;
+}

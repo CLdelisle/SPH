@@ -40,10 +40,10 @@ class ParticleGPUInterface:
 
 
   # gpu_particles.first_sim_loop(timestep, smooth, CHOOSE_KERNEL_CONST)
-  def first_sim_loop(self, timestep, smooth, CHOOSE_KERNEL_CONST):
+  def sim_loop(self, function_name, timestep, smooth, CHOOSE_KERNEL_CONST):
     cuda_code = self.get_cuda_functions()
     mod = SourceModule(cuda_code)
-    func = mod.get_function("first_sim_loop")
+    func = mod.get_function(function_name)
     func(self.struct_arr, numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST), block=(32, 1, 1), grid=(1, 1))
 
   # Runs cuda tests
