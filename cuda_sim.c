@@ -47,14 +47,37 @@ __device__ float Gaussian_kernel(float* r, float h) {
 
 // def del_Gaussian(r, h):
 //   # derivative of Gaussian kernel
-//   r = np.linalg.norm(r)
-//   return ( ((-2 * r) / (h**2)) * Gaussian_kernel(r,h) )
+//   r1 = np.linalg.norm(r)
+//   return ( ((-2 * r1) / (h**2)) * Gaussian_kernel(r, h))
 
 __device__ float del_Gaussian(float* r, float h) {
-  float r_ = linalg_norm(r)
+  float r1 = linalg_norm(r);
+  return (((-2 * r1) / (powf(h, 2))) * Gaussian_kernel(r, h));
+}
 
-  // ERROR - why are we now passing Gaussian_kernel a scalar???
-    return ( ((-2 * r) / (h**2)) * Gaussian_kernel(r, h) )
+
+// def del_cubic_spline(r, h):
+//   # derivative of cubic spline
+//   return 0.5 # this is a bullshit placeholder
+
+__device__ float del_cubic_spline(float* r, float h) {
+  return 0.5;
+}
+
+// def del_kernel(x, r, h):
+//   # if 1 (true) use Gaussian
+//   # if 0 (false) use spline
+//   if(x):
+//     return del_Gaussian(r, h)
+//   else:
+//     return del_cubic_spline(r, h)
+
+__device__ float del_kernel(int x, float* r, float h) {
+  if (x) {
+    return del_Gaussian(r, h);
+  } else {
+    return del_cubic_spline(r, h);
+  }
 }
 
 
@@ -226,8 +249,11 @@ __global__ void second_sim_loop(ParticleArray *particle_array, int timestep, flo
         if (p->id != q->id) {
           float pos_difference[3];
           vector_difference(pos_difference, p->pos, q->pos);
-          float a=((p->pressure / powf(p->rho, 2)) + (q->pressure / powf(q->rho, 2)));
-          p.acc -= (q->mass * a * del_kernel(CHOOSE_KERNEL_CONST, pos_difference, smooth)) * (1 / linalg_norm(pos_difference)) * pos_difference
+          float a = ((p->pressure / powf(p->rho, 2)) + (q->pressure / powf(q->rho, 2)));
+          float b = (q->mass * a * del_kernel(CHOOSE_KERNEL_CONST, pos_difference, smooth)) * (1 / linalg_norm(pos_difference));
+          p->acc[0] -= b * pos_difference[0];
+          p->acc[1] -= b * pos_difference[1];
+          p->acc[2] -= b * pos_difference[2];
 
         }
     }
