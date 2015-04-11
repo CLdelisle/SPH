@@ -51,8 +51,8 @@ def Gaussian_kernel(r, h):
 
 def del_Gaussian(r, h):
 	# derivative of Gaussian kernel
-	r = np.linalg.norm(r)
-	return ( ((-2 * r) / (h**2)) * Gaussian_kernel(r,h) )
+	r1 = np.linalg.norm(r)
+	return ( ((-2 * r1) / (h**2)) * Gaussian_kernel(r,h) )
 
 
 def cubic_spline_kernel(r, h):
