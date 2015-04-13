@@ -254,7 +254,19 @@ __global__ void second_sim_loop(ParticleArray *particle_array, int timestep, flo
           p->acc[0] -= b * pos_difference[0];
           p->acc[1] -= b * pos_difference[1];
           p->acc[2] -= b * pos_difference[2];
-
         }
     }
+}
+
+/*
+  third and final sim loop
+  for p in particles:
+    # perform position update
+    p.pos += timestep * (p.vel + (timestep/2.0)*p.temp)
+*/
+__global__ void third_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
+  Particle* p = particle_array->ptr + threadIdx.x;
+    // p.pos += timestep * (p.vel + (timestep/2.0)*p.temp)
+  for (int i=0; i<3; i++)
+    p->pos[i] += timestep * (p->vel[i] + (timestep/2.0) * p->temp[i]);
 }

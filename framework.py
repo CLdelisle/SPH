@@ -119,8 +119,15 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 			if mode == "parallel":
 				# init gpu interface, pass particles
 				gpu_particles = ParticleGPUInterface(particles)
-				# run the first sim loop, pass in constants
+
 				gpu_particles.sim_loop("first_sim_loop", timestep, smooth, CHOOSE_KERNEL_CONST)
+				gpu_particles.sim_loop("second_sim_loop", timestep, smooth, CHOOSE_KERNEL_CONST)
+				gpu_particles.sim_loop("third_sim_loop", timestep, smooth, CHOOSE_KERNEL_CONST)
+				# Transfer the results back to CPU
+				# Just for testing, this should not be done here
+				particles = gpu_particles.getResultsFromDevice()
+				# run the first sim loop, pass in constants
+
 
 			else:
 				# first sim loop (could use a better name, but I have no idea what this loop is doing)
@@ -142,12 +149,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 						p.rho = ( p.rho / len(particles) )
 						p.pressure = pressure(p)
 
-			if mode == "parallel":
-				gpu_particles.sim_loop("second_sim_loop", timestep, smooth, CHOOSE_KERNEL_CONST)
-				# Transfer the results back to CPU
-				# Just for testing, this should not be done here
-				particles = gpu_particles.getResultsFromDevice()
-			else:
+				# second sim loop
 				for p in particles:
 					# acceleration from pressure gradient
 					for q in particles:
@@ -159,17 +161,18 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 				Velocity Verlet integration: Works only assuming force is velocity-independent
 				http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
 				'''
-			# iterate AGAIN to do final position updates
-			# save particles list to temporary holder - ensures we have consistent indexing throughout for loop
-		#	tempp = particles
-			for p in particles:
-				# perform position update
-				p.pos += timestep * (p.vel + (timestep/2.0)*p.temp)
-		#                if np.linalg.norm(p.pos) > bound:
-		#                        print "Particle %d position: %f out of range at iteration %d" % (p.id, np.linalg.norm(p.pos), int(t))
-		#                        tempp.remove(p)
-		#        particles = tempp
-						
+				# iterate AGAIN to do final position updates
+				# save particles list to temporary holder - ensures we have consistent indexing throughout for loop
+				#	tempp = particles
+
+				# third sim loop
+				for p in particles:
+					# perform position update
+					p.pos += timestep * (p.vel + (timestep/2.0)*p.temp)
+			#                if np.linalg.norm(p.pos) > bound:
+			#                        print "Particle %d position: %f out of range at iteration %d" % (p.id, np.linalg.norm(p.pos), int(t))
+			#                        tempp.remove(p)
+			#        particles = tempp
 			t += timestep  # advance time
 
 	# Always save the last interval
