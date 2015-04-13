@@ -18,7 +18,7 @@
 **/
 
 
-__global__ void first_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
+__device__ void first_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
     // for p in particles
     Particle* p = particle_array->ptr + threadIdx.x;
     // preemptively start the Velocity Verlet computation (first half of velocity update part)
@@ -83,7 +83,7 @@ for p in particles:
 
 */
 
-__global__ void second_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
+__device__ void second_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
     Particle* p = particle_array->ptr + threadIdx.x;
 
     // for q in particles:
@@ -108,11 +108,12 @@ __global__ void second_sim_loop(ParticleArray *particle_array, int timestep, flo
     # perform position update
     p.pos += timestep * (p.vel + (timestep/2.0)*p.temp)
 */
-__global__ void third_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
+__device__ void third_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
   Particle* p = particle_array->ptr + threadIdx.x;
     // p.pos += timestep * (p.vel + (timestep/2.0)*p.temp)
-  for (int i=0; i<3; i++)
+  for (int i=0; i<3; i++) {
     p->pos[i] += timestep * (p->vel[i] + (timestep/2.0) * p->temp[i]);
+  }
 }
 
 // Runs all sim loops
