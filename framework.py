@@ -120,14 +120,10 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 				# init gpu interface, pass particles
 				gpu_particles = ParticleGPUInterface(particles)
 
-				gpu_particles.sim_loop("first_sim_loop", timestep, smooth, CHOOSE_KERNEL_CONST)
-				gpu_particles.sim_loop("second_sim_loop", timestep, smooth, CHOOSE_KERNEL_CONST)
-				gpu_particles.sim_loop("third_sim_loop", timestep, smooth, CHOOSE_KERNEL_CONST)
+				gpu_particles.sim_loop("run_simulation_loops", timestep, smooth, CHOOSE_KERNEL_CONST)
 				# Transfer the results back to CPU
 				# Just for testing, this should not be done here
 				particles = gpu_particles.getResultsFromDevice()
-				# run the first sim loop, pass in constants
-
 
 			else:
 				# first sim loop (could use a better name, but I have no idea what this loop is doing)
