@@ -23,8 +23,14 @@ class ParticleArrayStruct:
                          numpy.getbuffer(numpy.intp(int(self.data))))
 
     def getDataFromDevice(self):
-        print "getDataFromDevice()"
-        return cuda.from_device(self.data, self.shape, self.dtype)
+        print "getDataFromDevice() start"
+        a = cuda.from_device(self.data, self.shape, self.dtype)
+        print "getDataFromDevice() end"
+        return a
+
+def gpuDeviceStats():
+  free, total = cuda.mem_get_info()
+  print("Global memory occupancy:%f%% free"%(free*100/total))
 
 class ParticleGPUInterface:
   def __init__(self, particles):
@@ -46,6 +52,7 @@ class ParticleGPUInterface:
 
   # gpu_particles.first_sim_loop(timestep, smooth, CHOOSE_KERNEL_CONST)
   def sim_loop(self, function_name, timestep, smooth, CHOOSE_KERNEL_CONST):
+    gpuDeviceStats()
     if function_name in self.cuda_function_cache:
       self.cuda_function_cache[function_name](self.struct_arr, numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST), block=(32, 1, 1), grid=(1, 1))
     else:
@@ -64,4 +71,7 @@ class ParticleGPUInterface:
 
 
   def getResultsFromDevice(self):
-    return [Particle.unflatten(raw_data) for raw_data in self.particles_array.getDataFromDevice()[0]]
+    print "getResultsFromDevice() start"
+    a = [Particle.unflatten(raw_data) for raw_data in self.particles_array.getDataFromDevice()[0]]
+    print "getResultsFromDevice() end"
+    return a
