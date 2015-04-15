@@ -27,24 +27,22 @@ class ParticleArrayStruct:
 
 class ParticleGPUInterface:
   def __init__(self, particles):
+    self.get_cuda_functions()
     self.struct_arr = cuda.mem_alloc(2 * ParticleArrayStruct.mem_size)
     particles = [x.flatten() for x in particles]
     self.particles_array = ParticleArrayStruct(numpy.array([particles], numpy.float32), self.struct_arr)
 
-  # collects all the cuda c files with the import order determined by their sorted file names
+  # collects all the cuda c files
   def get_cuda_functions(self):
-    cuda_code = ""
+    self.cuda_code = ""
     with open('cuda_lib.c', 'r') as content_file:
-        cuda_code += content_file.read()
+        self.cuda_code += content_file.read()
     with open('cuda_sim.c', 'r') as content_file:
-        cuda_code += "\n" + content_file.read()
-    return cuda_code
-
+        self.cuda_code += "\n" + content_file.read()
 
   # gpu_particles.first_sim_loop(timestep, smooth, CHOOSE_KERNEL_CONST)
   def sim_loop(self, function_name, timestep, smooth, CHOOSE_KERNEL_CONST):
-    cuda_code = self.get_cuda_functions()
-    mod = SourceModule(cuda_code)
+    mod = SourceModule(self.cuda_code)
     func = mod.get_function(function_name)
     func(self.struct_arr, numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST), block=(32, 1, 1), grid=(1, 1))
 
