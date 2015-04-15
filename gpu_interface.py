@@ -3,6 +3,7 @@ import pycuda.autoinit
 import numpy
 from pycuda.compiler import SourceModule
 from particle import Particle
+import warnings
 
 class ParticleArrayStruct:
     mem_size = 8 + numpy.intp(0).nbytes
@@ -27,24 +28,29 @@ class ParticleArrayStruct:
 
 class ParticleGPUInterface:
   def __init__(self, particles):
-    self.get_cuda_functions()
+    self.mod = SourceModule(self.get_cuda_functions())
+    self.cuda_function_cache = {}
+
     self.struct_arr = cuda.mem_alloc(2 * ParticleArrayStruct.mem_size)
     particles = [x.flatten() for x in particles]
     self.particles_array = ParticleArrayStruct(numpy.array([particles], numpy.float32), self.struct_arr)
 
   # collects all the cuda c files
   def get_cuda_functions(self):
-    self.cuda_code = ""
+    cuda_code = ""
     with open('cuda_lib.c', 'r') as content_file:
-        self.cuda_code += content_file.read()
+        cuda_code += content_file.read()
     with open('cuda_sim.c', 'r') as content_file:
-        self.cuda_code += "\n" + content_file.read()
+        cuda_code += "\n" + content_file.read()
+    return cuda_code
 
   # gpu_particles.first_sim_loop(timestep, smooth, CHOOSE_KERNEL_CONST)
   def sim_loop(self, function_name, timestep, smooth, CHOOSE_KERNEL_CONST):
-    mod = SourceModule(self.cuda_code)
-    func = mod.get_function(function_name)
-    func(self.struct_arr, numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST), block=(32, 1, 1), grid=(1, 1))
+    if function_name in self.cuda_function_cache:
+      self.cuda_function_cache[function_name](self.struct_arr, numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST), block=(32, 1, 1), grid=(1, 1))
+    else:
+      warnings.warn("Cuda function {} not found in cache.".format(function_name), Warning)
+      self.cuda_function_cache[function_name] = self.mod.get_function(function_name)
 
   # Runs cuda tests
   def cudaTests(self, test_name, number_particles):
