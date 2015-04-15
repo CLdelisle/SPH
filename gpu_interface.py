@@ -21,6 +21,7 @@ class ParticleArrayStruct:
                          numpy.getbuffer(numpy.intp(int(self.data))))
 
     def getDataFromDevice(self):
+        print "getDataFromDevice()"
         return cuda.from_device(self.data, self.shape, self.dtype)
 
 class ParticleGPUInterface:

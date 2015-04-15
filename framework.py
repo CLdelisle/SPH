@@ -106,24 +106,28 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
         # output-100.csv = prefix + interval + file extension
 	ary = savefile.split(".")  # only split savefile once ([0]=prefix, [1]=extension)
 	save = 0
+
+	if mode == "parallel":
+		# init gpu interface, pass particles
+		gpu_particles = ParticleGPUInterface(particles)
+
 #	print "[+] Saved @ iterations: ",
 	while(t < (maxiter*timestep)):
+			print "t={}".format(t)
 			if (save*interval) == t:
 					fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 					save += 1  # bump save counter
 				#	string = "\b%d..." % int(t)     # '\b' prints a backspace character to remove previous space
 				#	print string,
+					if mode == "parallel":
+						particles = gpu_particles.getResultsFromDevice()
 					saveParticles(particles, fname)
 
 			# main simulation loop
 			if mode == "parallel":
-				# init gpu interface, pass particles
-				gpu_particles = ParticleGPUInterface(particles)
-
 				gpu_particles.sim_loop("run_simulation_loops", timestep, smooth, CHOOSE_KERNEL_CONST)
 				# Transfer the results back to CPU
 				# Just for testing, this should not be done here
-				particles = gpu_particles.getResultsFromDevice()
 
 			else:
 				# first sim loop (could use a better name, but I have no idea what this loop is doing)
@@ -170,6 +174,9 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 			#                        tempp.remove(p)
 			#        particles = tempp
 			t += timestep  # advance time
+
+	if mode == "parallel":
+		particles = gpu_particles.getResultsFromDevice()
 
 	# Always save the last interval
 #	print "\b%d\n" % int(t)
