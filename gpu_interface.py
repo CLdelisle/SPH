@@ -7,6 +7,7 @@ from particle import Particle
 class ParticleArrayStruct:
     mem_size = 8 + numpy.intp(0).nbytes
     def __init__(self, array, struct_arr_ptr):
+        print "copying data to device"
         self.data = cuda.to_device(array)
         self.shape, self.dtype = array.shape, array.dtype
         """

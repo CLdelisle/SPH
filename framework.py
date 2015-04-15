@@ -115,6 +115,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 	while(t < (maxiter*timestep)):
 			print "t={}".format(t)
 			if (save*interval) == t:
+					print "saving file"
 					fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 					save += 1  # bump save counter
 				#	string = "\b%d..." % int(t)     # '\b' prints a backspace character to remove previous space
@@ -180,7 +181,6 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 
 	# Always save the last interval
 #	print "\b%d\n" % int(t)
-        print
 	fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 	saveParticles(particles, fname)
 	return t    # returns the last t-value, which is useful for displaying total iterations
