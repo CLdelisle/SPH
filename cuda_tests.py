@@ -37,7 +37,7 @@ np.testing.assert_almost_equal(updated_particle.temp, particles_test_data[0].tem
 particles_test_data = generateParticles(5)
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
-gpu_particles.cudaTests("increment_particle_properties_on_multiple_particles")
+gpu_particles.cudaTests("increment_particle_properties")
 updated_particles = gpu_particles.getResultsFromDevice()
 
 for idx in xrange(len(particles_test_data)):
