@@ -23,6 +23,7 @@
 __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
     // for p in particles
     Particle* p = particle_array->ptr + threadIdx.x;
+    printf("p->pos[0]: %f\n", p->pos[0]);
     // preemptively start the Velocity Verlet computation (first half of velocity update part)
     // p.vel += (timestep/2.0) * p.acc
     for (int i=0; i<3; i++)
@@ -50,7 +51,6 @@ __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
 
       //   p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
       float pos_difference[3];
-      // printf("p->pos[0]: %f\n", p->pos[0]);
       // printf("pos_difference[1]: %f\n", pos_difference[1]);
       // printf("pos_difference[1]: %f\n", pos_difference[1]);
       vector_difference(pos_difference, p->pos, q->pos);
