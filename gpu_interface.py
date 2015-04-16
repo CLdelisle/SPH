@@ -66,7 +66,4 @@ class ParticleGPUInterface:
     func(self.struct_arr, block=(self.number_particles, 1, 1), grid=(1, 1))
 
   def getResultsFromDevice(self):
-    print "getResultsFromDevice() start"
-    a = [Particle.unflatten(raw_data) for raw_data in self.particles_array.getDataFromDevice()[0]]
-    print "getResultsFromDevice() end"
-    return a
+    return [Particle.unflatten(raw_data) for raw_data in self.particles_array.getDataFromDevice()[0]]

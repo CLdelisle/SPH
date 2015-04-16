@@ -137,5 +137,3 @@ for idx in xrange(len(particles_test_data)):
 	np.testing.assert_almost_equal(updated_particles[idx].id, num_particles, required_decimal_accuray)
 
 print "All tests passed."
-
-
