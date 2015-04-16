@@ -50,7 +50,7 @@ class ParticleGPUInterface:
   def sim_loop(self, function_name, timestep, smooth, CHOOSE_KERNEL_CONST):
     gpuDeviceStats()
     if function_name in self.cuda_function_cache:
-      self.cuda_function_cache[function_name](self.struct_arr, numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST), block=(self.number_particles, 1, 1), grid=(1, 1))
+      self.cuda_function_cache[function_name](self.struct_arr, numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST), block=(32, 1, 1), grid=(self.number_particles / 32, 1))
     else:
       print "Cuda function {} not found in cache.".format(function_name)
       self.cuda_function_cache[function_name] = self.mod.get_function(function_name)
@@ -63,7 +63,7 @@ class ParticleGPUInterface:
         cuda_code += "\n" + content_file.read()
     mod = SourceModule(cuda_code)
     func = mod.get_function(test_name)
-    func(self.struct_arr, block=(self.number_particles, 1, 1), grid=(1, 1))
+    func(self.struct_arr, block=(32, 1, 1), grid=(self.number_particles / 32, 1))
 
   def getResultsFromDevice(self):
     return [Particle.unflatten(raw_data) for raw_data in self.particles_array.getDataFromDevice()[0]]

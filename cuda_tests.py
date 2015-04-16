@@ -17,7 +17,7 @@ def generateParticles(n):
 
 
 # Test 1 - increment all particle property values by 1
-particles_test_data = generateParticles(1)
+particles_test_data = generateParticles(32)
 gpu_particles = ParticleGPUInterface(particles_test_data)
 gpu_particles.cudaTests("increment_particle_properties")
 updated_particle = gpu_particles.getResultsFromDevice()[0]
@@ -34,7 +34,7 @@ np.testing.assert_almost_equal(updated_particle.temp, particles_test_data[0].tem
 
 
 # Test 2 - Same as test 1, but apply +1 to all properties on multiple particles. Tests thread access index
-particles_test_data = generateParticles(5)
+particles_test_data = generateParticles(32)
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
 gpu_particles.cudaTests("increment_particle_properties")
@@ -54,7 +54,7 @@ for idx in xrange(len(particles_test_data)):
 
 # Test 3 - vector_difference
 # pos vector - vel vector => store result in acc vector
-particles_test_data = generateParticles(1)
+particles_test_data = generateParticles(32)
 expected_result = particles_test_data[0].pos - particles_test_data[0].vel
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
@@ -76,7 +76,7 @@ np.testing.assert_almost_equal(updated_particles[0].acc, updated_particles[0].po
 # Test 4 - pressure
 from framework import pressure
 
-particles_test_data = generateParticles(10)
+particles_test_data = generateParticles(32)
 pressures = [pressure(particle) for particle in particles_test_data]
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
@@ -90,7 +90,7 @@ for idx in xrange(len(particles_test_data)):
 # Test 5 - Gaussian_kernel
 from framework import Gaussian_kernel
 
-particles_test_data = generateParticles(10)
+particles_test_data = generateParticles(32)
 gaussian_kernels = [Gaussian_kernel(particle.acc, particle.rho) for particle in particles_test_data]
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
@@ -104,7 +104,7 @@ for idx in xrange(len(particles_test_data)):
 # Test 6 - Call get getResultsFromDevice() multiple times with the same data set
 # This is important since we want to transfer data to the GPU once at sim start, but get data back multiple times
 
-particles_test_data = generateParticles(25)
+particles_test_data = generateParticles(32)
 gpu_particles = ParticleGPUInterface(particles_test_data)
 
 n = 200
@@ -126,7 +126,7 @@ for i in xrange(n):
 
 
 # Test 7 - Confirm the number of particles is being correctly received by the GPU
-num_particles = 50
+num_particles = 32
 particles_test_data = generateParticles(num_particles)
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
@@ -139,7 +139,7 @@ for idx in xrange(len(particles_test_data)):
 
 # Stat 1 - Get the size of a particle
 
-particles_test_data = generateParticles(1)
+particles_test_data = generateParticles(32)
 gpu_particles = ParticleGPUInterface(particles_test_data)
 gpu_particles.cudaTests("particle_size")
 

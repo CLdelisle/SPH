@@ -56,7 +56,7 @@ __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
       vector_difference(pos_difference, p->pos, q->pos);
       
       p->rho = (q->mass * find_and_execute_kernel(CHOOSE_KERNEL_CONST, pos_difference, smooth));
-
+      
       //   # while we're iterating, add contribution from gravity
       //   if(p.id != q.id):
       if (p->id != q->id) {
