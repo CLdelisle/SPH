@@ -36,6 +36,7 @@ class ParticleGPUInterface:
   def __init__(self, particles):
     self.mod = SourceModule(self.get_cuda_functions())
     self.cuda_function_cache = {}
+    self.number_particles = len(particles)
 
     self.struct_arr = cuda.mem_alloc(2 * ParticleArrayStruct.mem_size)
     particles = [x.flatten() for x in particles]
@@ -54,9 +55,9 @@ class ParticleGPUInterface:
   def sim_loop(self, function_name, timestep, smooth, CHOOSE_KERNEL_CONST):
     gpuDeviceStats()
     if function_name in self.cuda_function_cache:
-      self.cuda_function_cache[function_name](self.struct_arr, numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST), block=(32, 1, 1), grid=(1, 1))
+      self.cuda_function_cache[function_name](self.struct_arr, numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST), block=(self.number_particles, 1, 1), grid=(1, 1))
     else:
-      warnings.warn("Cuda function {} not found in cache.".format(function_name), Warning)
+      print "Cuda function {} not found in cache.".format(function_name)
       self.cuda_function_cache[function_name] = self.mod.get_function(function_name)
 
   # Runs cuda tests
