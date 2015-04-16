@@ -124,8 +124,12 @@ __device__ void third_sim_loop(ParticleArray *particle_array, int timestep, floa
 
 // Runs all sim loops
 __global__ void run_simulation_loops(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
-  printf("particle_array->datalen %d\n", particle_array->datalen);
-  first_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
-  second_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
-  third_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
+  if (threadIdx.x < particle_array->datalen) {
+    printf("particle_array->datalen %d\n", particle_array->datalen);
+    first_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
+    second_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
+    third_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
+  } else {
+    printf("not running on index %d\n", threadIdx.x);
+  }
 }

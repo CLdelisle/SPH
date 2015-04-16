@@ -33,7 +33,7 @@ class ParticleGPUInterface:
     self.mod = SourceModule(self.get_cuda_functions())
     self.cuda_function_cache = {}
     self.number_particles = len(particles)
-
+    print "Allocating memory on the GPU - during sims, you should only see this at the start."
     self.struct_arr = cuda.mem_alloc(2 * ParticleArrayStruct.mem_size)
     particles = [x.flatten() for x in particles]
     self.particles_array = ParticleArrayStruct(numpy.array([particles], numpy.float32), self.struct_arr)
