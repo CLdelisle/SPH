@@ -136,4 +136,11 @@ updated_particles = gpu_particles.getResultsFromDevice()
 for idx in xrange(len(particles_test_data)):
 	np.testing.assert_almost_equal(updated_particles[idx].id, num_particles, required_decimal_accuray)
 
+
+# Stat 1 - Get the size of a particle
+
+particles_test_data = generateParticles(1)
+gpu_particles = ParticleGPUInterface(particles_test_data)
+gpu_particles.cudaTests("particle_size")
+
 print "All tests passed."

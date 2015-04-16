@@ -42,3 +42,8 @@ __global__ void number_of_particles_test(ParticleArray *particle_array) {
     Particle* p = particle_array->ptr + threadIdx.x;
     p->id = particle_array->datalen;
 }
+
+//stores the size of a particle as the id
+__global__ void particle_size(ParticleArray *particle_array) {
+    printf("particle size on the GPU is %d bytes\n", sizeof(Particle));
+}
