@@ -55,3 +55,10 @@ __global__ void gaussian_kernel_test(ParticleArray *particle_array) {
     //I know these values don't normally seed this function, but I'm just throwing a random vector and float at it.
     p->pressure = Gaussian_kernel(p->acc, p->rho);
 }
+
+
+//confirm that the number of particles is correctly received by the GPU
+__global__ void number_of_particles_test(ParticleArray *particle_array) {
+    Particle* p = particle_array->ptr + threadIdx.x;
+    p->id = particle_array->datalen;
+}

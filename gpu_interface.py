@@ -9,16 +9,12 @@ class ParticleArrayStruct:
     mem_size = 8 + numpy.intp(0).nbytes
     def __init__(self, array, struct_arr_ptr):
         print "copying data to device"
+
         self.data = cuda.to_device(array)
         self.shape, self.dtype = array.shape, array.dtype
-        """
-        numpy.getbuffer() needed due to lack of new-style buffer interface for
-        scalar numpy arrays as of numpy version 1.9.1
 
-        see: https://github.com/inducer/pycuda/pull/60
-        """
         cuda.memcpy_htod(int(struct_arr_ptr),
-                         numpy.getbuffer(numpy.int32(array.size)))
+                         numpy.getbuffer(numpy.int32(len(array[0]))))
         cuda.memcpy_htod(int(struct_arr_ptr) + 8,
                          numpy.getbuffer(numpy.intp(int(self.data))))
 
@@ -30,7 +26,7 @@ class ParticleArrayStruct:
 
 def gpuDeviceStats():
   free, total = cuda.mem_get_info()
-  print("Global memory occupancy:%f%% free"%(free*100/total))
+  print "Global memory occupancy:%f%% free" % (free*100/total)
 
 class ParticleGPUInterface:
   def __init__(self, particles):
@@ -51,7 +47,6 @@ class ParticleGPUInterface:
         cuda_code += "\n" + content_file.read()
     return cuda_code
 
-  # gpu_particles.first_sim_loop(timestep, smooth, CHOOSE_KERNEL_CONST)
   def sim_loop(self, function_name, timestep, smooth, CHOOSE_KERNEL_CONST):
     gpuDeviceStats()
     if function_name in self.cuda_function_cache:
@@ -69,7 +64,6 @@ class ParticleGPUInterface:
     mod = SourceModule(cuda_code)
     func = mod.get_function(test_name)
     func(self.struct_arr, block=(number_particles, 1, 1), grid=(1, 1))
-
 
   def getResultsFromDevice(self):
     print "getResultsFromDevice() start"

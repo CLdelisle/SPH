@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 /**
   for p in particles:
       # preemptively start the Velocity Verlet computation (first half of velocity update part)
@@ -48,7 +50,11 @@ __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
 
       //   p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
       float pos_difference[3];
+      // printf("p->pos[0]: %f\n", p->pos[0]);
+      // printf("pos_difference[1]: %f\n", pos_difference[1]);
+      // printf("pos_difference[1]: %f\n", pos_difference[1]);
       vector_difference(pos_difference, p->pos, q->pos);
+      
       p->rho = (q->mass * find_and_execute_kernel(CHOOSE_KERNEL_CONST, pos_difference, smooth));
 
       //   # while we're iterating, add contribution from gravity
@@ -118,6 +124,7 @@ __device__ void third_sim_loop(ParticleArray *particle_array, int timestep, floa
 
 // Runs all sim loops
 __global__ void run_simulation_loops(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
+  printf("particle_array->datalen %d\n", particle_array->datalen);
   first_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
   second_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
   third_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);

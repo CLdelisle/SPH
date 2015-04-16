@@ -86,6 +86,7 @@ updated_particles = gpu_particles.getResultsFromDevice()
 for idx in xrange(len(particles_test_data)):
 	np.testing.assert_almost_equal(updated_particles[idx].pressure, pressures[idx], required_decimal_accuray)
 
+
 # Test 5 - Gaussian_kernel
 from framework import Gaussian_kernel
 
@@ -100,7 +101,7 @@ for idx in xrange(len(particles_test_data)):
 	np.testing.assert_almost_equal(updated_particles[idx].pressure, gaussian_kernels[idx], required_decimal_accuray)
 
 
-# Test 5 - Call get getResultsFromDevice() multiple times with the same data set
+# Test 6 - Call get getResultsFromDevice() multiple times with the same data set
 # This is important since we want to transfer data to the GPU once at sim start, but get data back multiple times
 
 particles_test_data = generateParticles(25)
@@ -123,4 +124,19 @@ for i in xrange(n):
 	np.testing.assert_almost_equal(updated_particle.rho, particles_test_data[0].rho + i + 1, required_decimal_accuray)
 	np.testing.assert_almost_equal(updated_particle.temp, particles_test_data[0].temp + i + 1, required_decimal_accuray)
 
+
+# Test 7 - Confirm the number of particles is being correctly received by the GPU
+num_particles = 50
+particles_test_data = generateParticles(num_particles)
+
+gpu_particles = ParticleGPUInterface(particles_test_data)
+gpu_particles.cudaTests("number_of_particles_test", len(particles_test_data))
+updated_particles = gpu_particles.getResultsFromDevice()
+
+for idx in xrange(len(particles_test_data)):
+	np.testing.assert_almost_equal(updated_particles[idx].id, num_particles, required_decimal_accuray)
+
+
 print "All tests passed."
+
+
