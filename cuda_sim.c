@@ -21,7 +21,8 @@
 
 __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
     // for p in particles
-    Particle* p = particle_array->ptr + threadIdx.x;
+    Particle* p = particle_array->ptr + blockDim.x * blockIdx.x + threadIdx.x;
+    printf("Launching Particle %d: threadIdx = %d\n", (int)p->id, (int)threadIdx.x);
     // preemptively start the Velocity Verlet computation (first half of velocity update part)
     // p.vel += (timestep/2.0) * p.acc
     for (int i=0; i<3; i++)
@@ -88,7 +89,7 @@ for p in particles:
 */
 
 __device__ void second_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
-    Particle* p = particle_array->ptr + threadIdx.x;
+    Particle* p = particle_array->ptr + blockDim.x * blockIdx.x + threadIdx.x;
 
     // for q in particles:
     for (int i=0; i<particle_array->datalen; i++) {
@@ -119,7 +120,7 @@ __device__ void second_sim_loop(ParticleArray *particle_array, int timestep, flo
     p.pos += timestep * (p.vel + (timestep/2.0)*p.temp)
 */
 __device__ void third_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
-  Particle* p = particle_array->ptr + threadIdx.x;
+  Particle* p = particle_array->ptr + blockDim.x * blockIdx.x + threadIdx.x;
     // p.pos += timestep * (p.vel + (timestep/2.0)*p.temp)
   for (int i=0; i<3; i++) {
     p->pos[i] += timestep * (p->vel[i] + (timestep/2.0) * p->temp[i]);
@@ -133,7 +134,7 @@ __global__ void run_simulation_loops(ParticleArray *particle_array, int timestep
     second_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
     third_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
 
-    Particle* p = particle_array->ptr + threadIdx.x;
+    Particle* p = particle_array->ptr + blockDim.x * blockIdx.x + threadIdx.x;
     printf("particle %d: pos[0]=%f pressure=%f\n", (int) p->id, p->pos[0], p->pressure);
   } else {
     printf("not running on index %d\n", threadIdx.x);
