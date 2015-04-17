@@ -104,6 +104,12 @@ __device__ void second_sim_loop(ParticleArray *particle_array, int timestep, flo
           p->acc[2] -= b * pos_difference[2];
         }
     }
+
+    // # finish velocity update
+    // p.vel += (timestep/2.0) * p.acc
+    p->vel[0] += ((float) timestep/2.0) * p->acc[0];
+    p->vel[1] += ((float) timestep/2.0) * p->acc[1];
+    p->vel[2] += ((float) timestep/2.0) * p->acc[2];
 }
 
 /*
