@@ -22,7 +22,6 @@
 __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
     // for p in particles
     Particle* p = particle_array->ptr + threadIdx.x;
-    printf("p->pos[0]: %f\n", p->pos[0]);
     // preemptively start the Velocity Verlet computation (first half of velocity update part)
     // p.vel += (timestep/2.0) * p.acc
     for (int i=0; i<3; i++)
@@ -127,6 +126,9 @@ __global__ void run_simulation_loops(ParticleArray *particle_array, int timestep
     first_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
     second_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
     third_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
+
+    Particle* p = particle_array->ptr + threadIdx.x;
+    printf("particle %d: pos[0]=%f pressure=%f\n", (int) p->id, p->pos[0], p->pressure);
   } else {
     printf("not running on index %d\n", threadIdx.x);
   }
