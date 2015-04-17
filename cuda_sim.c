@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <stdlib.h>
 /**
   for p in particles:
       # preemptively start the Velocity Verlet computation (first half of velocity update part)
@@ -18,7 +18,6 @@
       p.rho = ( p.rho / len(particles) )
           p.pressure = pressure(p)
 **/
-
 
 __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
     // for p in particles
@@ -59,7 +58,7 @@ __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
       
       //   # while we're iterating, add contribution from gravity
       //   if(p.id != q.id):
-      if (p->id != q->id) {
+      if (!ids_are_equal(p->id, q->id)) {
         // p.acc += Newtonian_gravity(p,q)
         float* newtonian_gravity_result = Newtonian_gravity(p, q);
         p->acc[0] += newtonian_gravity_result[0];
@@ -96,7 +95,7 @@ __device__ void second_sim_loop(ParticleArray *particle_array, int timestep, flo
     for (int i=0; i<particle_array->datalen; i++) {
       Particle* q = particle_array->ptr + i;
       // if p.id != q.id:
-        if (p->id != q->id) {
+        if (!ids_are_equal(p->id, q->id)) {
           float pos_difference[3];
           vector_difference(pos_difference, p->pos, q->pos);
           float a = ((p->pressure / powf(p->rho, 2)) + (q->pressure / powf(q->rho, 2)));
