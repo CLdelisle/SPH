@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 __global__ void increment_particle_properties(ParticleArray *particle_array) {
     Particle* p = particle_array->ptr + threadIdx.x;
     p->id       += 1;

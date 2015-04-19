@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 /**
   for p in particles:
       # preemptively start the Velocity Verlet computation (first half of velocity update part)

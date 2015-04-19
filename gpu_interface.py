@@ -3,7 +3,6 @@ import pycuda.autoinit
 import numpy
 from pycuda.compiler import SourceModule
 from particle import Particle
-import warnings
 
 class ParticleArrayStruct:
     mem_size = 8 + numpy.intp(0).nbytes
