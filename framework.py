@@ -47,7 +47,7 @@ def Gaussian_kernel(r, h):
 	# Gaussian function
 	r = np.linalg.norm(r)
 
-	return ( (((1/(np.pi * (h**2)))) ** (3/2) ) * ( np.exp( - ((r**2) / (h**2)) )) )
+	return ( (((1/(np.pi * (h**2)))) ** (1.5) ) * ( np.exp( - ((r**2) / (h**2)) )) )
 
 
 def del_Gaussian(r, h):
