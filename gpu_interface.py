@@ -18,10 +18,7 @@ class ParticleArrayStruct:
                          numpy.getbuffer(numpy.intp(int(self.data))))
 
     def getDataFromDevice(self):
-        print "getDataFromDevice() start"
-        a = cuda.from_device(self.data, self.shape, self.dtype)
-        print "getDataFromDevice() end"
-        return a
+        return cuda.from_device(self.data, self.shape, self.dtype)
 
 def gpuDeviceStats():
   free, total = cuda.mem_get_info()

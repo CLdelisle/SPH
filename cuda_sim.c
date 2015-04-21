@@ -127,15 +127,10 @@ __device__ void third_sim_loop(ParticleArray *particle_array, int timestep, floa
 // Runs all sim loops
 __global__ void run_simulation_loops(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
   if (threadIdx.x < particle_array->datalen) {
-    Particle* p = particle_array->ptr + blockDim.x * blockIdx.x + threadIdx.x;
     first_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
-    printf("1st: %f\n", p->vel[0]);
     second_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
-    printf("2nd: %f\n", p->vel[0]);
     third_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
-    printf("3rd: %f\n", p->vel[0]);
 
-    // printf("particle %d: pos[0]=%f pressure=%f\n", (int) p->id, p->pos[0], p->pressure);
   } else {
     printf("not running on index %d\n", threadIdx.x);
   }
