@@ -64,14 +64,14 @@ __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
         p->acc[1] += newtonian_gravity_result[1];
         p->acc[2] += newtonian_gravity_result[2];
         free(&newtonian_gravity_result);
-
-        // # normalize density
-        // p.rho = ( p.rho / len(particles) )
-        p->rho = p->rho / (float) particle_array->datalen;
-        //     p.pressure = pressure(p)
-        p->pressure = pressure(p);
       }
     }
+
+    // # normalize density
+    // p.rho = ( p.rho / len(particles) )
+    p->rho = p->rho / (float) particle_array->datalen;
+    //     p.pressure = pressure(p)
+    p->pressure = pressure(p);
 
 }
 
@@ -93,7 +93,6 @@ __device__ void second_sim_loop(ParticleArray *particle_array, int timestep, flo
     // for q in particles:
     for (int i=0; i<particle_array->datalen; i++) {
       Particle* q = particle_array->ptr + i;
-      printf("~~~~: %.15f\n", (q->pressure / powf(q->rho, 2)));
       // if p.id != q.id:
         if (!ids_are_equal(p->id, q->id)) {
           float pos_difference[3];
