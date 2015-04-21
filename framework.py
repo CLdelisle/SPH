@@ -126,7 +126,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 
 			# main simulation loop
 			if mode == "parallel":
-				gpu_particles.sim_loop("run_simulation_loops", timestep, smooth, CHOOSE_KERNEL_CONST)
+				gpu_particles.run_cuda_function('run_simulation_loops', (numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST)))
 				# Transfer the results back to CPU
 				# Just for testing, this should not be done here
 
@@ -147,8 +147,9 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 								p.acc += Newtonian_gravity(p,q)
 
 						# normalize density
-						p.rho = ( p.rho / len(particles) )
+						p.rho = p.rho / len(particles)
 						p.pressure = pressure(p)
+
 
 				# second sim loop
 				for p in particles:
@@ -158,6 +159,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 							p.acc -= ( q.mass * ((p.pressure / (p.rho ** 2)) + (q.pressure / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
 					# finish velocity update
 					p.vel += (timestep/2.0) * p.acc
+					print (p.vel[0])
 				'''
 				Velocity Verlet integration: Works only assuming force is velocity-independent
 				http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet

@@ -20,7 +20,7 @@
 __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
     // for p in particles
     Particle* p = particle_array->ptr + blockDim.x * blockIdx.x + threadIdx.x;
-    printf("Launching Particle %d: threadIdx = %d\n", (int)p->id, (int)threadIdx.x);
+    // printf("Launching Particle %d: threadIdx = %d\n", (int)p->id, (int)threadIdx.x);
     // preemptively start the Velocity Verlet computation (first half of velocity update part)
     // p.vel += (timestep/2.0) * p.acc
     for (int i=0; i<3; i++)
@@ -48,8 +48,6 @@ __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
 
       //   p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
       float pos_difference[3];
-      // printf("pos_difference[1]: %f\n", pos_difference[1]);
-      // printf("pos_difference[1]: %f\n", pos_difference[1]);
       vector_difference(pos_difference, p->pos, q->pos);
 
       float temp = find_and_execute_kernel(CHOOSE_KERNEL_CONST, pos_difference, smooth);
@@ -60,6 +58,7 @@ __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
         // p.acc += Newtonian_gravity(p,q)
         float newtonian_gravity_result[3];
         Newtonian_gravity(newtonian_gravity_result, p, q);
+
         p->acc[0] += newtonian_gravity_result[0];
         p->acc[1] += newtonian_gravity_result[1];
         p->acc[2] += newtonian_gravity_result[2];
@@ -82,7 +81,7 @@ for p in particles:
                   if p.id != q.id:
                     p.acc -= ( q.mass * ((p.pressure / (p.rho ** 2)) + (q.pressure / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
           # finish velocity update
-                                  p.vel += (timestep/2.0) * p.acc
+          p.vel += (timestep/2.0) * p.acc
 
 */
 
@@ -128,12 +127,15 @@ __device__ void third_sim_loop(ParticleArray *particle_array, int timestep, floa
 // Runs all sim loops
 __global__ void run_simulation_loops(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
   if (threadIdx.x < particle_array->datalen) {
-    first_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
-    second_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
-    third_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
-
     Particle* p = particle_array->ptr + blockDim.x * blockIdx.x + threadIdx.x;
-    printf("particle %d: pos[0]=%f pressure=%f\n", (int) p->id, p->pos[0], p->pressure);
+    first_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
+    printf("1st: %f\n", p->vel[0]);
+    second_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
+    printf("2nd: %f\n", p->vel[0]);
+    third_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
+    printf("3rd: %f\n", p->vel[0]);
+
+    // printf("particle %d: pos[0]=%f pressure=%f\n", (int) p->id, p->pos[0], p->pressure);
   } else {
     printf("not running on index %d\n", threadIdx.x);
   }

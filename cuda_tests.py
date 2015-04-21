@@ -19,7 +19,7 @@ def generateParticles(n):
 # Test 1 - increment all particle property values by 1
 particles_test_data = generateParticles(32)
 gpu_particles = ParticleGPUInterface(particles_test_data)
-gpu_particles.cudaTests("increment_particle_properties")
+gpu_particles.run_cuda_function("increment_particle_properties")
 updated_particle = gpu_particles.getResultsFromDevice()[0]
 
 
@@ -37,7 +37,7 @@ np.testing.assert_almost_equal(updated_particle.temp, particles_test_data[0].tem
 particles_test_data = generateParticles(32)
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
-gpu_particles.cudaTests("increment_particle_properties")
+gpu_particles.run_cuda_function("increment_particle_properties")
 updated_particles = gpu_particles.getResultsFromDevice()
 
 for idx in xrange(len(particles_test_data)):
@@ -58,7 +58,7 @@ particles_test_data = generateParticles(32)
 expected_result = particles_test_data[0].pos - particles_test_data[0].vel
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
-gpu_particles.cudaTests("vector_difference_test")
+gpu_particles.run_cuda_function("vector_difference_test")
 updated_particles = gpu_particles.getResultsFromDevice()
 
 # compare to the original python object
@@ -80,7 +80,7 @@ particles_test_data = generateParticles(32)
 pressures = [pressure(particle) for particle in particles_test_data]
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
-gpu_particles.cudaTests("particle_pressure_test")
+gpu_particles.run_cuda_function("particle_pressure_test")
 updated_particles = gpu_particles.getResultsFromDevice()
 
 for idx in xrange(len(particles_test_data)):
@@ -94,7 +94,7 @@ particles_test_data = generateParticles(32)
 gaussian_kernels = [Gaussian_kernel(particle.acc, particle.rho) for particle in particles_test_data]
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
-gpu_particles.cudaTests("gaussian_kernel_test")
+gpu_particles.run_cuda_function("gaussian_kernel_test")
 updated_particles = gpu_particles.getResultsFromDevice()
 
 for idx in xrange(len(particles_test_data)):
@@ -112,7 +112,7 @@ n = 200
 # call the increment function n times
 # on each iteration, increment all particle properties and make sure they've been incremented
 for i in xrange(n):
-	gpu_particles.cudaTests("increment_particle_properties")
+	gpu_particles.run_cuda_function("increment_particle_properties")
 	updated_particle = gpu_particles.getResultsFromDevice()[0]
 
 	np.testing.assert_almost_equal(updated_particle.id, particles_test_data[0].id + i + 1, required_decimal_accuray)
@@ -130,7 +130,7 @@ num_particles = 32
 particles_test_data = generateParticles(num_particles)
 
 gpu_particles = ParticleGPUInterface(particles_test_data)
-gpu_particles.cudaTests("number_of_particles_test")
+gpu_particles.run_cuda_function("number_of_particles_test")
 updated_particles = gpu_particles.getResultsFromDevice()
 
 for idx in xrange(len(particles_test_data)):
@@ -139,8 +139,8 @@ for idx in xrange(len(particles_test_data)):
 
 # Stat 1 - Get the size of a particle
 
-particles_test_data = generateParticles(32)
-gpu_particles = ParticleGPUInterface(particles_test_data)
-gpu_particles.cudaTests("particle_size")
+# particles_test_data = generateParticles(32)
+# gpu_particles = ParticleGPUInterface(particles_test_data)
+# gpu_particles.run_cuda_function("particle_size")
 
 print "All tests passed."
