@@ -51,8 +51,9 @@ __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
       // printf("pos_difference[1]: %f\n", pos_difference[1]);
       // printf("pos_difference[1]: %f\n", pos_difference[1]);
       vector_difference(pos_difference, p->pos, q->pos);
-      
-      p->rho += (q->mass * find_and_execute_kernel(CHOOSE_KERNEL_CONST, pos_difference, smooth));
+
+      float temp = find_and_execute_kernel(CHOOSE_KERNEL_CONST, pos_difference, smooth);
+      p->rho += q->mass * temp;
       
       //   # while we're iterating, add contribution from gravity
       //   if(p.id != q.id):
@@ -92,6 +93,7 @@ __device__ void second_sim_loop(ParticleArray *particle_array, int timestep, flo
     // for q in particles:
     for (int i=0; i<particle_array->datalen; i++) {
       Particle* q = particle_array->ptr + i;
+      printf("~~~~: %.15f\n", (q->pressure / powf(q->rho, 2)));
       // if p.id != q.id:
         if (!ids_are_equal(p->id, q->id)) {
           float pos_difference[3];

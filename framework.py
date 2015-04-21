@@ -71,16 +71,16 @@ def pressure(p):
 
 def saveParticles(particles, fname):
 #	if particles:
-	        fhandle = open(fname, "w")
-	        for p in particles:
-	                p.writeToFile(fhandle)
-	        fhandle.close()
+			fhandle = open(fname, "w")
+			for p in particles:
+					p.writeToFile(fhandle)
+			fhandle.close()
 #	else:
 #		print "[-] No more particles in list!"
 
 
 def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep, mode):
-	t = 0.0     # elapsed time
+	t = 0.0	 # elapsed time
 	if(kernel == "gaussian"):
 		CHOOSE_KERNEL_CONST = 1
 	else:
@@ -93,7 +93,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 		from pycuda.compiler import SourceModule
 
 		from gpu_interface import ParticleGPUInterface
-        '''
+		'''
 	So we can do this one of two ways.
 	1) Keep only one copy of the system in memory.
 	   This is what is implemented here. This does not require
@@ -103,7 +103,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 	   This way we can remove a for-loop, but requires more memory.
 	Luckily, it is likely these problems only affect the serial algorithm.
 	'''
-        # output-100.csv = prefix + interval + file extension
+		# output-100.csv = prefix + interval + file extension
 	ary = savefile.split(".")  # only split savefile once ([0]=prefix, [1]=extension)
 	save = 0
 
@@ -118,7 +118,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 					print "saving file"
 					fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 					save += 1  # bump save counter
-				#	string = "\b%d..." % int(t)     # '\b' prints a backspace character to remove previous space
+				#	string = "\b%d..." % int(t)	 # '\b' prints a backspace character to remove previous space
 				#	print string,
 					if mode == "parallel":
 						particles = gpu_particles.getResultsFromDevice()
@@ -141,7 +141,7 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 						p.pressure = 0.0
 						#get density
 						for q in particles:
-					#	        print find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)
+					#			print find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)
 							p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
 							# while we're iterating, add contribution from gravity
 							if(p.id != q.id):
@@ -154,10 +154,10 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 				for p in particles:
 					# acceleration from pressure gradient
 					for q in particles:
-					        if p.id != q.id:
-	        					p.acc -= ( q.mass * ((p.pressure / (p.rho ** 2)) + (q.pressure / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
+						if p.id != q.id:
+							p.acc -= ( q.mass * ((p.pressure / (p.rho ** 2)) + (q.pressure / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
 					# finish velocity update
-	                                p.vel += (timestep/2.0) * p.acc
+					p.vel += (timestep/2.0) * p.acc
 				'''
 				Velocity Verlet integration: Works only assuming force is velocity-independent
 				http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
@@ -170,10 +170,10 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 				for p in particles:
 					# perform position update
 					p.pos += timestep * (p.vel + (timestep/2.0)*p.temp)
-			#                if np.linalg.norm(p.pos) > bound:
-			#                        print "Particle %d position: %f out of range at iteration %d" % (p.id, np.linalg.norm(p.pos), int(t))
-			#                        tempp.remove(p)
-			#        particles = tempp
+			#				if np.linalg.norm(p.pos) > bound:
+			#						print "Particle %d position: %f out of range at iteration %d" % (p.id, np.linalg.norm(p.pos), int(t))
+			#						tempp.remove(p)
+			#		particles = tempp
 			t += timestep  # advance time
 
 	if mode == "parallel":
@@ -183,4 +183,4 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 #	print "\b%d\n" % int(t)
 	fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 	saveParticles(particles, fname)
-	return t    # returns the last t-value, which is useful for displaying total iterations
+	return t	# returns the last t-value, which is useful for displaying total iterations
