@@ -10,10 +10,11 @@ def main():
     for particle in ppos:
         particle.display(tabs=1)
     
-    cli.startSimulation(ppos)
+    (iterations, final_particles) = cli.startSimulation(ppos)
     print " ================ AFTER SIMULATION ENDS ================ "
     print "\tid\tmass\tposx, posy, posz\t\tvx, vy, vz\t\tax, ay, az\tpressure\tdensity"
-    for particle in ppos:
+
+    for particle in final_particles:
         particle.display(tabs=1)
 
 

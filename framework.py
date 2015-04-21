@@ -185,4 +185,6 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 #	print "\b%d\n" % int(t)
 	fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 	saveParticles(particles, fname)
-	return t	# returns the last t-value, which is useful for displaying total iterations
+	# returns the last t-value, which is useful for displaying total iterations
+	# Also returns the final updated particles
+	return (t, particles)
