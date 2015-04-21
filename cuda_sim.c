@@ -54,16 +54,15 @@ __device__ void first_sim_loop(ParticleArray *particle_array, int timestep, floa
 
       float temp = find_and_execute_kernel(CHOOSE_KERNEL_CONST, pos_difference, smooth);
       p->rho += q->mass * temp;
-      
       //   # while we're iterating, add contribution from gravity
       //   if(p.id != q.id):
       if (!ids_are_equal(p->id, q->id)) {
         // p.acc += Newtonian_gravity(p,q)
-        float* newtonian_gravity_result = Newtonian_gravity(p, q);
+        float newtonian_gravity_result[3];
+        Newtonian_gravity(newtonian_gravity_result, p, q);
         p->acc[0] += newtonian_gravity_result[0];
         p->acc[1] += newtonian_gravity_result[1];
         p->acc[2] += newtonian_gravity_result[2];
-        free(&newtonian_gravity_result);
       }
     }
 

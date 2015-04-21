@@ -141,11 +141,11 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 						p.pressure = 0.0
 						#get density
 						for q in particles:
-					#			print find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)
-							p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
+							p.rho += q.mass * find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)
 							# while we're iterating, add contribution from gravity
 							if(p.id != q.id):
 								p.acc += Newtonian_gravity(p,q)
+
 						# normalize density
 						p.rho = ( p.rho / len(particles) )
 						p.pressure = pressure(p)

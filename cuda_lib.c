@@ -173,7 +173,7 @@ __device__ float find_and_execute_kernel(int CHOOSE_KERNEL_CONST, float* r, floa
 //   R = np.linalg.norm(r) # magnitude of the separation vector
 //   return ((CONST_G * q.mass) / (R**3)) * r
 
-__device__ float* Newtonian_gravity(Particle* p, Particle* q) {
+__device__ void Newtonian_gravity(float* result, Particle* p, Particle* q) {
   //   # Newton's gravitational constant
   //   CONST_G = 6.67384 # * 10^(-11) m^3 kg^-1 s^-2
   float CONST_G = 6.67384;
@@ -190,9 +190,7 @@ __device__ float* Newtonian_gravity(Particle* p, Particle* q) {
   //   return ((CONST_G * q.mass) / (R**3)) * r
 
   float scalar = (CONST_G * q->mass) / (powf(R, 3));
-  float* result = (float*) malloc(sizeof(float) * 3);
   result[0] = r[0] * scalar;
   result[1] = r[1] * scalar;
   result[2] = r[2] * scalar;
-  return result;
 }
