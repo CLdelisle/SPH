@@ -10,7 +10,7 @@ __version__ = "2.0.0"
 
 """ THIS VERSION HAS NOT BEEN TESTED, BUT RUNS SUCCESSFULLY AT THE VERY LEAST """
 
-
+# Params p,q particles
 def Newtonian_gravity(p,q):
 	# Newton's gravitational constant
 	CONST_G = 6.67384 # * 10^(-11) m^3 kg^-1 s^-2
@@ -20,9 +20,9 @@ def Newtonian_gravity(p,q):
 	Note that this is all in the r-direction vectorially
 	'''
 
-	r = q.pos - p.pos # separation vector
-	R = np.linalg.norm(r) # magnitude of the separation vector
-	return ((CONST_G * q.mass) / (R**3)) * r
+	zz = q.pos - p.pos # separation vector
+	R = np.linalg.norm(zz) # magnitude of the separation vector
+	return ((CONST_G * q.mass) / (R**3)) * zz
 
 
 def find_kernel(x, r, h):
@@ -46,13 +46,14 @@ def del_kernel(x, r, h):
 def Gaussian_kernel(r, h):
 	# Gaussian function
 	r = np.linalg.norm(r)
+
 	return ( (((1/(np.pi * (h**2)))) ** (1.5) ) * ( np.exp( - ((r**2) / (h**2)) )) )
 
 
 def del_Gaussian(r, h):
 	# derivative of Gaussian kernel
 	r1 = np.linalg.norm(r)
-	return ( ((-2 * r1) / (h**2)) * Gaussian_kernel(r,h) )
+	return ( ((-2 * r1) / (h**2)) * Gaussian_kernel(r, h))
 
 
 def cubic_spline_kernel(r, h):
@@ -70,21 +71,29 @@ def pressure(p):
 
 def saveParticles(particles, fname):
 #	if particles:
-	        fhandle = open(fname, "w")
-	        for p in particles:
-	                p.writeToFile(fhandle)
-	        fhandle.close()
+			fhandle = open(fname, "w")
+			for p in particles:
+					p.writeToFile(fhandle)
+			fhandle.close()
 #	else:
 #		print "[-] No more particles in list!"
 
-def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep):
-	t = 0.0     # elapsed time
+
+def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep, mode):
+	t = 0.0	 # elapsed time
 	if(kernel == "gaussian"):
 		CHOOSE_KERNEL_CONST = 1
 	else:
 		CHOOSE_KERNEL_CONST = 0
 
-        '''
+	if mode == "parallel":
+		import pycuda.driver as cuda
+		import pycuda.autoinit
+		import numpy
+		from pycuda.compiler import SourceModule
+
+		from gpu_interface import ParticleGPUInterface
+		'''
 	So we can do this one of two ways.
 	1) Keep only one copy of the system in memory.
 	   This is what is implemented here. This does not require
@@ -94,67 +103,87 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 	   This way we can remove a for-loop, but requires more memory.
 	Luckily, it is likely these problems only affect the serial algorithm.
 	'''
-        # output-100.csv = prefix + interval + file extension
+		# output-100.csv = prefix + interval + file extension
 	ary = savefile.split(".")  # only split savefile once ([0]=prefix, [1]=extension)
-	tempacc = [len(particles)]
-	count = 0
 	save = 0
+
+	if mode == "parallel":
+		# init gpu interface, pass particles
+		gpu_particles = ParticleGPUInterface(particles)
+
 #	print "[+] Saved @ iterations: ",
 	while(t < (maxiter*timestep)):
+			print "t={}".format(t)
 			if (save*interval) == t:
+					print "saving file"
 					fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 					save += 1  # bump save counter
-				#	string = "\b%d..." % int(t)     # '\b' prints a backspace character to remove previous space
+				#	string = "\b%d..." % int(t)	 # '\b' prints a backspace character to remove previous space
 				#	print string,
+					if mode == "parallel":
+						particles = gpu_particles.getResultsFromDevice()
 					saveParticles(particles, fname)
-							
-			# main simulation loop
-			for p in particles:
-					# preemptively start the Velocity Verlet computation (first half of velocity update part)
-					p.vel += (timestep/2.0) * p.acc
-					tempacc.append(p.acc)
-					p.acc = 0.0
-					p.rho = 0.0
-					p.pressure = 0.0
-					#get density
-					for q in particles:
-				#	        print find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)
-						p.rho += ( q.mass * (find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)) )
-						# while we're iterating, add contribution from gravity
-						if(p.id != q.id):
-							p.acc += Newtonian_gravity(p,q)
-					# normalize density
-					p.rho = ( p.rho / len(particles) )
-					p.pressure = pressure(p)
 
-			for p in particles:
-				# acceleration from pressure gradient
-				for q in particles:
-				        if p.id != q.id:
-        					p.acc -= ( q.mass * ((p.pressure / (p.rho ** 2)) + (q.pressure / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
-				# finish velocity update
-                                p.vel += (timestep/2.0) * p.acc
+			# main simulation loop
+			if mode == "parallel":
+				gpu_particles.run_cuda_function('run_simulation_loops', (numpy.int32(timestep), numpy.float32(smooth), numpy.int32(CHOOSE_KERNEL_CONST)))
+				# Transfer the results back to CPU
+				# Just for testing, this should not be done here
+
+			else:
+				# first sim loop (could use a better name, but I have no idea what this loop is doing)
+				for p in particles:
+						# preemptively start the Velocity Verlet computation (first half of velocity update part)
+						p.vel += (timestep/2.0) * p.acc
+						p.temp = p.acc
+						p.acc = 0.0
+						p.rho = 0.0
+						p.pressure = 0.0
+						#get density
+						for q in particles:
+							p.rho += q.mass * find_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth)
+							# while we're iterating, add contribution from gravity
+							if(p.id != q.id):
+								p.acc += Newtonian_gravity(p,q)
+
+						# normalize density
+						p.rho = p.rho / len(particles)
+						p.pressure = pressure(p)
+
+
+				# second sim loop
+				for p in particles:
+					# acceleration from pressure gradient
+					for q in particles:
+						if p.id != q.id:
+							p.acc -= ( q.mass * ((p.pressure / (p.rho ** 2)) + (q.pressure / (q.rho ** 2))) * del_kernel(CHOOSE_KERNEL_CONST, p.pos - q.pos, smooth) ) * (1 / (np.linalg.norm(p.pos - q.pos))) * (p.pos - q.pos)
+					# finish velocity update
+					p.vel += (timestep/2.0) * p.acc
 				'''
 				Velocity Verlet integration: Works only assuming force is velocity-independent
 				http://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
 				'''
-			# iterate AGAIN to do final position updates
-			# save particles list to temporary holder - ensures we have consistent indexing throughout for loop
-		#	tempp = particles
-			for p in particles:
-				# perform position update
-				p.pos += timestep * (p.vel + (timestep/2.0)*tempacc[count])
-		#                if np.linalg.norm(p.pos) > bound:
-		#                        print "Particle %d position: %f out of range at iteration %d" % (p.id, np.linalg.norm(p.pos), int(t))
-		#                        tempp.remove(p)
-		#        particles = tempp
-						
+				# iterate AGAIN to do final position updates
+				# save particles list to temporary holder - ensures we have consistent indexing throughout for loop
+				#	tempp = particles
+
+				# third sim loop
+				for p in particles:
+					# perform position update
+					p.pos += timestep * (p.vel + (timestep/2.0)*p.temp)
+			#				if np.linalg.norm(p.pos) > bound:
+			#						print "Particle %d position: %f out of range at iteration %d" % (p.id, np.linalg.norm(p.pos), int(t))
+			#						tempp.remove(p)
+			#		particles = tempp
 			t += timestep  # advance time
-			count += 1	# bump count for tempacc[]
+
+	if mode == "parallel":
+		particles = gpu_particles.getResultsFromDevice()
 
 	# Always save the last interval
 #	print "\b%d\n" % int(t)
-        print
 	fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 	saveParticles(particles, fname)
-	return t    # returns the last t-value, which is useful for displaying total iterations
+	# returns the last t-value, which is useful for displaying total iterations
+	# Also returns the final updated particles
+	return (t, particles)

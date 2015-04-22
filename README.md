@@ -24,6 +24,8 @@ sph.py [-h] [-g GEN] [-i IFILE] [--gtype {gaussian,random}]
           [--maxiter MAXITER] [--t_norm {months,years,decades,centuries}]
           [--x_norm {Meters,kilometers,light-years}]
           [--kernel {gaussian,cubic}]
+          [--mode {serial,parallel}]
+
 ```
 
 ### SPH.py
