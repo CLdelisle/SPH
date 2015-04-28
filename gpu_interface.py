@@ -34,7 +34,7 @@ def gpuDeviceStats():
 class ParticleGPUInterface:
   # Initialize with the array of particles
   def __init__(self, particles):
-    self.mod = SourceModule(self.get_cuda_functions())
+    self.mod = SourceModule(self.get_cuda_code())
     self.cuda_function_cache = {}
     self.number_particles = len(particles)
     print "Allocating memory on the GPU - during sims, you should only see this at the start."
@@ -47,13 +47,13 @@ class ParticleGPUInterface:
   # collects all the cuda c files
   # currently hardcoded for 3 files (library, simulation, and test)
   # Reminder - this is a SLOW function since it's file i/o. Only call this once!
-  def get_cuda_functions(self):
+  def get_cuda_code(self):
     cuda_code = ""
-    with open('cuda_lib.c', 'r') as content_file:
+    with open('cuda_lib.cu', 'r') as content_file:
         cuda_code += content_file.read()
-    with open('cuda_sim.c', 'r') as content_file:
+    with open('cuda_sim.cu', 'r') as content_file:
         cuda_code += "\n" + content_file.read()
-    with open('cuda_tests.c', 'r') as content_file:
+    with open('cuda_tests.cu', 'r') as content_file:
         cuda_code += "\n" + content_file.read()
     return cuda_code
 
