@@ -24,7 +24,7 @@ data = []
 
 # data file format: Particle ID, X-coord, Y-coord, Z-coord, X-Velocity, Y-Velocity, Z-Velocity
 for i, filename in enumerate(files):
-	data.append(np.genfromtxt(filename, delimiter=',', names=['pid', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz']))
+	data.append(np.genfromtxt(filename, delimiter=',', names=['x', 'y', 'z']))
 
 RUNTIME = len(files) - 1 #Number of frames to render
 
