@@ -69,17 +69,16 @@ def pressure(p):
 	gamma = 1.5 #but i'm keeping these constants segregated in this function for now instead of inlining because of this issue
 	return (k * (p.rho ** gamma))
 
-def saveParticles(particles, fname):
+def saveParticles(particles, fname, verbosity):
 #	if particles:
 			fhandle = open(fname, "w")
 			for p in particles:
-					p.writeToFile(fhandle)
+					p.writeToFile(fhandle, verbosity)
 			fhandle.close()
 #	else:
 #		print "[-] No more particles in list!"
 
-
-def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep, mode):
+def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep, mode, verbosity):
 	t = 0.0	 # elapsed time
 	if(kernel == "gaussian"):
 		CHOOSE_KERNEL_CONST = 1
@@ -111,18 +110,18 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 		# init gpu interface, pass particles
 		gpu_particles = ParticleGPUInterface(particles)
 
-#	print "[+] Saved @ iterations: ",
+	print "[+] Saved @ iterations: ",
 	while(t < (maxiter*timestep)):
-			print "t={}".format(t)
+#			print "t={}".format(t)
 			if (save*interval) == t:
-					print "saving file"
+#					print "saving file"
 					fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
 					save += 1  # bump save counter
-				#	string = "\b%d..." % int(t)	 # '\b' prints a backspace character to remove previous space
-				#	print string,
+					string = "\b%d..." % int(t)	 # '\b' prints a backspace character to remove previous space
+					print string,
 					if mode == "parallel":
 						particles = gpu_particles.getResultsFromDevice()
-					saveParticles(particles, fname)
+					saveParticles(particles, fname, verbosity)
 
 			# main simulation loop
 			if mode == "parallel":
@@ -181,9 +180,9 @@ def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interva
 		particles = gpu_particles.getResultsFromDevice()
 
 	# Always save the last interval
-#	print "\b%d\n" % int(t)
+	print "\b%d\n" % int(t)
 	fname = "%s-%d.%s" % (ary[0], int(t), ary[1])
-	saveParticles(particles, fname)
+	saveParticles(particles, fname, verbosity)
 	# returns the last t-value, which is useful for displaying total iterations
 	# Also returns the final updated particles
 	return (t, particles)

@@ -42,16 +42,15 @@ class Particle(object):
 		return sqrt(self.vel[0] ** 2 + self.vel[1] ** 2 + self.vel[2] ** 2)
 
 	#  Requires current an open file handle
-	def writeToFile(self, output):
-		line = self.formatProperties()
+	def writeToFile(self, output, v):
+		line = self.formatProperties(v)
 		output.write(line)
 
-	def formatProperties(self):
-		#   "Particle ID, X-coord, Y-coord, Z-coord, etc."
-		return "%d,%.2f,%f,%f,%f,%f,%f,%f,%f,%f\n" % (int(self.id), float(self.mass), float(self.pos[0]), float(self.pos[1]),
-				float(self.pos[2]),float(self.vel[0]),
-				float(self.vel[1]), float(self.vel[2]),
-				float(self.pressure), float(self.rho))
+	#   "Particle ID, X-coord, Y-coord, Z-coord, etc."
+	def formatProperties(self, v):
+		if v == 1: return "%.3f,%.3f,%.3f\n" % (float(self.pos[0]), float(self.pos[1]), float(self.pos[2]))
+		if v == 2: return "%d,%.2f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n" % (int(self.id), float(self.mass), float(self.pos[0]), float(self.pos[1]), float(self.pos[2]),float(self.vel[0]), float(self.vel[1]), float(self.vel[2]), float(self.pressure), float(self.rho))
+		if v == 3: return "%d,%.2f,%f,%f,%f,%f,%f,%f,%f,%f\n" % (int(self.id), float(self.mass), float(self.pos[0]), float(self.pos[1]), float(self.pos[2]),float(self.vel[0]), float(self.vel[1]), float(self.vel[2]), float(self.pressure), float(self.rho))
 
 	def flatten(self):
 		return [self.id, self.mass, self.pos[0], self.pos[1], self.pos[2], self.vel[0], self.vel[1], self.vel[2], self.acc[0], self.acc[1], self.acc[2], self.rho, self.pressure, self.temp[0], self.temp[1], self.temp[2]]
@@ -59,3 +58,4 @@ class Particle(object):
 	@staticmethod
 	def unflatten(float_array):
 		return Particle(float_array[0], float_array[1], float_array[2], float_array[3], float_array[4], float_array[5], float_array[6], float_array[7], [float_array[8], float_array[9], float_array[10]], float_array[11], float_array[12], [float_array[13], float_array[14], float_array[15]])
+

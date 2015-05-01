@@ -29,7 +29,8 @@ class Interface():
         self.parser.add_argument("--smooth", help="Smoothing for the kernel function. Default is "+defaults['smooth'], type=float, default=float(defaults['smooth']))
         self.parser.add_argument("--interval", help="How many loops before particles are saved. Default is "+defaults['interval'], type=int, default=int(defaults['interval']))
         self.parser.add_argument("--mass", help="Mass of the particles in the simulation. Default is "+defaults['mass'], type=float, default=float(defaults['mass']))
-        self.parser.add_argument("--mode", help="Simulation mode (parallel or serial) Default is "+defaults['mode'], choices=['serial', 'parallel'], default=defaults['mode'])
+        self.parser.add_argument("--mode", help="Simulation mode (parallel or serial). Default is "+defaults['mode'], choices=['serial', 'parallel'], default=defaults['mode'])
+        self.parser.add_argument("-v", "--verbosity", help="Level of detail when outputting particles. Default is "+defaults['verbosity'], choices=[1,2,3], type=int, default=defaults['verbosity'])
         # Actually begin to parse the arguments
         self.args = self.parser.parse_args()
 
@@ -141,8 +142,8 @@ class Interface():
                   # casting should catch odd values as well (e.g. '40a' for a PID)
                   ppos.append(particle(int(p[0]), float(p[1]), float(p[2]), float(p[3]), float(p[4]), float(p[5]), float(p[6]), float(p[7])))
             return ppos
-        except:
-            raise IOError("[-] Cannot find input file! Does it exist?")
+        except IOError:
+            raise IOError("Error reading input file!")
 
     ######################################################
     # This is where all the CLI rules will be set and interpreted, and further function calls done
@@ -161,8 +162,6 @@ class Interface():
         else: # If [IFILE] and [NUMPRT] are NOT specified, print help message and exit
             self.parser.print_help()
             raise IOError("You did not specify an input file or tell me to generate particles!")
-# OLD            print "\n[-] You did not specify an input file or tell me to generate particles!"
-# OLD            exit(1)
 
         # retrieved from either an input file or generated in self.genParticles
         return particles
@@ -176,4 +175,4 @@ class Interface():
         print "\n[+] Starting simulation..."
         return framework.sim(particles, self.args.bound, self.args.kernel, self.args.maxiter,
                                 self.args.gen, self.args.smooth, self.args.t_norm, self.args.x_norm,
-                                self.args.interval, self.args.savefile, self.args.timestep, self.args.mode)
+                                self.args.interval, self.args.savefile, self.args.timestep, self.args.mode, self.args.verbosity)
