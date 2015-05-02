@@ -7,12 +7,12 @@ class Particle(object):
 		self.mass = m				# particle mass (double)
 		self.pos = np.array([x,y,z])		# position vector<double>
 		self.vel = np.array([vx,vy,vz])		# velocity vector<double>
-		
+
 		if temp is None:
 			self.temp = np.array([0.0,0.0,0.0])	# temp vector<double>
 		else:
 			self.temp = np.array(temp) # force temp to be a numpy array
-		
+
 		if acc is None:
 			self.acc = np.array([0.0,0.0,0.0])	# acceleration vector<double>
 		else:
@@ -48,7 +48,6 @@ class Particle(object):
 
 	#   "Particle ID, X-coord, Y-coord, Z-coord, etc."
 	def formatProperties(self, v):
-		if v == 1: return "%.3f,%.3f,%.3f\n" % (float(self.pos[0]), float(self.pos[1]), float(self.pos[2]))
 		if v == 2: return "%d,%.2f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n" % (int(self.id), float(self.mass), float(self.pos[0]), float(self.pos[1]), float(self.pos[2]),float(self.vel[0]), float(self.vel[1]), float(self.vel[2]), float(self.pressure), float(self.rho))
 		if v == 3: return "%d,%.2f,%f,%f,%f,%f,%f,%f,%f,%f\n" % (int(self.id), float(self.mass), float(self.pos[0]), float(self.pos[1]), float(self.pos[2]),float(self.vel[0]), float(self.vel[1]), float(self.vel[2]), float(self.pressure), float(self.rho))
 

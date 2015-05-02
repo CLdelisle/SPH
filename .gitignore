@@ -4,4 +4,5 @@ __pycache__/
 
 example-*.csv
 output-*.csv
+output-*.csv.npz
 *.pem
