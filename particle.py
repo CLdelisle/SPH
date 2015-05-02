@@ -7,12 +7,12 @@ class Particle(object):
 		self.mass = m				# particle mass (double)
 		self.pos = np.array([x,y,z])		# position vector<double>
 		self.vel = np.array([vx,vy,vz])		# velocity vector<double>
-		
+
 		if temp is None:
 			self.temp = np.array([0.0,0.0,0.0])	# temp vector<double>
 		else:
 			self.temp = np.array(temp) # force temp to be a numpy array
-		
+
 		if acc is None:
 			self.acc = np.array([0.0,0.0,0.0])	# acceleration vector<double>
 		else:
