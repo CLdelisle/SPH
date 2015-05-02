@@ -49,8 +49,8 @@ class Particle(object):
 	#   "Particle ID, X-coord, Y-coord, Z-coord, etc."
 	def formatProperties(self, v):
 		if v == 1: return "%.3f,%.3f,%.3f\n" % (float(self.pos[0]), float(self.pos[1]), float(self.pos[2]))
-		if v == 2: return "%d,%.2f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n" % (int(self.id), float(self.mass), float(self.pos[0]), float(self.pos[1]), float(self.pos[2]),float(self.vel[0]), float(self.vel[1]), float(self.vel[2]), float(self.pressure), float(self.rho))
-		if v == 3: return "%d,%.2f,%f,%f,%f,%f,%f,%f,%f,%f\n" % (int(self.id), float(self.mass), float(self.pos[0]), float(self.pos[1]), float(self.pos[2]),float(self.vel[0]), float(self.vel[1]), float(self.vel[2]), float(self.pressure), float(self.rho))
+		if v == 2: return "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f, %.2f, %d\n" % (float(self.pos[0]), float(self.pos[1]), float(self.pos[2]),float(self.vel[0]), float(self.vel[1]), float(self.vel[2]), float(self.pressure), float(self.rho), float(self.mass), int(self.id))
+		if v == 3: return "%f,%f,%f,%f,%f,%f,%f,%f, %.2f, %d\n" % (float(self.pos[0]), float(self.pos[1]), float(self.pos[2]),float(self.vel[0]), float(self.vel[1]), float(self.vel[2]), float(self.pressure), float(self.rho), float(self.mass), int(self.id))
 
 	def flatten(self):
 		return [self.id, self.mass, self.pos[0], self.pos[1], self.pos[2], self.vel[0], self.vel[1], self.vel[2], self.acc[0], self.acc[1], self.acc[2], self.rho, self.pressure, self.temp[0], self.temp[1], self.temp[2]]
