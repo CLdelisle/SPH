@@ -68,10 +68,17 @@ class ParticleGPUInterface:
   # Supply its name and optional parameters
   # Right now, parameters are hardcoded for the sim.  They should be variable in the future.
   def run_cuda_function(self, function_name, params = None):
+    blocks = (32, 1, 1)
+
+    num_blocks = self.number_particles / 32
+    if self.number_particles % 32 != 0:
+      num_blocks += 1
+
+    grid = (num_blocks, 1)
     if params == None:
-      self.get_cuda_function(function_name)(self.struct_arr, block=(32, 1, 1), grid=(self.number_particles / 32, 1))
+      self.get_cuda_function(function_name)(self.struct_arr, block=blocks, grid=grid)
     else:
-      self.get_cuda_function(function_name)(self.struct_arr, params[0], params[1], params[2], block=(32, 1, 1), grid=(self.number_particles / 32, 1))
+      self.get_cuda_function(function_name)(self.struct_arr, params[0], params[1], params[2], block=blocks, grid=grid)
 
   # transfers float array fromt the GPU and converts the floats to particles
   def getResultsFromDevice(self):
