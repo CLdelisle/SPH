@@ -48,6 +48,7 @@ def update(num,sc,ax):
 
 	t += 1
 	ax.autoscale(False)
+	ax.view_init(elev=10, azim=t)
 	sc = ax.scatter(curr_x, curr_y, curr_z, c='m', marker='o')
 	return sc
 
