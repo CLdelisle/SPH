@@ -26,7 +26,7 @@ struct ParticleArray {
 };
 
 __device__ int ids_are_equal(float id1, float id2) {
-  return (fabsf(id1) - fabsf(id2) <= 0.00001);
+  return fabsf(id1 -id2) <= 0.00001;
 }
 
 // subtract vectors

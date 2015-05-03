@@ -101,6 +101,7 @@ __device__ void second_sim_loop(ParticleArray *particle_array, int timestep, flo
           p->acc[1] -= b * pos_difference[1];
           p->acc[2] -= b * pos_difference[2];
         }
+        else printf("Particle %f skipping particle  %f\n",p->id,q->id);
     }
 
     // # finish velocity update
@@ -127,6 +128,9 @@ __device__ void third_sim_loop(ParticleArray *particle_array, int timestep, floa
 // Runs all sim loops
 __global__ void run_simulation_loops(ParticleArray *particle_array, int timestep, float smooth, int CHOOSE_KERNEL_CONST) {
   if (threadIdx.x < particle_array->datalen) {
+
+
+
     first_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
     second_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
     third_sim_loop(particle_array, timestep, smooth, CHOOSE_KERNEL_CONST);
