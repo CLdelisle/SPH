@@ -1,6 +1,6 @@
 # Smoothed-Particle Hydrodynamics Simulator
 <hr>
-The SPH Framework encompasses the command line environment and configuration file interpretation. One Python script, and three Python modules are included to accomplish this: SPH.py, CLI.py, Configuration.py, Framework.py, and Particle.py. 
+The SPH Framework encompasses the command line environment and configuration file interpretation. Two Python scripts, and four Python modules are included to accomplish this: SPH.py, Framework.py, CLI.py, Configuration.py, gpu_interface.py, and Particle.py. 
 
 ### Usage
 The SPH simulator needs either a CSV file as input, or it needs to be instructed to generate a set amount of particles. Most options have defaults pre-set in the config file
@@ -26,7 +26,7 @@ sph.py [-h] [-g GEN] [-i IFILE] [--gtype {gaussian,random,disk}]
 
 ### SPH.py
 The entrypoint for the SPH simulator application.
-* Aggregates the Configuration and CLI Python modules
+* Aggregates the Framework, Configuration, gpu_interface and CLI Python modules
 * Provides a chokepoint for catching exceptions
 
 ### Configuration.py
@@ -43,7 +43,7 @@ Builds the command line interface, and is the only interaction between the user 
 * Periodically save program state by writing particles to output files
 
 ### Framework.py
-Calculates particle accelerations and numerically integrates their equations of motion
+Calculates particle accelerations and numerically integrates their equations of motion when implementing SPH serially
 
 ### Particle.py
 Simply stores particle IDs, X, Y, and Z coordinates, mass, velocity, and acceleration for each particle.
