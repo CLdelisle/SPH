@@ -21,7 +21,6 @@ sph.py [-h] [-g GEN] [-i IFILE] [--gtype {gaussian,random}]
           [--x_norm {Meters,kilometers,light-years}]
           [--kernel {gaussian,cubic}]
           [--mode {serial,parallel}]
-
 ```
 
 ### SPH.py
@@ -59,7 +58,6 @@ Command line usage:
 ```
 3dplot.py [-h] [--prefix PREFIX] [--fps FPS] [--file FILE]
           [--title TITLE] [--bound BOUND] [--rotation ROTATION]
-
 ```
 Basic example: ```python 3dplot.py --prefix output```
 
