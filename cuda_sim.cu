@@ -101,7 +101,6 @@ __device__ void second_sim_loop(ParticleArray *particle_array, int timestep, flo
           p->acc[1] -= b * pos_difference[1];
           p->acc[2] -= b * pos_difference[2];
         }
-        else printf("Particle %f skipping particle  %f\n",p->id,q->id);
     }
 
     // # finish velocity update
