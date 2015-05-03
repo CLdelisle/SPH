@@ -6,3 +6,4 @@ example-*.csv
 output-*.csv
 output-*.csv.npz
 *.pem
+plot.gif
