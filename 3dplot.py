@@ -12,6 +12,7 @@ parser.add_argument("--fps", help="Frames per second Defaults to 15", type=int, 
 parser.add_argument("--file", help="Filename to save animation to", default='plot.gif')
 parser.add_argument("--title", help="Plot title (defaults to blank)", default='')
 parser.add_argument("--bound", help="Bound of the simulation used", default=1000, type=int)
+parser.add_argument("--rotation", help="Speed of the rotation", default=1.0, type=float)
 args = parser.parse_args()
 
 files = sortedFileNames(args.prefix)
@@ -40,7 +41,7 @@ def get_particle_positions(time=0):
 	return curr_x, curr_y, curr_z
 
 t = 0
-def update(num,sc,ax):
+def update(num, sc, ax, rotationSpeed):
 	ax.cla();
 	global t
 
@@ -48,7 +49,7 @@ def update(num,sc,ax):
 
 	t += 1
 	ax.autoscale(False)
-	ax.view_init(elev=10, azim=t)
+	ax.view_init(elev=10, azim=t*rotationSpeed)
 	sc = ax.scatter(curr_x, curr_y, curr_z, c='m', marker='o')
 	return sc
 
@@ -67,7 +68,7 @@ def main():
 
 	sc = ax.scatter(curr_x, curr_y, curr_z, c='r', marker='o')
 
-	ani = animation.FuncAnimation(fig, update, frames=RUNTIME,fargs=(sc,ax))
+	ani = animation.FuncAnimation(fig, update, frames=RUNTIME,fargs=(sc, ax, args.rotation))
 
 	ani.save(args.file, writer='imagemagick', fps=args.fps);
 	# ani.save('test_run.mp4', fps=15, extra_args=['-vcodec', 'libx264'])
