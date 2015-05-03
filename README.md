@@ -62,8 +62,6 @@ Basic example: ```python 3dplot.py --prefix output```
 Advanced example: ```python 3dplot.py --prefix output --fps=15 --file test.gif --title="multiword title use quotes"```
 
 The prefix parameter is the prefix of the output files that contain particle locations at a given timestep (<b>output</b>-1.csv, <b>output</b>-100.csv, <b>output</b>-200.csv, etc).
-* Todo:
- * Auto scale the axis
 
 ### Necessary Dependencies
 * Python 2.7 - Tested with Python 2.7.8 and 2.7.9
