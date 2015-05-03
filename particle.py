@@ -36,7 +36,7 @@ class Particle(object):
 		else:
 			t = ''
 		#	id  mass  posx, posy, posz      vx, vy, vz       ax, ay, az
-		print "%s%s\t%.2f\t%.2f, %.2f, %.2f\t%.2f, %.2f, %.2f\t%.2f, %.2f, %.2f\t%.8f\t%.8f" % (t, str(self.id), self.mass, p[0],p[1],p[2], v[0],v[1],v[2], a[0],a[1],a[2], self.pressure, self.rho)
+		print "%s%d\t%.2f\t%.2f, %.2f, %.2f\t%.2f, %.2f, %.2f\t%.2f, %.2f, %.2f\t%.8f\t%.8f" % (t, int(self.id), self.mass, p[0],p[1],p[2], v[0],v[1],v[2], a[0],a[1],a[2], self.pressure, self.rho)
 
 	def velocityMagnitude(self):
 		return sqrt(self.vel[0] ** 2 + self.vel[1] ** 2 + self.vel[2] ** 2)
