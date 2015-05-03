@@ -55,13 +55,16 @@ This is the configuration file for the simulator. Options take a 'key=value' for
 Command line usage:
 ```
 3dplot.py [-h] [--prefix PREFIX] [--fps FPS] [--file FILE]
-                 [--title TITLE]
+          [--title TITLE] [--bound BOUND] [--rotation ROTATION]
+
 ```
 Basic example: ```python 3dplot.py --prefix output```
 
 Advanced example: ```python 3dplot.py --prefix output --fps=15 --file test.gif --title="multiword title use quotes"```
 
 The prefix parameter is the prefix of the output files that contain particle locations at a given timestep (<b>output</b>-1.csv, <b>output</b>-100.csv, <b>output</b>-200.csv, etc).
+
+Negative rotation speed constants spin the camera in the counter-clockwise direction.
 
 ### Necessary Dependencies
 * Python 2.7 - Tested with Python 2.7.8 and 2.7.9
