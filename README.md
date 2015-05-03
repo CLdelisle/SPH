@@ -51,6 +51,9 @@ Simply stores particle IDs, X, Y, and Z coordinates, mass, velocity, and acceler
 ### SPH.conf
 This is the configuration file for the simulator. Options take a 'key=value' format. Newlines are ignored, and lines are considered commented when #'s are found at the beginning of them. In addition, each option has a small description above it in the .conf file.
 
+### gpu_interface.py
+This file exposes a cuda API that allows manipulation of particles on the GPU.  It handles copying the particles, running cuda kernels, and compiling the cuda source files.
+
 ### Generating 3D Plots
 Command line usage:
 ```
