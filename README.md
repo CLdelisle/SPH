@@ -1,4 +1,4 @@
-# SPH Input/Output
+# Smoothed-Particle Hydrodynamics Simulator
 <hr>
 The SPH Framework encompasses the command line environment and configuration file interpretation. One Python script, and three Python modules are included to accomplish this: SPH.py, CLI.py, Configuration.py, Framework.py, and Particle.py. 
 
