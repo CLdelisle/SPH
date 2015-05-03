@@ -40,7 +40,7 @@ class Interface():
 	rmin = 0.7*self.args.bound
 	rmax = 0.9*self.args.bound
 	ppos = []
-	vel_scale = 0.0
+	vel_scale = 0.02
 
 	phis = np.linspace(0, 2*np.pi, num)
 	zthick = (rmax - rmin)/2.0
@@ -51,8 +51,8 @@ class Interface():
 		x = dist_scale*np.cos(phi)
 		y = dist_scale*np.sin(phi)
 		z = np.random.uniform(-zthick, zthick)
-		vx = vel_scale*np.cos(phi)
-		vy =  vel_scale*np.sin(phi)
+		vx = -1*vel_scale*np.sin(phi)
+		vy =  vel_scale*np.cos(phi)
 		vz = 0.0
 		ppos.append(particle(pid, mass, x, y, z, vx, vy, vz))
 		pid += 1
