@@ -4,6 +4,7 @@ import configuration
 from random import uniform, gauss
 from particle import Particle as particle
 import framework
+import numpy as np
 
 class Interface():
 
@@ -17,7 +18,7 @@ class Interface():
 
         self.parser.add_argument("-g", "--gen", help="Number of particles to generate. Conflicts with [IFILE] argument", type=int)
         self.parser.add_argument("-i", "--ifile", help="Input file path to read particles from. Takes precedence over [GEN] argument")
-        self.parser.add_argument("--gtype", help="Type of particle generation to perform. Default is "+defaults['gtype'], choices=['gaussian', 'random'], default=defaults['gtype'])
+        self.parser.add_argument("--gtype", help="Type of particle generation to perform. Default is "+defaults['gtype'], choices=['gaussian', 'random', 'disk'], default=defaults['gtype'])
         self.parser.add_argument("-s", "--savefile", help="Output file path to write particles to. Suffix is currently "+defaults['savefile'], default=defaults['savefile'])
         self.parser.add_argument("--bound", help="Sets boundaries of particle space. Default is "+defaults['bound'], type=int, default=int(defaults['bound']))
         self.parser.add_argument("--stdev", help="Standard deviation of particle space. Default is "+defaults['stdev'], type=float, default=float(defaults['stdev']))
@@ -33,6 +34,30 @@ class Interface():
         self.parser.add_argument("-v", "--verbosity", help="Level of detail when outputting particles. Default is "+defaults['verbosity'], choices=[1,2,3], type=int, default=defaults['verbosity'])
         # Actually begin to parse the arguments
         self.args = self.parser.parse_args()
+
+    def createDisk(self, num, mass):
+	print 'CreateDisk'
+	rmin = 0.7*self.args.bound
+	rmax = 0.9*self.args.bound
+	ppos = []
+	vel_scale = 0.0
+
+	phis = np.linspace(0, 2*np.pi, num)
+	zthick = (rmax - rmin)/2.0
+
+	pid = 0
+	for phi in phis:
+		dist_scale = np.random.uniform(rmin, rmax)
+		x = dist_scale*np.cos(phi)
+		y = dist_scale*np.sin(phi)
+		z = np.random.uniform(-zthick, zthick)
+		vx = vel_scale*np.cos(phi)
+		vy =  vel_scale*np.sin(phi)
+		vz = 0.0
+		ppos.append(particle(pid, mass, x, y, z, vx, vy, vz))
+		pid += 1
+
+	return ppos
 
     ######################################################
     # Generate a specified number of particles in a 3D space using random.gauss() function
@@ -111,6 +136,9 @@ class Interface():
             elif method == 'random':
                 print "[+] Spreading particles randomly within %s%s^3 space" % (str(self.args.bound), self.args.x_norm)
                 ppos = self.createRandom(num, mass)
+	    elif method == 'disk':
+		print "[+] Generated randomly distributed disk of particles within %s%s^3 space" % (str(self.args.bound), self.args.x_norm)
+		ppos = self.createDisk(num, mass)
             else:
                 print "[+] No particle generation method selected. Spreading particles randomly"
                 ppos = self.createRandom(num, mass)

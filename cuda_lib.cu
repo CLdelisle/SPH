@@ -52,7 +52,7 @@ def pressure(p):
 
 __device__ float pressure(Particle* p) {
   //  k = 1.0 #this may need to stay hardcoded for our purposes, though could be read in from config file
-  float k = 1e-2;
+  float k = 1e-4;
 
   // gamma = 1.5 #but i'm keeping these constants segregated in this function for now instead of inlining because of this issue
   float gamma = 1.5;
@@ -176,7 +176,7 @@ __device__ float find_and_execute_kernel(int CHOOSE_KERNEL_CONST, float* r, floa
 __device__ void Newtonian_gravity(float* result, Particle* p, Particle* q) {
   //   # Newton's gravitational constant
   //   CONST_G = 6.67384 # * 10^(-11) m^3 kg^-1 s^-2
-  float CONST_G = 6.67384e-5;
+  float CONST_G = 6.67384e-4;
   float epsilon = 2e-5;
   //   '''
   //   F = (m_p)a = G(m_p)(m_q)(r)/r^3 -> a = (G * m_q)(r)/(g(r,r)^(3/2)), with g(_,_) the Euclidian inner product
