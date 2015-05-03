@@ -70,17 +70,17 @@ def pressure(p):
 	return (k * (p.rho ** gamma))
 
 def saveParticles(particles, fname, verbosity):
-	if verbosity == 1:
-		particle_positions = []
-		for p in particles:
-			particle_positions.append(p.pos.astype(np.float16))
-		#Binary data
-		np.savez_compressed(fname, particle_positions)
-	else:
-		fhandle = open(fname, "w")
-		for p in particles:
-				p.writeToFile(fhandle, verbosity)
-		fhandle.close()
+	# if verbosity == 1:
+	# 	particle_positions = []
+	# 	for p in particles:
+	# 		particle_positions.append(p.pos.astype(np.float16))
+	# 	#Binary data
+	# 	np.savez_compressed(fname, particle_positions)
+	# else:
+	fhandle = open(fname, "w")
+	for p in particles:
+			p.writeToFile(fhandle, verbosity)
+	fhandle.close()
 
 def sim(particles, bound, kernel, maxiter, pnum, smooth, t_norm, x_norm, interval, savefile, timestep, mode, verbosity):
 	t = 0.0	 # elapsed time
