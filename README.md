@@ -6,16 +6,12 @@ The SPH Framework encompasses the command line environment and configuration fil
 The SPH simulator needs either a CSV file as input, or it needs to be instructed to generate a set amount of particles. Most options have defaults pre-set in the config file
 (generally <b>sph.conf</b>).
 <br><br>Some simple examples are shown below:
-<ul>
-    <li>If all you want to do is generate 100 particles, you would use:
-    ```python sph.py -g 100```</li>
-    <li>Reading from an input file is as simple as: 
-    ```python sph.py -i example.csv```</li>
-    <li>Having a custom output file prefix can be useful too: 
+* If all you want to do is generate 100 particles, you would use: ```python sph.py -g 100```
+* Reading from an input file is as simple as: 
+    ```python sph.py -i example.csv```
+* Having a custom output file prefix can be useful too: 
     ```python sph.py -i example.csv -s output```
-        <ul><li>This would yield output files such as: <b>output-1.csv</b>, <b>output-100.csv</b>, <b>output-200.csv</b>, etc.</li></ul>
-    </li>
-</ul>
+  * This would yield output files such as: <b>output-1.csv</b>, <b>output-100.csv</b>, <b>output-200.csv</b>, etc.
 
 #### Available Flags
 ```
@@ -59,15 +55,16 @@ This is the configuration file for the simulator. Options take a 'key=value' for
 Command line usage:
 ```
 3dplot.py [-h] [--prefix PREFIX] [--fps FPS] [--file FILE]
-                 [--title TITLE]
+          [--title TITLE] [--bound BOUND] [--rotation ROTATION]
+
 ```
 Basic example: ```python 3dplot.py --prefix output```
 
 Advanced example: ```python 3dplot.py --prefix output --fps=15 --file test.gif --title="multiword title use quotes"```
 
 The prefix parameter is the prefix of the output files that contain particle locations at a given timestep (<b>output</b>-1.csv, <b>output</b>-100.csv, <b>output</b>-200.csv, etc).
-* Todo:
- * Auto scale the axis
+
+Negative rotation speed constants spin the camera in the counter-clockwise direction.
 
 ### Necessary Dependencies
 * Python 2.7 - Tested with Python 2.7.8 and 2.7.9
