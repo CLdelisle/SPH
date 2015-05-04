@@ -1,4 +1,7 @@
 # Smoothed-Particle Hydrodynamics Simulator
+
+![SPH Demo GIF](https://github.com/QuarkStar/SPH/blob/master/collapse_cluster_collapse.gif)
+
 <hr>
 The SPH Framework encompasses the command line environment and configuration file interpretation. Two Python scripts, and four Python modules are included to accomplish this: SPH.py, Framework.py, CLI.py, Configuration.py, gpu_interface.py, and Particle.py. 
 
